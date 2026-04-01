@@ -11,7 +11,6 @@ import {
   Location01Icon,
   StarIcon,
   FavouriteIcon,
-  DashboardSquare01Icon,
   TemperatureIcon,
   ViewIcon,
 } from "@hugeicons/core-free-icons";
@@ -78,14 +77,14 @@ export default function LakesSection() {
   }, [search, sortBy, selectedRegion, selectedState, selectedCondition]);
 
   return (
-    <section id="lakes" className="bg-[#F8FAFC] py-20 pb-32">
+    <section id="lakes" className="bg-white py-20 pb-32">
       <div className="container-1620">
         <div className="flex flex-col items-center text-center">
           <div className="inline-flex items-center gap-2 rounded-full bg-[#FF6B3515] px-4 py-1.5 text-xs font-semibold text-primary ring-1 ring-primary/20">
             <HugeiconsIcon icon={Location01Icon} className="h-4 w-4" />
             Lake intelligence Database
           </div>
-          <h2 className="mt-4 text-3xl font-bold text-[#1A2B42] md:text-4xl lg:text-5xl">
+          <h2 className="mt-4 text-3xl font-semibold text-[#1A2B42] md:text-4xl lg:text-5xl">
             Top Bass Fishing Lakes
           </h2>
           <p className="mt-4 max-w-2xl text-sm text-[#4B5563] md:text-base">
@@ -155,7 +154,7 @@ export default function LakesSection() {
             >
               <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
                 <div>
-                  <h4 className="mb-4 text-sm font-bold text-[#1A2B42]">
+                  <h4 className="mb-4 text-sm font-semibold text-[#1A2B42]">
                     Region
                   </h4>
                   <div className="space-y-2">
@@ -173,7 +172,7 @@ export default function LakesSection() {
                   </div>
                 </div>
                 <div>
-                  <h4 className="mb-4 text-sm font-bold text-[#1A2B42]">
+                  <h4 className="mb-4 text-sm font-semibold text-[#1A2B42]">
                     State
                   </h4>
                   <div className="grid grid-cols-2 gap-2">
@@ -199,7 +198,7 @@ export default function LakesSection() {
                   </div>
                 </div>
                 <div>
-                  <h4 className="mb-4 text-sm font-bold text-[#1A2B42]">
+                  <h4 className="mb-4 text-sm font-semibold text-[#1A2B42]">
                     Condition
                   </h4>
                   <div className="space-y-2">
@@ -223,8 +222,8 @@ export default function LakesSection() {
 
         <div className="mt-4 flex items-center justify-between">
           <p className="text-sm font-medium text-[#1A2B42]">
-            Showing <span className="font-bold">{filteredLakes.length}</span>{" "}
-            lakes
+            Showing{" "}
+            <span className="font-semibold">{filteredLakes.length}</span> lakes
           </p>
         </div>
 
@@ -258,7 +257,7 @@ function LakeCardComponent({ lake }: { lake: LakeCard }) {
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9 }}
       transition={{ duration: 0.3 }}
-      className="group flex flex-col overflow-hidden rounded-2xl bg-white shadow-sm border-x border-b border-t-0 border-solid border-[#F3F4F6] transition-all hover:shadow-xl hover:ring-1 hover:ring-primary/20"
+      className="group flex flex-col overflow-hidden rounded-2xl bg-white border-x border-b border-t-0 border-solid border-[#F3F4F6] transition-all hover:shadow-xs hover:ring-1 hover:ring-primary/20"
     >
       <div className="relative aspect-[4/3] overflow-hidden">
         <Image
@@ -272,14 +271,18 @@ function LakeCardComponent({ lake }: { lake: LakeCard }) {
 
         <div className="absolute left-3 top-3">
           <span
-            className={`${conditionColor} rounded-lg px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white`}
+            className={`${conditionColor} rounded-lg px-2.5 py-1 text-xs font-semibold uppercase tracking-wider text-white`}
           >
             {lake.condition}
           </span>
         </div>
 
-        <button className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-[#FFFFFF22] text-white backdrop-blur-sm transition-colors hover:bg-white hover:text-red-500">
-          <HugeiconsIcon icon={FavouriteIcon} className="h-4.5 w-4.5" />
+        <button className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-[#D9D9D94D] text-white backdrop-blur-sm transition-colors hover:bg-white hover:text-primary cursor-pointer">
+          <HugeiconsIcon
+            icon={FavouriteIcon}
+            className="h-5 w-5"
+            strokeWidth={2}
+          />
         </button>
 
         <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white">
@@ -289,13 +292,13 @@ function LakeCardComponent({ lake }: { lake: LakeCard }) {
           </div>
           <div className="flex items-center gap-1.5 rounded-lg bg-[#00000066] px-2 py-1 backdrop-blur-sm">
             <HugeiconsIcon icon={StarIcon} className="h-3 w-3 text-[#F59E0B]" />
-            <span className="text-xs font-bold">{lake.rating}</span>
+            <span className="text-xs font-semibold">{lake.rating}</span>
           </div>
         </div>
       </div>
 
       <div className="flex flex-1 flex-col p-5">
-        <h3 className="text-lg font-bold text-[#1A2B42] group-hover:text-primary transition-colors leading-tight">
+        <h3 className="text-lg font-semibold text-[#1A2B42] group-hover:text-primary transition-colors leading-tight">
           {lake.name}
         </h3>
         <p className="mt-2 line-clamp-2 text-[13px] leading-relaxed text-[#64748B]">
@@ -303,24 +306,24 @@ function LakeCardComponent({ lake }: { lake: LakeCard }) {
         </p>
 
         <div className="mt-3 grid grid-cols-3 gap-2">
-          <div className="flex flex-col items-center justify-center rounded-xl bg-[#1111110D] py-3 transition-colors group-hover:bg-white">
+          <div className="flex flex-col items-center justify-center rounded-xl bg-[#1111110D] py-3 transition-colors group-hover:bg-black/5">
             <HugeiconsIcon
               icon={TemperatureIcon}
-              className="h-4 w-4 text-[#EF4444]"
+              className="h-5 w-5 text-[#EF4444]"
             />
-            <span className="mt-1.5 text-[11px] font-bold text-[#1A2B42]">
+            <span className="mt-1 text-xs font-semibold text-[#1A2B42]">
               {lake.temp}
             </span>
           </div>
-          <div className="flex flex-col items-center justify-center rounded-xl bg-[#1111110D] py-3 transition-colors group-hover:bg-white">
-            <HugeiconsIcon icon={ViewIcon} className="h-4 w-4 text-[#3B82F6]" />
-            <span className="mt-1.5 text-[11px] font-bold text-[#1A2B42]">
+          <div className="flex flex-col items-center justify-center rounded-xl bg-[#1111110D] py-3 transition-colors group-hover:bg-black/5">
+            <HugeiconsIcon icon={ViewIcon} className="h-5 w-5 text-[#3B82F6]" />
+            <span className="mt-1 text-xs font-semibold text-[#1A2B42]">
               {lake.clarity}
             </span>
           </div>
-          <div className="flex flex-col items-center justify-center rounded-xl bg-[#1111110D] py-3 transition-colors group-hover:bg-white">
-            <Fish className="h-4 w-4 text-[#22C55E]" />
-            <span className="mt-1.5 text-[11px] font-bold text-[#1A2B42]">
+          <div className="flex flex-col items-center justify-center rounded-xl bg-[#1111110D] py-3 transition-colors group-hover:bg-black/5">
+            <Fish className="h-5 w-5 text-[#22C55E]" />
+            <span className="mt-1 text-xs font-semibold text-[#1A2B42]">
               {lake.catchRate}/hr
             </span>
           </div>
@@ -330,13 +333,13 @@ function LakeCardComponent({ lake }: { lake: LakeCard }) {
           {lake.species.slice(0, 2).map((s) => (
             <span
               key={s}
-              className="rounded-lg bg-[#EFF6FF] px-2.5 py-1 text-[10px] font-bold text-[#2563EB]"
+              className="rounded-full bg-[#3060D91A] px-2.5 py-1 text-xs font-semibold text-blue"
             >
               {s}
             </span>
           ))}
           {lake.species.length > 2 && (
-            <span className="rounded-lg bg-[#F1F5F9] px-2.5 py-1 text-[10px] font-bold text-[#64748B]">
+            <span className="rounded-full bg-[#1111111A] px-2.5 py-1 text-xs font-semibold text-foreground">
               +{lake.species.length - 2}
             </span>
           )}
