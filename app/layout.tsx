@@ -69,7 +69,6 @@ export const metadata: Metadata = {
     "BASSPORT Pro",
     "angler community",
   ],
-  manifest: "/manifest.json",
   icons: {
     icon: "/icons/logo.png",
     apple: "/icons/logo.png",
