@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import Image from "next/image";
+import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
@@ -9,14 +8,12 @@ import {
   PreferenceHorizontalIcon,
   ArrowDown01Icon,
   Location01Icon,
-  StarIcon,
-  FavouriteIcon,
-  TemperatureIcon,
-  ViewIcon,
 } from "@hugeicons/core-free-icons";
 import { lakes } from "@/data/landingData";
-import { LakeCard } from "@/types/landingData.types";
-import { Fish } from "lucide-react";
+import { FilterX } from "lucide-react";
+import LakeCard from "./LakeCard";
+import { TablePagination } from "@/components/Shared/TablePagination";
+import { LakeGridSkeleton } from "@/components/Skeleton/LakeGridSkeleton";
 
 const sortOptions = [
   { label: "Sort by Rating", value: "rating" },
@@ -31,10 +28,21 @@ export default function LakesSection() {
   const [sortBy, setSortBy] = useState("rating");
   const [showFilters, setShowFilters] = useState(false);
 
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 12;
+
   // Filter states
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedRegion, setSelectedRegion] = useState("All");
   const [selectedState, setSelectedState] = useState("All");
   const [selectedCondition, setSelectedCondition] = useState("All");
+
+  // Simulate loading on mount
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 800);
+    return () => clearTimeout(timer);
+  }, []);
 
   const filteredLakes = useMemo(() => {
     const result = lakes.filter((lake) => {
@@ -75,6 +83,26 @@ export default function LakesSection() {
 
     return result;
   }, [search, sortBy, selectedRegion, selectedState, selectedCondition]);
+
+  const totalPages = Math.ceil(filteredLakes.length / itemsPerPage);
+  const paginatedLakes = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return filteredLakes.slice(startIndex, startIndex + itemsPerPage);
+  }, [filteredLakes, currentPage]);
+
+  const handleClearFilters = () => {
+    setSearch("");
+    setSelectedRegion("All");
+    setSelectedState("All");
+    setSelectedCondition("All");
+    setCurrentPage(1);
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    // Scroll to section start on page change
+    document.getElementById("lakes")?.scrollIntoView({ behavior: "smooth" });
+  };
 
   return (
     <section id="lakes" className="bg-white py-20 pb-32">
@@ -129,7 +157,7 @@ export default function LakesSection() {
 
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className={`flex items-center gap-2 rounded-xl px-6 py-4 text-sm font-medium transition-all ${
+              className={`flex items-center gap-2 rounded-xl px-6 py-4 text-sm font-medium transition-all cursor-pointer ${
                 showFilters
                   ? "bg-primary text-white shadow-lg shadow-primary/20 ring-primary"
                   : "bg-white text-[#1A2B42] shadow-sm ring-1 ring-[#E2E8F0] hover:bg-gray-50"
@@ -227,120 +255,59 @@ export default function LakesSection() {
           </p>
         </div>
 
-        <motion.div
-          layout
-          className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-        >
-          <AnimatePresence mode="popLayout">
-            {filteredLakes.map((lake) => (
-              <LakeCardComponent key={lake.id} lake={lake} />
-            ))}
-          </AnimatePresence>
-        </motion.div>
+        {isLoading ? (
+          <LakeGridSkeleton count={8} />
+        ) : paginatedLakes.length > 0 ? (
+          <>
+            <motion.div
+              layout
+              className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+            >
+              <AnimatePresence mode="popLayout">
+                {paginatedLakes.map((lake) => (
+                  <LakeCard key={lake.id} lake={lake} />
+                ))}
+              </AnimatePresence>
+            </motion.div>
+
+            {filteredLakes.length > itemsPerPage && (
+              <div className="mt-12">
+                <TablePagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  totalItems={filteredLakes.length}
+                  itemsPerPage={itemsPerPage}
+                  onPageChange={handlePageChange}
+                  className="border-none bg-gray-50/50 rounded-2xl"
+                />
+              </div>
+            )}
+          </>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-20 flex flex-col items-center justify-center text-center"
+          >
+            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gray-50 text-gray-400">
+              <FilterX className="h-10 w-10" />
+            </div>
+            <h3 className="mt-6 text-xl font-semibold text-[#1A2B42]">
+              No lakes found
+            </h3>
+            <p className="mt-2 text-[#64748B]">
+              We couldn&apos;t find any lakes matching your current search or
+              filters.
+            </p>
+            <button
+              onClick={handleClearFilters}
+              className="mt-8 rounded-xl bg-primary px-8 py-3 text-sm font-semibold text-white shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+            >
+              Clear all filters
+            </button>
+          </motion.div>
+        )}
       </div>
     </section>
-  );
-}
-
-function LakeCardComponent({ lake }: { lake: LakeCard }) {
-  const conditionColor = {
-    Excellent: "bg-[#22C55E]",
-    Good: "bg-[#3B82F6]",
-    Fair: "bg-[#F59E0B]",
-    Poor: "bg-[#EF4444]",
-  }[lake.condition];
-
-  return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.9 }}
-      transition={{ duration: 0.3 }}
-      className="group flex flex-col overflow-hidden rounded-2xl bg-white border-x border-b border-t-0 border-solid border-[#F3F4F6] transition-all hover:shadow-xs hover:ring-1 hover:ring-primary/20"
-    >
-      <div className="relative aspect-[4/3] overflow-hidden">
-        <Image
-          src={lake.image}
-          alt={lake.name}
-          fill
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-          className="object-cover transition-transform duration-500 group-hover:scale-110"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#00000088] via-transparent to-transparent opacity-60" />
-
-        <div className="absolute left-3 top-3">
-          <span
-            className={`${conditionColor} rounded-lg px-2.5 py-1 text-xs font-semibold uppercase tracking-wider text-white`}
-          >
-            {lake.condition}
-          </span>
-        </div>
-
-        <button className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-[#FFFFFF22] text-white backdrop-blur-sm transition-colors hover:bg-white hover:text-primary cursor-pointer">
-          <HugeiconsIcon icon={FavouriteIcon} className="h-5 w-5" />
-        </button>
-
-        <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white">
-          <div className="flex items-center gap-1.5">
-            <HugeiconsIcon icon={Location01Icon} className="h-4 w-4" />
-            <span className="text-xs font-semibold">{lake.state}</span>
-          </div>
-          <div className="flex items-center gap-1.5 rounded-lg bg-[#00000066] px-2 py-1 backdrop-blur-sm">
-            <HugeiconsIcon icon={StarIcon} className="h-3 w-3 text-[#F59E0B]" />
-            <span className="text-xs font-semibold">{lake.rating}</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="flex flex-1 flex-col p-5">
-        <h3 className="text-lg font-semibold text-[#1A2B42] group-hover:text-primary transition-colors leading-tight">
-          {lake.name}
-        </h3>
-        <p className="mt-2 line-clamp-2 text-[13px] leading-relaxed text-[#64748B]">
-          {lake.description}
-        </p>
-
-        <div className="mt-3 grid grid-cols-3 gap-2">
-          <div className="flex flex-col items-center justify-center rounded-xl bg-[#1111110D] py-3 transition-colors group-hover:bg-black/5">
-            <HugeiconsIcon
-              icon={TemperatureIcon}
-              className="h-5 w-5 text-[#EF4444]"
-            />
-            <span className="mt-1 text-xs font-semibold text-[#1A2B42]">
-              {lake.temp}
-            </span>
-          </div>
-          <div className="flex flex-col items-center justify-center rounded-xl bg-[#1111110D] py-3 transition-colors group-hover:bg-black/5">
-            <HugeiconsIcon icon={ViewIcon} className="h-5 w-5 text-[#3B82F6]" />
-            <span className="mt-1 text-xs font-semibold text-[#1A2B42]">
-              {lake.clarity}
-            </span>
-          </div>
-          <div className="flex flex-col items-center justify-center rounded-xl bg-[#1111110D] py-3 transition-colors group-hover:bg-black/5">
-            <Fish className="h-5 w-5 text-[#22C55E]" />
-            <span className="mt-1 text-xs font-semibold text-[#1A2B42]">
-              {lake.catchRate}/hr
-            </span>
-          </div>
-        </div>
-
-        <div className="mt-3 flex flex-wrap gap-1.5">
-          {lake.species.slice(0, 2).map((s) => (
-            <span
-              key={s}
-              className="rounded-full bg-[#3060D91A] px-2.5 py-1 text-xs font-semibold text-blue"
-            >
-              {s}
-            </span>
-          ))}
-          {lake.species.length > 2 && (
-            <span className="rounded-full bg-[#1111111A] px-2.5 py-1 text-xs font-semibold text-foreground">
-              +{lake.species.length - 2}
-            </span>
-          )}
-        </div>
-      </div>
-    </motion.div>
   );
 }
