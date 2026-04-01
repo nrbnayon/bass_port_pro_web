@@ -9,6 +9,12 @@ export type LakeCard = {
   species: string[];
   image: string;
   color: string;
+  size: number; // in acres or similar
+  catchRate: number; // fish per hour
+  recordBass: number; // in lbs
+  description: string;
+  condition: "Excellent" | "Good" | "Fair" | "Poor";
+  clarity: "Clear" | "Stained" | "Muddy";
 };
 
 export type CatchCard = {

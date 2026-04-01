@@ -64,7 +64,8 @@ export default function HeroSection() {
               alt="BassPort Logo"
               width={280}
               height={80}
-              className="h-auto w-48 md:w-64 lg:w-72 drop-shadow-2xl"
+              style={{ height: "auto" }}
+              className="w-48 md:w-64 lg:w-72 drop-shadow-2xl"
             />
           </motion.div>
 

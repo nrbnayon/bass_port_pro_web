@@ -80,7 +80,8 @@ export default function LandingNavbar() {
             alt="BassPort"
             width={160}
             height={48}
-            className="h-auto w-32 md:w-40"
+            style={{ height: "auto" }}
+            className="w-32 md:w-40"
             priority
           />
         </Link>
