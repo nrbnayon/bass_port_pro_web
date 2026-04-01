@@ -60,6 +60,8 @@
 
 /* ===== Light Theme — Design Tokens ===== */
 :root {
+  scroll-behavior: smooth;
+  scroll-padding-top: 100px;
   --radius: 0.5rem;
 
   /* Backgrounds */
@@ -177,6 +179,13 @@
   .container-1620 {
     width: min(100% - 2rem, 1620px);
     margin-inline: auto;
+  }
+
+  .hero-bg {
+    background-image: linear-gradient(to bottom, #11264099, #11264099), url('/images/hero_bg.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
   }
 
   /* Scrollbar */

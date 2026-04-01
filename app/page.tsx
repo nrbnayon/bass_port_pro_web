@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { LandingView } from "@/components/Landing/LandingView";
+import { LandingView } from "@/components/Layouts/LandingView";
 
 export const metadata: Metadata = {
   title: "Bass Fishing Intelligence Hub",

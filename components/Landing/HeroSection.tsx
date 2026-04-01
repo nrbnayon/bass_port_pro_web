@@ -1,51 +1,128 @@
+"use client";
+
+import Image from "next/image";
 import Link from "next/link";
-import { Compass, ImageIcon } from "lucide-react";
-import { heroStats } from "@/data/landingData";
+import { Compass, ImageIcon, MapPin, Camera, FileText, Users } from "lucide-react";
+import { motion } from "framer-motion";
+
+const heroStats = [
+  { id: "1", value: "12+", label: "Premium Lakes", icon: MapPin },
+  { id: "2", value: "500+", label: "Catch Photos", icon: Camera },
+  { id: "3", value: "1,200+", label: "Fishing Reports", icon: FileText },
+  { id: "4", value: "5,000+", label: "Active Anglers", icon: Users },
+];
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15,
+      delayChildren: 0.3,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+    },
+  },
+};
 
 export default function HeroSection() {
   return (
-    <section id="home" className="relative isolate overflow-hidden bg-[#102A51] pt-28 text-white sm:pt-32">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_#355D9A_0%,_#102A51_45%,_#091A35_100%)]" />
-      <div className="absolute inset-0 opacity-30 [background-image:linear-gradient(to_right,rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.08)_1px,transparent_1px)] [background-size:36px_36px]" />
-      <div className="absolute -left-24 top-24 h-72 w-72 rounded-full bg-primary/25 blur-3xl" />
-      <div className="absolute right-[-80px] top-16 h-80 w-80 rounded-full bg-cyan-400/20 blur-3xl" />
+    <section id="home" className="hero-bg relative isolate flex min-h-screen flex-col items-center justify-center pt-20 text-white overflow-hidden">
+      <div className="container-1620 relative z-10 flex flex-col items-center">
+        <motion.div 
+          initial="hidden"
+          animate="visible"
+          variants={containerVariants}
+          className="flex flex-col items-center text-center"
+        >
+          <motion.div variants={itemVariants} className="mb-8">
+            <Image
+              src="/icons/logo.png"
+              alt="BassPort Logo"
+              width={280}
+              height={80}
+              className="h-auto w-48 md:w-64 lg:w-72 drop-shadow-2xl"
+            />
+          </motion.div>
 
-      <div className="container-1620 relative pb-10 sm:pb-16">
-        <div className="mx-auto max-w-4xl text-center">
-          <p className="inline-flex items-center rounded-full border border-white/20 bg-white/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-white/80">
-            BassPort Pro Intelligence
-          </p>
-          <h1 className="mt-6 text-4xl font-extrabold leading-tight sm:text-5xl lg:text-6xl">
-            Your Bass Fishing <span className="text-primary">Intelligence Hub</span>
-          </h1>
-          <p className="mx-auto mt-5 max-w-3xl text-sm text-white/80 sm:text-base">
-            Discover top bass lakes in America, monitor local conditions, and share your trophy catches with a thriving angler community.
-          </p>
+          <motion.h1 
+            variants={itemVariants}
+            className="max-w-5xl text-5xl font-bold leading-[1.1] tracking-tight sm:text-6xl lg:text-7xl"
+          >
+            Your Bass Fishing <br />
+            <motion.span 
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.8, duration: 0.8 }}
+              className="text-primary inline-block"
+            >
+              Intelligence Hub
+            </motion.span>
+          </motion.h1>
+          
+          <motion.p 
+            variants={itemVariants}
+            className="mx-auto mt-8 max-w-2xl px-4 text-base text-white/90 sm:text-lg"
+          >
+            Discover the best bass fishing lakes across America. Get real-time conditions,
+            expert reports, and share your trophy catches with the community.
+          </motion.p>
 
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+          <motion.div 
+            variants={itemVariants}
+            className="mt-10 flex flex-wrap items-center justify-center gap-4 px-4"
+          >
             <Link
               href="#lakes"
-              className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-white transition hover:bg-primary/90"
+              className="flex items-center gap-2 rounded-lg bg-primary px-8 py-4 text-sm font-bold text-white transition hover:bg-primary/90 shadow-xl shadow-primary/30 hover:scale-105 active:scale-95"
             >
-              <Compass className="h-4 w-4" /> Explore Lakes
+              <Compass className="h-5 w-5" /> Explore Lakes
             </Link>
             <Link
               href="#catches"
-              className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/20"
+              className="flex items-center gap-2 rounded-lg border border-white/20 bg-[#0E2A52]/40 px-8 py-4 text-sm font-bold text-white backdrop-blur-md transition hover:bg-[#0E2A52]/60 hover:scale-105 active:scale-95"
             >
-              <ImageIcon className="h-4 w-4" /> BassPort Gallery
+              <ImageIcon className="h-5 w-5" /> BassPorn Gallery
             </Link>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
-        <div className="mt-10 grid grid-cols-2 gap-3 rounded-2xl border border-white/15 bg-white/10 p-3 backdrop-blur md:grid-cols-4">
-          {heroStats.map((stat) => (
-            <div key={stat.id} className="rounded-xl border border-white/10 bg-[#0C2242]/70 px-3 py-4 text-center">
-              <p className="text-2xl font-bold text-white">{stat.value}</p>
-              <p className="mt-1 text-xs text-white/75 sm:text-sm">{stat.label}</p>
-            </div>
-          ))}
-        </div>
+        <motion.div 
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={containerVariants}
+          className="mt-20 lg:mt-24 w-full px-4"
+        >
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
+            {heroStats.map((stat) => {
+              const Icon = stat.icon;
+              return (
+                <motion.div 
+                  key={stat.id} 
+                  variants={itemVariants}
+                  whileHover={{ y: -8, transition: { duration: 0.2 } }}
+                  className="group flex flex-col items-center rounded-2xl border border-white/10 bg-[#FFFFFF0A] p-6 text-center backdrop-blur-md transition-colors duration-300 hover:bg-[#FFFFFF15] hover:border-white/20"
+                >
+                  <div className="mb-4 flex items-center justify-center text-primary group-hover:scale-110 transition-transform duration-300">
+                    <Icon className="h-6 w-6" />
+                  </div>
+                  <p className="text-3xl font-bold text-white">{stat.value}</p>
+                  <p className="mt-1 text-sm font-medium text-white/60">{stat.label}</p>
+                </motion.div>
+              );
+            })}
+          </div>
+        </motion.div>
       </div>
     </section>
   );

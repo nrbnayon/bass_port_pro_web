@@ -155,6 +155,36 @@ export default function RootLayout({
         className={`${poppins.variable} ${onest.variable} ${geistMono.variable} ${clashDisplay.variable} antialiased bg-background font-sans`}
         suppressHydrationWarning
       >
+        <Script id="strip-extension-attrs" strategy="beforeInteractive">
+          {`
+            (function () {
+              function cleanBisAttrs() {
+                var nodes = document.querySelectorAll('[bis_skin_checked]');
+                for (var i = 0; i < nodes.length; i++) {
+                  nodes[i].removeAttribute('bis_skin_checked');
+                }
+              }
+
+              cleanBisAttrs();
+
+              var observer = new MutationObserver(function () {
+                cleanBisAttrs();
+              });
+
+              observer.observe(document.documentElement, {
+                attributes: true,
+                childList: true,
+                subtree: true,
+              });
+
+              window.addEventListener('load', function () {
+                setTimeout(function () {
+                  observer.disconnect();
+                }, 2000);
+              });
+            })();
+          `}
+        </Script>
         <Script
           id="json-ld"
           type="application/ld+json"
