@@ -1,0 +1,38 @@
+export type LakeCard = {
+  id: string;
+  name: string;
+  state: string;
+  rating: number;
+  temp: string;
+  weather: string;
+  wind: string;
+  species: string[];
+  image: string;
+  color: string;
+};
+
+export type CatchCard = {
+  id: string;
+  angler: string;
+  lake: string;
+  weight: string;
+  image: string;
+};
+
+export type FeatureCard = {
+  id: string;
+  title: string;
+  description: string;
+  icon: "map" | "chart" | "camera" | "message" | "calendar" | "target";
+};
+
+export type ReportCard = {
+  id: string;
+  angler: string;
+  date: string;
+  lake: string;
+  score: string;
+  catches: string;
+  text: string;
+  tags: string[];
+};

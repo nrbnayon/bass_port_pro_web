@@ -1,41 +1,9 @@
-export type LakeCard = {
-  id: string;
-  name: string;
-  state: string;
-  rating: number;
-  temp: string;
-  weather: string;
-  wind: string;
-  species: string[];
-  image: string;
-  color: string;
-};
-
-export type CatchCard = {
-  id: string;
-  angler: string;
-  lake: string;
-  weight: string;
-  image: string;
-};
-
-export type FeatureCard = {
-  id: string;
-  title: string;
-  description: string;
-  icon: "map" | "chart" | "camera" | "message" | "calendar" | "target";
-};
-
-export type ReportCard = {
-  id: string;
-  angler: string;
-  date: string;
-  lake: string;
-  score: string;
-  catches: string;
-  text: string;
-  tags: string[];
-};
+import {
+  LakeCard,
+  CatchCard,
+  FeatureCard,
+  ReportCard,
+} from "@/types/landingData.types";
 
 export const navLinks = [
   { label: "Home", href: "#home" },
@@ -162,37 +130,43 @@ export const features: FeatureCard[] = [
   {
     id: "f1",
     title: "Lake Intelligence",
-    description: "Know fish activity windows, pressure swings, and local water behavior before launch.",
+    description:
+      "Know fish activity windows, pressure swings, and local water behavior before launch.",
     icon: "map",
   },
   {
     id: "f2",
     title: "Expert Reports",
-    description: "Detailed reports from experienced anglers with techniques, lures, and timing.",
+    description:
+      "Detailed reports from experienced anglers with techniques, lures, and timing.",
     icon: "chart",
   },
   {
     id: "f3",
     title: "BassPort Gallery",
-    description: "Share your trophy catches with the community and inspire your next trip.",
+    description:
+      "Share your trophy catches with the community and inspire your next trip.",
     icon: "camera",
   },
   {
     id: "f4",
     title: "Lake Reviews",
-    description: "Read honest reviews from local anglers and rate your favorite fishing spots.",
+    description:
+      "Read honest reviews from local anglers and rate your favorite fishing spots.",
     icon: "message",
   },
   {
     id: "f5",
     title: "Seasonal Patterns",
-    description: "Understand migration paths and season-based behavior across major bass lakes.",
+    description:
+      "Understand migration paths and season-based behavior across major bass lakes.",
     icon: "calendar",
   },
   {
     id: "f6",
     title: "Record Tracking",
-    description: "Track catches, personal bests, and compare historical performance metrics.",
+    description:
+      "Track catches, personal bests, and compare historical performance metrics.",
     icon: "target",
   },
 ];
@@ -231,6 +205,18 @@ export const reports: ReportCard[] = [
 ];
 
 export const footerLinks = {
-  quick: ["Home", "Lake Database", "BassPort Gallery", "Fishing Reports", "Contact Us"],
-  lakes: ["Lake Guntersville", "Lake Fork", "Sam Rayburn", "Lake Okeechobee", "Lake Chickamauga"],
+  quick: [
+    "Home",
+    "Lake Database",
+    "BassPort Gallery",
+    "Fishing Reports",
+    "Contact Us",
+  ],
+  lakes: [
+    "Lake Guntersville",
+    "Lake Fork",
+    "Sam Rayburn",
+    "Lake Okeechobee",
+    "Lake Chickamauga",
+  ],
 };
