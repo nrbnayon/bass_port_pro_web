@@ -107,7 +107,13 @@ export default function LakesSection() {
   return (
     <section id="lakes" className="bg-white py-20 pb-32">
       <div className="container-1620">
-        <div className="flex flex-col items-center text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ margin: "-100px" }}
+          transition={{ duration: 0.6 }}
+          className="flex flex-col items-center text-center"
+        >
           <div className="inline-flex items-center gap-2 rounded-full bg-[#FF6B3515] px-4 py-1.5 text-xs font-semibold text-primary ring-1 ring-primary/20">
             <HugeiconsIcon icon={Location01Icon} className="h-4 w-4" />
             Lake intelligence Database
@@ -119,9 +125,15 @@ export default function LakesSection() {
             Explore our curated database of premier bass fishing destinations
             with real-time conditions and expert insights.
           </p>
-        </div>
+        </motion.div>
 
-        <div className="mt-12 flex flex-col gap-4 md:flex-row md:items-center">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ margin: "-50px" }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="mt-12 flex flex-col gap-4 md:flex-row md:items-center"
+        >
           <div className="relative flex-1">
             <HugeiconsIcon
               icon={Search01Icon}
@@ -170,7 +182,7 @@ export default function LakesSection() {
               Filters
             </button>
           </div>
-        </div>
+        </motion.div>
 
         <AnimatePresence>
           {showFilters && (
@@ -261,6 +273,10 @@ export default function LakesSection() {
           <>
             <motion.div
               layout
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ margin: "-50px" }}
+              transition={{ duration: 0.6, delay: 0.3 }}
               className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
             >
               <AnimatePresence mode="popLayout">
