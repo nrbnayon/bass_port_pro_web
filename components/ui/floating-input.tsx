@@ -4,19 +4,9 @@ import { cn } from "@/lib/utils";
 
 interface FloatingInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
-  /**
-   * Optional: additional classes for the label
-   */
   labelClassName?: string;
-  /**
-   * When true → full rounded border (like outlined input)
-   * When false → only bottom border (like underline / minimal style)
-   */
   isLabelBorder?: boolean;
   error?: string;
-  /**
-   * Optional: control input height (default 56px / h-14)
-   */
   inputHeight?: string;
   suffix?: React.ReactNode;
 }
@@ -39,7 +29,6 @@ const FloatingInput = React.forwardRef<HTMLInputElement, FloatingInputProps>(
     const [isFocused, setIsFocused] = React.useState(false);
     const [hasValue, setHasValue] = React.useState(!!props.value || !!props.defaultValue);
 
-    // Update hasValue when controlled or uncontrolled value changes
     React.useEffect(() => {
       if (props.value !== undefined) {
         setHasValue(!!props.value);
@@ -62,17 +51,14 @@ const FloatingInput = React.forwardRef<HTMLInputElement, FloatingInputProps>(
     return (
       <div className="w-full">
         <div className="relative w-full">
-          <input
+         <input
             ref={ref}
             type={type}
             className={cn(
-              // Core layout – centered text vertically
               "peer w-full bg-transparent outline-none transition-all duration-200",
               inputHeight,
               "px-4 text-base leading-none",
               "py-0",
-
-              // Border styles
               isLabelBorder
                 ? cn(
                     "rounded-lg border border-input",
@@ -82,22 +68,18 @@ const FloatingInput = React.forwardRef<HTMLInputElement, FloatingInputProps>(
                     "border-b-2 border-x-0 border-t-0 border-input",
                     "focus:border-primary"
                   ),
-
-              // Error states override
               error &&
                 (isLabelBorder
                   ? "border-destructive focus:border-destructive focus:ring-4 focus:ring-destructive/10"
                   : "border-destructive focus:border-destructive"),
-
-              // Disabled state
               "disabled:pointer-events-none disabled:opacity-50",
-
               className
             )}
             onFocus={handleFocus}
             onBlur={handleBlur}
             placeholder=" "
-            aria-invalid={!!error}
+            aria-describedby={error && props.id ? `${props.id}-error` : undefined}
+            {...(error ? { "aria-invalid": "true" as const } : {})} 
             {...props}
           />
 
@@ -106,11 +88,7 @@ const FloatingInput = React.forwardRef<HTMLInputElement, FloatingInputProps>(
             className={cn(
               "absolute left-4 pointer-events-none transition-all duration-200 ease-out",
               "text-muted-foreground select-none",
-
-              // Inactive (placeholder-like) state
               !isActive && cn("top-1/2 -translate-y-1/2 text-base"),
-
-              // Active (floating) state
               isActive &&
                 (isLabelBorder
                   ? cn(
@@ -118,12 +96,8 @@ const FloatingInput = React.forwardRef<HTMLInputElement, FloatingInputProps>(
                       isLabelBorder && "peer-focus:text-primary"
                     )
                   : cn("top-2 text-xs font-medium")),
-
-              // Color overrides (only apply if no error)
               isFocused && !error && "text-primary",
               error && "text-destructive",
-              
-              // Allow custom label classes to override default colors when inactive
               !isActive && !error && labelClassName
             )}
           >
@@ -140,7 +114,11 @@ const FloatingInput = React.forwardRef<HTMLInputElement, FloatingInputProps>(
 
         {/* Error message */}
         {error && (
-          <p className="mt-1.5 text-xs text-destructive leading-tight px-1">
+          <p
+            id={`${props.id}-error`}          // ✅ Matches aria-describedby above
+            className="mt-1.5 text-xs text-destructive leading-tight px-1"
+            role="alert"                       // ✅ Announces to screen readers immediately
+          >
             {error}
           </p>
         )}

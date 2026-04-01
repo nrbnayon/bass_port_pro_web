@@ -5,6 +5,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import { Toaster } from "sonner";
 import StoreProvider from "@/redux/StoreProvider";
+import Script from "next/script";
 
 const clashDisplay = localFont({
   src: [
@@ -55,23 +56,23 @@ export const metadata: Metadata = {
     process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
   ),
   title: {
-    default: `Obliq – Discover more than 5000+ Jobs`,
-    template: "%s | Obliq",
+    default: "BASSPORT Pro | Bass Fishing Intelligence Hub",
+    template: "%s | BASSPORT Pro",
   },
   description:
-    "Obliq is the great platform for job seekers searching for new career heights and passionate about startups. Discover more than 5000+ jobs across Design, Technology, Engineering and more.",
+    "Discover top bass fishing lakes, real-time fishing reports, seasonal patterns, and community catches with BASSPORT Pro.",
   keywords: [
-    "Admin Panel",
-    "User Management",
-    "career",
-    "Obliq",
-    "Jobs",
+    "bass fishing",
+    "fishing lakes",
+    "lake intelligence",
+    "fishing reports",
+    "BASSPORT Pro",
+    "angler community",
   ],
-  // PWA Configuration
   manifest: "/manifest.json",
   icons: {
-    icon: "/favicon-96x96.png",
-    apple: "/apple-touch-icon.png",
+    icon: "/icons/logo.png",
+    apple: "/icons/logo.png",
   },
   authors: [{ name: "Nayon" }],
   creator: "Nayon",
@@ -96,41 +97,39 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "/",
-    siteName: process.env.NEXT_PUBLIC_APP_NAME || "Obliq",
-    title: `${process.env.NEXT_PUBLIC_APP_NAME || "Obliq"} - Site Panel`,
+    siteName: process.env.NEXT_PUBLIC_APP_NAME || "BASSPORT Pro",
+    title: "BASSPORT Pro | Bass Fishing Intelligence Hub",
     description:
-      "Obliq is the great platform for job seekers searching for new career heights and passionate about startups. Discover more than 5000+ jobs across Design, Technology, Engineering and more.",
+      "Explore premium bass fishing lakes, catch intelligence, and expert reports to plan your next trophy day.",
     images: [
       {
-        url: "/icons/logo.png",
+        url: `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/icons/logo.png`,
         width: 1200,
         height: 630,
-        alt: "Logo",
+        alt: "BASSPORT Pro",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: `${process.env.NEXT_PUBLIC_APP_NAME || "Obliq"} - Site Panel`,
+    title: "BASSPORT Pro | Bass Fishing Intelligence Hub",
     description:
-      "Obliq is the great platform for job seekers searching for new career heights and passionate about startups. Discover more than 5000+ jobs across Design, Technology, Engineering and more.",
-    images: ["/icons/logo.png"],
-    creator: "@nrbnayon",
+      "Lake intelligence, fishing reports, and trophy catches in one platform.",
+    images: [`${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/icons/logo.png`],
   },
   alternates: {
     canonical: "/",
   },
   category: "Software",
-  classification: "Modern Web Application",
+  classification: "Fishing Platform",
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
+  themeColor: "#1A365D",
 };
-
-import Script from "next/script";
 
 export default function RootLayout({
   children,
@@ -139,21 +138,15 @@ export default function RootLayout({
 }>) {
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    name: process.env.NEXT_PUBLIC_APP_NAME || "Obliq",
-    applicationCategory: "Dashboard Management System",
-    operatingSystem: "Web",
+    "@type": "WebSite",
+    name: process.env.NEXT_PUBLIC_APP_NAME || "BASSPORT Pro",
+    url: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
     description:
-      "Obliq is the great platform for job seekers searching for new career heights and passionate about startups. Discover more than 5000+ jobs across Design, Technology, Engineering and more.",
-    offers: {
-      "@type": "Offer",
-      price: "0",
-      priceCurrency: "USD",
-    },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "5",
-      ratingCount: "1",
+      "Discover top bass fishing lakes, real-time reports, and trophy catches with BASSPORT Pro.",
+    potentialAction: {
+      "@type": "SearchAction",
+      target: `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/?q={search_term_string}`,
+      "query-input": "required name=search_term_string",
     },
   };
 
@@ -174,8 +167,8 @@ export default function RootLayout({
           forcedTheme="light"
         >
           <StoreProvider>
-              {children}
-              <Toaster richColors position="top-center" />
+            {children}
+            <Toaster richColors position="top-right" />
           </StoreProvider>
         </ThemeProvider>
       </body>

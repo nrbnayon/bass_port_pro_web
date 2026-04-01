@@ -58,7 +58,7 @@
   --radius-4xl:  calc(var(--radius) + 16px);
 }
 
-/* ===== Light Theme — QuickHire Design Tokens ===== */
+/* ===== Light Theme — Design Tokens ===== */
 :root {
   --radius: 0.5rem;
 

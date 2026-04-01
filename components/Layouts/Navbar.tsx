@@ -28,7 +28,7 @@ function ObliqLogo() {
   );
 }
 
-export default function PublicNavbar() {
+export default function Navbar() {
   const { name, role, avatar, isAuthenticated, logout } = useUser();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
