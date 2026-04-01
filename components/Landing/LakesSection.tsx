@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
@@ -8,11 +9,14 @@ import {
   PreferenceHorizontalIcon,
   ArrowDown01Icon,
   Location01Icon,
-  ReloadIcon,
+  StarIcon,
+  FavouriteIcon,
+  TemperatureIcon,
+  ViewIcon,
 } from "@hugeicons/core-free-icons";
 import { lakes } from "@/data/landingData";
-import LakeCard from "./LakeCard";
-import { LakeGridSkeleton } from "../Skeleton/LakeGridSkeleton";
+import { LakeCard } from "@/types/landingData.types";
+import { Fish } from "lucide-react";
 
 const sortOptions = [
   { label: "Sort by Rating", value: "rating" },
@@ -31,24 +35,6 @@ export default function LakesSection() {
   const [selectedRegion, setSelectedRegion] = useState("All");
   const [selectedState, setSelectedState] = useState("All");
   const [selectedCondition, setSelectedCondition] = useState("All");
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Mock loading state
-  useEffect(() => {
-    // Only handle turning loading OFF. 
-    // Turning it ON is now handled by the event handlers for better performance.
-    const timer = setTimeout(() => setIsLoading(false), 800);
-    return () => clearTimeout(timer);
-  }, [search, sortBy, selectedRegion, selectedState, selectedCondition]);
-
-  const resetFilters = () => {
-    setIsLoading(true);
-    setSearch("");
-    setSortBy("rating");
-    setSelectedRegion("All");
-    setSelectedState("All");
-    setSelectedCondition("All");
-  };
 
   const filteredLakes = useMemo(() => {
     const result = lakes.filter((lake) => {
@@ -117,10 +103,7 @@ export default function LakesSection() {
               type="text"
               placeholder="Search by lake name, state, species, or technique..."
               value={search}
-              onChange={(e) => {
-                setIsLoading(true);
-                setSearch(e.target.value);
-              }}
+              onChange={(e) => setSearch(e.target.value)}
               className="w-full rounded-xl border-none bg-white py-4 pl-12 pr-4 text-sm text-[#1A2B42] shadow-sm ring-1 ring-[#E2E8F0] focus:ring-2 focus:ring-primary outline-none transition-all"
             />
           </div>
@@ -129,10 +112,7 @@ export default function LakesSection() {
             <div className="relative">
               <select
                 value={sortBy}
-                onChange={(e) => {
-                  setIsLoading(true);
-                  setSortBy(e.target.value);
-                }}
+                onChange={(e) => setSortBy(e.target.value)}
                 className="appearance-none rounded-xl border-none bg-white py-4 pl-5 pr-12 text-sm font-medium text-[#1A2B42] shadow-sm ring-1 ring-[#E2E8F0] outline-none cursor-pointer focus:ring-2 focus:ring-primary"
               >
                 {sortOptions.map((opt) => (
@@ -182,12 +162,7 @@ export default function LakesSection() {
                       (region) => (
                         <button
                           key={region}
-                          onClick={() => {
-                            if (region !== selectedRegion) {
-                              setIsLoading(true);
-                              setSelectedRegion(region);
-                            }
-                          }}
+                          onClick={() => setSelectedRegion(region)}
                           className={`block w-full rounded-lg px-4 py-2.5 text-left text-sm transition-colors ${region === selectedRegion ? "bg-[#3B82F6] text-white" : "text-[#64748B] hover:bg-[#F8FAFC] hover:text-[#1A2B42]"}`}
                         >
                           {region}
@@ -214,12 +189,7 @@ export default function LakesSection() {
                     ].map((st) => (
                       <button
                         key={st}
-                        onClick={() => {
-                          if (st !== selectedState) {
-                            setIsLoading(true);
-                            setSelectedState(st);
-                          }
-                        }}
+                        onClick={() => setSelectedState(st)}
                         className={`rounded-lg px-4 py-2.5 text-left text-sm transition-colors ${st === selectedState ? "bg-[#3B82F6] text-white" : "text-[#64748B] hover:bg-[#F8FAFC] hover:text-[#1A2B42]"}`}
                       >
                         {st}
@@ -236,12 +206,7 @@ export default function LakesSection() {
                       (cond) => (
                         <button
                           key={cond}
-                          onClick={() => {
-                          if (cond !== selectedCondition) {
-                            setIsLoading(true);
-                            setSelectedCondition(cond);
-                          }
-                        }}
+                          onClick={() => setSelectedCondition(cond)}
                           className={`block w-full rounded-lg px-4 py-2.5 text-left text-sm transition-colors ${cond === selectedCondition ? "bg-[#3B82F6] text-white" : "text-[#64748B] hover:bg-[#F8FAFC] hover:text-[#1A2B42]"}`}
                         >
                           {cond}
@@ -262,50 +227,120 @@ export default function LakesSection() {
           </p>
         </div>
 
-        {isLoading ? (
-          <LakeGridSkeleton count={8} />
-        ) : filteredLakes.length > 0 ? (
-          <motion.div
-            layout
-            className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-          >
-            <AnimatePresence mode="popLayout">
-              {filteredLakes.map((lake) => (
-                <LakeCard key={lake.id} lake={lake} />
-              ))}
-            </AnimatePresence>
-          </motion.div>
-        ) : (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mt-20 flex flex-col items-center justify-center text-center py-20 px-4 bg-[#F8FAFC] rounded-[32px] border-2 border-dashed border-gray-200"
-          >
-            <div className="relative mb-6">
-              <div className="absolute -inset-4 rounded-full bg-primary/5 animate-pulse" />
-              <div className="relative h-20 w-20 flex items-center justify-center rounded-3xl bg-white shadow-xl ring-1 ring-black/5">
-                <HugeiconsIcon 
-                  icon={Search01Icon} 
-                  className="h-10 w-10 text-gray-400" 
-                  strokeWidth={1.5}
-                />
-              </div>
-            </div>
-            <h3 className="text-xl font-bold text-[#1A2B42]">No Lakes Found</h3>
-            <p className="mt-2 max-w-[400px] text-gray-500 text-sm leading-relaxed">
-              We couldn&apos;t find any lakes matching your current search or filters. 
-              Try adjusting your criteria or clear all filters to start over.
-            </p>
-            <button
-              onClick={resetFilters}
-              className="mt-8 flex items-center gap-2 rounded-xl bg-primary px-8 py-3.5 text-sm font-semibold text-white shadow-lg shadow-primary/25 transition-all hover:scale-105 active:scale-95 hover:shadow-primary/40"
-            >
-              <HugeiconsIcon icon={ReloadIcon} className="h-4 w-4" strokeWidth={2.5} />
-              Clear All Filters
-            </button>
-          </motion.div>
-        )}
+        <motion.div
+          layout
+          className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+        >
+          <AnimatePresence mode="popLayout">
+            {filteredLakes.map((lake) => (
+              <LakeCardComponent key={lake.id} lake={lake} />
+            ))}
+          </AnimatePresence>
+        </motion.div>
       </div>
     </section>
+  );
+}
+
+function LakeCardComponent({ lake }: { lake: LakeCard }) {
+  const conditionColor = {
+    Excellent: "bg-[#22C55E]",
+    Good: "bg-[#3B82F6]",
+    Fair: "bg-[#F59E0B]",
+    Poor: "bg-[#EF4444]",
+  }[lake.condition];
+
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.9 }}
+      transition={{ duration: 0.3 }}
+      className="group flex flex-col overflow-hidden rounded-2xl bg-white border-x border-b border-t-0 border-solid border-[#F3F4F6] transition-all hover:shadow-xs hover:ring-1 hover:ring-primary/20"
+    >
+      <div className="relative aspect-[4/3] overflow-hidden">
+        <Image
+          src={lake.image}
+          alt={lake.name}
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+          className="object-cover transition-transform duration-500 group-hover:scale-110"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#00000088] via-transparent to-transparent opacity-60" />
+
+        <div className="absolute left-3 top-3">
+          <span
+            className={`${conditionColor} rounded-lg px-2.5 py-1 text-xs font-semibold uppercase tracking-wider text-white`}
+          >
+            {lake.condition}
+          </span>
+        </div>
+
+        <button className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-[#FFFFFF22] text-white backdrop-blur-sm transition-colors hover:bg-white hover:text-primary cursor-pointer">
+          <HugeiconsIcon icon={FavouriteIcon} className="h-5 w-5" />
+        </button>
+
+        <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white">
+          <div className="flex items-center gap-1.5">
+            <HugeiconsIcon icon={Location01Icon} className="h-4 w-4" />
+            <span className="text-xs font-semibold">{lake.state}</span>
+          </div>
+          <div className="flex items-center gap-1.5 rounded-lg bg-[#00000066] px-2 py-1 backdrop-blur-sm">
+            <HugeiconsIcon icon={StarIcon} className="h-3 w-3 text-[#F59E0B]" />
+            <span className="text-xs font-semibold">{lake.rating}</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-1 flex-col p-5">
+        <h3 className="text-lg font-semibold text-[#1A2B42] group-hover:text-primary transition-colors leading-tight">
+          {lake.name}
+        </h3>
+        <p className="mt-2 line-clamp-2 text-[13px] leading-relaxed text-[#64748B]">
+          {lake.description}
+        </p>
+
+        <div className="mt-3 grid grid-cols-3 gap-2">
+          <div className="flex flex-col items-center justify-center rounded-xl bg-[#1111110D] py-3 transition-colors group-hover:bg-black/5">
+            <HugeiconsIcon
+              icon={TemperatureIcon}
+              className="h-5 w-5 text-[#EF4444]"
+            />
+            <span className="mt-1 text-xs font-semibold text-[#1A2B42]">
+              {lake.temp}
+            </span>
+          </div>
+          <div className="flex flex-col items-center justify-center rounded-xl bg-[#1111110D] py-3 transition-colors group-hover:bg-black/5">
+            <HugeiconsIcon icon={ViewIcon} className="h-5 w-5 text-[#3B82F6]" />
+            <span className="mt-1 text-xs font-semibold text-[#1A2B42]">
+              {lake.clarity}
+            </span>
+          </div>
+          <div className="flex flex-col items-center justify-center rounded-xl bg-[#1111110D] py-3 transition-colors group-hover:bg-black/5">
+            <Fish className="h-5 w-5 text-[#22C55E]" />
+            <span className="mt-1 text-xs font-semibold text-[#1A2B42]">
+              {lake.catchRate}/hr
+            </span>
+          </div>
+        </div>
+
+        <div className="mt-3 flex flex-wrap gap-1.5">
+          {lake.species.slice(0, 2).map((s) => (
+            <span
+              key={s}
+              className="rounded-full bg-[#3060D91A] px-2.5 py-1 text-xs font-semibold text-blue"
+            >
+              {s}
+            </span>
+          ))}
+          {lake.species.length > 2 && (
+            <span className="rounded-full bg-[#1111111A] px-2.5 py-1 text-xs font-semibold text-foreground">
+              +{lake.species.length - 2}
+            </span>
+          )}
+        </div>
+      </div>
+    </motion.div>
   );
 }
