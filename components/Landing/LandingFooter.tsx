@@ -6,7 +6,7 @@ export default function LandingFooter() {
   const year = new Date().getFullYear();
 
   return (
-    <footer id="footer" className="bg-foreground pb-8 pt-12 text-white">
+    <footer id="footer" className="bg-foreground py-12 text-white">
       <div className="container-1620">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-4">
           <div>

@@ -38,7 +38,9 @@ export type ReportCard = {
   date: string;
   lake: string;
   score: string;
+  temp: string;
   catches: string;
   text: string;
   tags: string[];
+  avatarColor: string;
 };

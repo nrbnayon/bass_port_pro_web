@@ -1,53 +1,119 @@
-import { Clock3, Fish, MapPin } from "lucide-react";
+"use client";
+
+import { motion } from "framer-motion";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  File02Icon,
+  Location01Icon,
+  Calendar03Icon,
+  TemperatureIcon,
+  ArrowRight02Icon,
+} from "@hugeicons/core-free-icons";
+import { Fish } from "lucide-react";
 import { reports } from "@/data/landingData";
-import SectionHeading from "./SectionHeading";
+import Link from "next/link";
 
 export default function ReportsSection() {
   return (
-    <section id="reports" className="bg-white py-16 sm:py-20">
+    <section id="reports" className="bg-white pt-10 pb-20">
       <div className="container-1620">
-        <div className="flex items-end justify-between gap-4">
-          <SectionHeading
-            badge="Latest Intel"
-            title="Recent Fishing Reports"
-            subtitle="Community-led observations from active anglers to help you plan your next cast with confidence."
-            align="left"
-          />
-          <button className="hidden text-sm font-semibold text-primary md:inline-flex">All Reports</button>
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="flex flex-col items-start gap-4">
+            <div className="inline-flex items-center gap-2 rounded-full bg-[#FAECE6] px-4 py-2 text-sm font-semibold text-primary">
+              <HugeiconsIcon
+                icon={File02Icon}
+                className="h-5 w-5"
+                strokeWidth={2}
+              />
+              Latest Intel
+            </div>
+            <h2 className="text-3xl font-semibold tracking-tight text-foreground md:text-5xl">
+              Recent Fishing Reports
+            </h2>
+          </div>
+          <Link
+            href="/reports"
+            className="group inline-flex items-center gap-2 text-sm font-bold text-[#FF6B35] transition-colors hover:opacity-80"
+          >
+            All Reports
+            <HugeiconsIcon
+              icon={ArrowRight02Icon}
+              className="h-4 w-4 transition-transform group-hover:translate-x-1"
+            />
+          </Link>
         </div>
 
-        <div className="mt-9 grid grid-cols-1 gap-4 lg:grid-cols-3">
-          {reports.map((report) => (
-            <article key={report.id} className="rounded-2xl border border-[#DEE7F3] bg-white p-5 shadow-sm">
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2">
-                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-primary text-sm font-semibold text-white">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 mt-8">
+          {reports.map((report, index) => (
+            <motion.article
+              key={report.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              className="group relative flex flex-col rounded-xl border border-[#F3F4F6] bg-white p-6 transition-all hover:shadow-xl hover:shadow-gray-200/40"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div
+                    className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-xl font-bold text-white ${report.avatarColor}`}
+                  >
                     {report.angler.charAt(0)}
-                  </span>
+                  </div>
                   <div>
-                    <p className="text-sm font-semibold text-[#1A365D]">{report.angler}</p>
-                    <p className="text-xs text-[#6F809A]">@ {report.lake}</p>
+                    <h3 className="text-base font-bold text-foreground">
+                      {report.angler}
+                    </h3>
+                    <div className="flex items-center gap-1 text-muted-foreground">
+                      <HugeiconsIcon
+                        icon={Location01Icon}
+                        className="h-3.5 w-3.5"
+                      />
+                      <span className="text-sm">{report.lake}</span>
+                    </div>
                   </div>
                 </div>
-                <div className="text-xs text-[#6F809A]">{report.date}</div>
+                <div className="flex items-center gap-1.5 text-muted-foreground">
+                  <HugeiconsIcon icon={Calendar03Icon} className="h-5 w-5" />
+                  <span className="text-sm font-medium">{report.date}</span>
+                </div>
               </div>
 
-              <div className="mt-4 flex flex-wrap items-center gap-3 text-xs font-medium text-[#506480]">
-                <span className="inline-flex items-center gap-1"><MapPin className="h-3.5 w-3.5" /> Score: {report.score}</span>
-                <span className="inline-flex items-center gap-1"><Fish className="h-3.5 w-3.5" /> {report.catches}</span>
-                <span className="inline-flex items-center gap-1"><Clock3 className="h-3.5 w-3.5" /> 3 hours</span>
+              <div className="mt-6 flex items-center justify-between">
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <HugeiconsIcon
+                    icon={TemperatureIcon}
+                    className="h-5 w-5 text-primary"
+                  />
+                  <span className="text-sm font-semibold text-foreground">
+                    {report.temp}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Fish className="h-5 w-5 text-[#22C55E]" />
+                  <span className="text-sm font-semibold text-foreground">
+                    {report.catches}
+                  </span>
+                </div>
               </div>
 
-              <p className="mt-4 text-sm leading-relaxed text-[#4E617C]">{report.text}</p>
+              <div className="mt-5 flex-1">
+                <p className="line-clamp-3 text-sm leading-relaxed text-muted-foreground">
+                  {report.text}
+                </p>
+              </div>
 
               <div className="mt-4 flex flex-wrap gap-2">
                 {report.tags.map((tag) => (
-                  <span key={tag} className="rounded-full bg-[#EEF4FF] px-2.5 py-1 text-xs font-medium text-[#315CA8]">
+                  <span
+                    key={tag}
+                    className="rounded-full bg-[#3060D91A] px-3 py-1 text-xs font-semibold text-blue"
+                  >
                     {tag}
                   </span>
                 ))}
               </div>
-            </article>
+            </motion.article>
           ))}
         </div>
       </div>
