@@ -35,7 +35,7 @@ const SECURE_COOKIE_BASE = {
 
 const AUTH_ROUTES: string[] = ["/signin", "/signup", "/forgot-password", "/reset-password", "/verify-otp"];
 const PUBLIC_ONLY_ROUTES: string[] = ["/success", "/jobs"];
-const INFO_ROUTES: string[] = ["/privacy-policy", "/terms", "/about-us"];
+const INFO_ROUTES: string[] = ["/privacy", "/terms", "/about-us", "/contact-us", "/faq","/cookie-policy"];
 
 // Map of page prefixes to required permission atoms
 // Map of page prefixes to required permission atoms

@@ -3,40 +3,51 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { ArrowLeft, Scale, ShieldCheck, UserCheck, ScrollText, AlertTriangle, CloudOff, RefreshCw, FileText, LucideIcon } from "lucide-react";
+import {
+  ArrowLeft,
+  Shield,
+  Fingerprint,
+  Activity,
+  Share2,
+  Lock,
+  ExternalLink,
+  Mail,
+  FileText,
+  LucideIcon,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { termsOfService } from "@/data/legalData";
+import { privacyPolicy } from "@/data/legalData";
 
 const iconMap: Record<string, LucideIcon> = {
-  acceptance: Scale,
-  accounts: UserCheck,
-  conduct: ShieldCheck,
-  content: FileText,
-  "intellectual-property": ScrollText,
-  liability: AlertTriangle,
-  termination: CloudOff,
-  changes: RefreshCw,
+  intro: Shield,
+  "data-collection": Fingerprint,
+  tracking: Activity,
+  sharing: Share2,
+  security: Lock,
+  "third-party": ExternalLink,
+  contact: Mail,
 };
 
-export default function TermsOfServicePage() {
+export default function PrivacyPolicyPage() {
   return (
-    <div className="min-h-screen bg-background py-6 px-6 sm:px-8 lg:px-12">
+    <div className="min-h-screen bg-background py-16 px-6 sm:px-8 lg:px-12">
       <div className="max-w-7xl mx-auto space-y-12">
         {/* Header */}
         <div className="text-center space-y-4">
-          <div className="flex justify-center mb-2">
+          <div className="flex justify-center mb-4">
             <Link href="/" className="hover:opacity-80 transition-opacity">
               <Image
                 src="/icons/logo1.png"
                 alt="Logo"
                 width={200}
                 height={200}
-                className="object-cover"
+                className="h-auto"
+                priority
               />
             </Link>
           </div>
           <h1 className="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
-            Terms of Service
+            Privacy Policy
           </h1>
           <p className="text-lg text-secondary">
             Last updated: {new Date().toLocaleDateString()}
@@ -45,10 +56,12 @@ export default function TermsOfServicePage() {
 
         {/* Content */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
-          {/* Sidebar Navigation (Hidden on mobile) */}
+          {/* Sidebar Navigation */}
           <aside className="hidden lg:block space-y-2 sticky top-24 self-start">
-            <h3 className="text-sm font-bold text-foreground/40 uppercase tracking-widest mb-4 px-4">Sections</h3>
-            {termsOfService.map((section, idx) => (
+            <h3 className="text-sm font-bold text-foreground/40 uppercase tracking-widest mb-4 px-4">
+              Sections
+            </h3>
+            {privacyPolicy.map((section, idx) => (
               <a
                 key={section.id}
                 href={`#${section.id}`}
@@ -66,10 +79,14 @@ export default function TermsOfServicePage() {
             className="lg:col-span-3 space-y-16"
           >
             <div className="bg-white border p-8 md:p-12 rounded-[2rem] shadow-sm space-y-12">
-              {termsOfService.map((section, idx) => {
+              {privacyPolicy.map((section, idx) => {
                 const Icon = iconMap[section.id] || FileText;
                 return (
-                  <section key={section.id} id={section.id} className="scroll-mt-24 group">
+                  <section
+                    key={section.id}
+                    id={section.id}
+                    className="scroll-mt-24 group"
+                  >
                     <div className="flex items-center gap-4 mb-4">
                       <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
                         <Icon className="h-5 w-5" />
