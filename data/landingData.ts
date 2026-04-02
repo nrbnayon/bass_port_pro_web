@@ -275,42 +275,42 @@ export const features: FeatureCard[] = [
     id: "f1",
     title: "Lake Intelligence",
     description:
-      "Know fish activity windows, pressure swings, and local water behavior before launch.",
+      "Everything you need to fish smarter, catch bigger, and connect with the bass fishing community.",
     icon: "map",
   },
   {
     id: "f2",
     title: "Expert Reports",
     description:
-      "Detailed reports from experienced anglers with techniques, lures, and timing.",
+      "Detailed fishing reports from experienced anglers with techniques, patterns, and conditions.",
     icon: "chart",
   },
   {
     id: "f3",
-    title: "BassPort Gallery",
+    title: "BassPorn Gallery",
     description:
-      "Share your trophy catches with the community and inspire your next trip.",
+      "Share your trophy catches with the community. Upload photos with weight, length, and technique details.",
     icon: "camera",
   },
   {
     id: "f4",
     title: "Lake Reviews",
     description:
-      "Read honest reviews from local anglers and rate your favorite fishing spots.",
+      "Read honest reviews from fellow anglers and rate your favorite fishing destinations.",
     icon: "message",
   },
   {
     id: "f5",
     title: "Seasonal Patterns",
     description:
-      "Understand migration paths and season-based behavior across major bass lakes.",
+      "Understand seasonal bass behavior with best times, techniques, and depth patterns.",
     icon: "calendar",
   },
   {
     id: "f6",
     title: "Record Tracking",
     description:
-      "Track catches, personal bests, and compare historical performance metrics.",
+      "Track your personal bests, total catches, and compete with the BASSPORT community.",
     icon: "target",
   },
 ];
