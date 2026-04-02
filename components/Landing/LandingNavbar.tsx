@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Menu, X, Search, Fish, MapPin, Heart, FileText } from "lucide-react";
 import React, { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Mail02Icon } from "@hugeicons/core-free-icons";
@@ -45,6 +46,27 @@ const NavIcon = ({
 export default function LandingNavbar() {
   const [open, setOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const searchQuery = searchParams.get("search") || "";
+
+  const handleSearchChange = (value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (value) {
+      params.set("search", value);
+    } else {
+      params.delete("search");
+    }
+    
+    router.replace(`?${params.toString()}`, { scroll: false });
+
+    if (value && window.scrollY < 200) {
+      const lakesSection = document.getElementById("lakes");
+      if (lakesSection) {
+        lakesSection.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -138,6 +160,8 @@ export default function LandingNavbar() {
             <input
               type="text"
               placeholder="Search lakes, species..."
+              value={searchQuery}
+              onChange={(e) => handleSearchChange(e.target.value)}
               className="w-full rounded-lg border border-white/10 bg-white/10 py-2 pl-10 pr-4 text-sm text-white placeholder:text-white/50 focus:border-primary/50 focus:outline-none focus:ring-1 focus:ring-primary/50"
             />
           </div>
@@ -197,6 +221,8 @@ export default function LandingNavbar() {
                 <input
                   type="text"
                   placeholder="Search lakes..."
+                  value={searchQuery}
+                  onChange={(e) => handleSearchChange(e.target.value)}
                   className="w-full rounded-lg border border-white/10 bg-white/10 py-2 pl-10 pr-4 text-sm text-white focus:outline-none"
                 />
               </div>

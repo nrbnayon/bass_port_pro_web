@@ -11,6 +11,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  allowedDevOrigins: ["10.10.12.11"],
   async headers() {
     return [
       {
@@ -23,8 +24,8 @@ const nextConfig: NextConfig = {
               "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com",
-              "img-src 'self' data: blob: https: http://localhost:5000",
-              "connect-src 'self' https: http://localhost:5000",
+              "img-src 'self' data: blob: https: http://localhost:5000 http://10.10.12.11:5000",
+              "connect-src 'self' https: http://localhost:5000 http://10.10.12.11:5000 ws://10.10.12.11:3000",
               "media-src 'self'",
               "object-src 'none'",
               "frame-ancestors 'none'",

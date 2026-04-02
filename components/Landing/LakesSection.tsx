@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
@@ -24,9 +25,22 @@ const sortOptions = [
 ];
 
 export default function LakesSection() {
-  const [search, setSearch] = useState("");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const search = searchParams.get("search") || "";
+
   const [sortBy, setSortBy] = useState("rating");
   const [showFilters, setShowFilters] = useState(false);
+
+  const handleSearchChange = (value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (value) {
+      params.set("search", value);
+    } else {
+      params.delete("search");
+    }
+    router.replace(`?${params.toString()}`, { scroll: false });
+  };
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
@@ -91,7 +105,7 @@ export default function LakesSection() {
   }, [filteredLakes, currentPage]);
 
   const handleClearFilters = () => {
-    setSearch("");
+    handleSearchChange("");
     setSelectedRegion("All");
     setSelectedState("All");
     setSelectedCondition("All");
@@ -132,133 +146,120 @@ export default function LakesSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ margin: "-50px" }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="mt-12 flex flex-col gap-4 md:flex-row md:items-center"
+          className="mt-12 rounded-2xl bg-white p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100/50"
         >
-          <div className="relative flex-1">
-            <HugeiconsIcon
-              icon={Search01Icon}
-              className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-foreground"
-            />
-            <input
-              type="text"
-              placeholder="Search by lake name, state, species, or technique..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full rounded-xl border-none bg-white py-4 pl-12 pr-4 text-sm text-[#1A2B42] shadow-sm ring-1 ring-[#E2E8F0] focus:ring-2 focus:ring-primary outline-none transition-all"
-            />
-          </div>
-
-          <div className="flex items-center gap-3">
-            <div className="relative">
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="appearance-none rounded-xl border-none bg-white py-4 pl-5 pr-12 text-sm font-medium text-[#1A2B42] shadow-sm ring-1 ring-[#E2E8F0] outline-none cursor-pointer focus:ring-2 focus:ring-primary"
-              >
-                {sortOptions.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
+          <div className="flex flex-col gap-4 md:flex-row md:items-center">
+            <div className="relative flex-1">
               <HugeiconsIcon
-                icon={ArrowDown01Icon}
-                className="absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 pointer-events-none text-foreground"
+                icon={Search01Icon}
+                className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400"
+              />
+              <input
+                type="text"
+                placeholder="Search by lake name, state, species, or technique..."
+                value={search}
+                onChange={(e) => handleSearchChange(e.target.value)}
+                className="w-full rounded-xl border-none bg-[#F8FAFC] py-4 pl-12 pr-4 text-sm text-[#1A2B42] outline-none transition-all focus:ring-2 focus:ring-primary/20"
               />
             </div>
 
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className={`flex items-center gap-2 rounded-xl px-6 py-4 text-sm font-medium transition-all cursor-pointer ${
-                showFilters
-                  ? "bg-primary text-white shadow-lg shadow-primary/20 ring-primary"
-                  : "bg-white text-[#1A2B42] shadow-sm ring-1 ring-[#E2E8F0] hover:bg-gray-50"
-              }`}
-            >
-              <HugeiconsIcon
-                icon={PreferenceHorizontalIcon}
-                className={`h-5 w-5 ${showFilters ? "text-white" : "text-foreground"}`}
-              />
-              Filters
-            </button>
-          </div>
-        </motion.div>
-
-        <AnimatePresence>
-          {showFilters && (
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="mt-4 overflow-hidden rounded-2xl bg-white p-6 shadow-xl ring-1 ring-[#E2E8F0]"
-            >
-              <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
-                <div>
-                  <h4 className="mb-4 text-sm font-semibold text-[#1A2B42]">
-                    Region
-                  </h4>
-                  <div className="space-y-2">
-                    {["All", "South", "West", "Midwest", "Northeast"].map(
-                      (region) => (
-                        <button
-                          key={region}
-                          onClick={() => setSelectedRegion(region)}
-                          className={`block w-full rounded-lg px-4 py-2.5 text-left text-sm transition-colors ${region === selectedRegion ? "bg-[#3B82F6] text-white" : "text-[#64748B] hover:bg-[#F8FAFC] hover:text-[#1A2B42]"}`}
-                        >
-                          {region}
-                        </button>
-                      ),
-                    )}
-                  </div>
-                </div>
-                <div>
-                  <h4 className="mb-4 text-sm font-semibold text-[#1A2B42]">
-                    State
-                  </h4>
-                  <div className="grid grid-cols-2 gap-2">
-                    {[
-                      "All",
-                      "Texas",
-                      "Alabama",
-                      "Florida",
-                      "Tennessee",
-                      "California",
-                      "Michigan",
-                      "Ohio",
-                      "South Carolina",
-                    ].map((st) => (
-                      <button
-                        key={st}
-                        onClick={() => setSelectedState(st)}
-                        className={`rounded-lg px-4 py-2.5 text-left text-sm transition-colors ${st === selectedState ? "bg-[#3B82F6] text-white" : "text-[#64748B] hover:bg-[#F8FAFC] hover:text-[#1A2B42]"}`}
-                      >
-                        {st}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <h4 className="mb-4 text-sm font-semibold text-[#1A2B42]">
-                    Condition
-                  </h4>
-                  <div className="space-y-2">
-                    {["All", "Excellent", "Good", "Fair", "Poor"].map(
-                      (cond) => (
-                        <button
-                          key={cond}
-                          onClick={() => setSelectedCondition(cond)}
-                          className={`block w-full rounded-lg px-4 py-2.5 text-left text-sm transition-colors ${cond === selectedCondition ? "bg-[#3B82F6] text-white" : "text-[#64748B] hover:bg-[#F8FAFC] hover:text-[#1A2B42]"}`}
-                        >
-                          {cond}
-                        </button>
-                      ),
-                    )}
-                  </div>
-                </div>
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="appearance-none rounded-xl border-none bg-[#F8FAFC] py-4 pl-5 pr-12 text-sm font-medium text-[#1A2B42] outline-none cursor-pointer hover:bg-gray-100/50 transition-colors"
+                >
+                  {sortOptions.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+                <HugeiconsIcon
+                  icon={ArrowDown01Icon}
+                  className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 pointer-events-none text-gray-400"
+                />
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className={`flex items-center gap-2 rounded-xl px-6 py-4 text-sm font-semibold transition-all cursor-pointer ${
+                  showFilters
+                    ? "bg-primary text-white shadow-lg shadow-primary/20"
+                    : "bg-primary text-white hover:bg-primary/90"
+                }`}
+              >
+                <HugeiconsIcon
+                  icon={PreferenceHorizontalIcon}
+                  className="h-5 w-5"
+                />
+                Filters
+              </button>
+            </div>
+          </div>
+
+          <AnimatePresence>
+            {showFilters && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="mt-6 flex flex-col gap-6 pt-6 border-t border-gray-100 md:flex-row"
+              >
+                <div className="flex-1 space-y-2">
+                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider ml-1">Region</label>
+                  <div className="relative">
+                    <select
+                      value={selectedRegion}
+                      onChange={(e) => setSelectedRegion(e.target.value)}
+                      className="w-full appearance-none rounded-xl border-none bg-[#F8FAFC] py-3.5 px-5 text-sm font-medium text-[#1A2B42] outline-none cursor-pointer focus:ring-2 focus:ring-primary/10"
+                    >
+                      {["All", "South", "West", "Midwest", "Northeast"].map((r) => (
+                        <option key={r} value={r}>{r}</option>
+                      ))}
+                    </select>
+                    <HugeiconsIcon icon={ArrowDown01Icon} className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                  </div>
+                </div>
+
+                <div className="flex-1 space-y-2">
+                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider ml-1">State</label>
+                  <div className="relative">
+                    <select
+                      value={selectedState}
+                      onChange={(e) => setSelectedState(e.target.value)}
+                      className="w-full appearance-none rounded-xl border-none bg-[#F8FAFC] py-3.5 px-5 text-sm font-medium text-[#1A2B42] outline-none cursor-pointer focus:ring-2 focus:ring-primary/10"
+                    >
+                      {[
+                        "All", "Texas", "Alabama", "Florida", "Tennessee", "California", "Michigan", "Ohio", "South Carolina",
+                      ].map((s) => (
+                        <option key={s} value={s}>{s}</option>
+                      ))}
+                    </select>
+                    <HugeiconsIcon icon={ArrowDown01Icon} className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                  </div>
+                </div>
+
+                <div className="flex-1 space-y-2">
+                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider ml-1">Condition</label>
+                  <div className="relative">
+                    <select
+                      value={selectedCondition}
+                      onChange={(e) => setSelectedCondition(e.target.value)}
+                      className="w-full appearance-none rounded-xl border-none bg-[#F8FAFC] py-3.5 px-5 text-sm font-medium text-[#1A2B42] outline-none cursor-pointer focus:ring-2 focus:ring-primary/10"
+                    >
+                      {["All", "Excellent", "Good", "Fair", "Poor"].map((c) => (
+                        <option key={c} value={c}>{c}</option>
+                      ))}
+                    </select>
+                    <HugeiconsIcon icon={ArrowDown01Icon} className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
 
         <div className="mt-4 flex items-center justify-between">
           <p className="text-sm font-medium text-[#1A2B42]">

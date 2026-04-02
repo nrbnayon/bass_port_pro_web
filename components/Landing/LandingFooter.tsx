@@ -5,7 +5,6 @@ import { footerLinks } from "@/data/landingData";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Mail02Icon } from "@hugeicons/core-free-icons";
 
-
 export default function LandingFooter() {
   const year = new Date().getFullYear();
 
@@ -85,7 +84,10 @@ export default function LandingFooter() {
         </div>
 
         <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-white/15 pt-6 text-xs text-white/60 md:flex-row">
-          <p>{year} BASSPORT. All rights reserved.</p>
+          <p>
+            {year} BASSPORT. All rights reserved. Built for bass anglers, by
+            bass anglers.
+          </p>
           <div className="flex items-center gap-5">
             <Link href="/privacy" className="hover:text-white transition">
               Privacy Policy
@@ -93,7 +95,7 @@ export default function LandingFooter() {
             <Link href="/terms" className="hover:text-white transition">
               Terms of Service
             </Link>
-            <Link href="/cookie" className="hover:text-white transition">
+            <Link href="/" className="hover:text-white transition">
               Cookie Policy
             </Link>
           </div>
