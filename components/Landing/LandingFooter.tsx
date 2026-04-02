@@ -1,7 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Mail, Send, Twitter, Facebook, Instagram, Youtube } from "lucide-react";
+import { Send, Twitter, Facebook, Instagram, Youtube } from "lucide-react";
 import { footerLinks } from "@/data/landingData";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Mail02Icon } from "@hugeicons/core-free-icons";
+
 
 export default function LandingFooter() {
   const year = new Date().getFullYear();
@@ -16,12 +19,18 @@ export default function LandingFooter() {
               alt="BassPort"
               width={140}
               height={40}
+              className="h-auto w-[140px]"
             />
             <p className="mt-4 text-sm leading-relaxed text-white/70">
-              Your premium bass fishing intelligence platform. Discover the right lake, right conditions, and right timing.
+              Your premium bass fishing intelligence platform. Discover the
+              right lake, right conditions, and right timing.
             </p>
             <p className="mt-4 inline-flex items-center gap-2 text-sm text-white/85">
-              <Mail className="h-4 w-4 text-primary" /> william@bassportpro.com
+              <HugeiconsIcon
+                icon={Mail02Icon}
+                className="h-4 w-4 text-primary"
+              />{" "}
+              william@bassportpro.com
             </p>
           </div>
 
@@ -30,7 +39,10 @@ export default function LandingFooter() {
             <ul className="mt-4 space-y-2 text-sm text-white/70">
               {footerLinks.quick.map((item) => (
                 <li key={item.label}>
-                  <Link href={item.href} className="transition hover:text-primary">
+                  <Link
+                    href={item.href}
+                    className="transition hover:text-primary"
+                  >
                     {item.label}
                   </Link>
                 </li>
@@ -43,7 +55,10 @@ export default function LandingFooter() {
             <ul className="mt-4 space-y-2 text-sm text-white/70">
               {footerLinks.lakes.map((item) => (
                 <li key={item.label}>
-                  <Link href={item.href} className="transition hover:text-primary">
+                  <Link
+                    href={item.href}
+                    className="transition hover:text-primary"
+                  >
                     {item.label}
                   </Link>
                 </li>
@@ -53,7 +68,9 @@ export default function LandingFooter() {
 
           <div>
             <h4 className="text-base font-semibold">Weekly Reports</h4>
-            <p className="mt-4 text-sm text-white/70">Get latest reports delivered to your inbox every week.</p>
+            <p className="mt-4 text-sm text-white/70">
+              Get latest reports delivered to your inbox every week.
+            </p>
             <div className="mt-4 flex rounded-lg border border-white/20 bg-white/10 p-1">
               <input
                 type="email"
@@ -70,15 +87,29 @@ export default function LandingFooter() {
         <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-white/15 pt-6 text-xs text-white/60 md:flex-row">
           <p>{year} BASSPORT. All rights reserved.</p>
           <div className="flex items-center gap-5">
-            <Link href="/privacy" className="hover:text-white transition">Privacy Policy</Link>
-            <Link href="/terms" className="hover:text-white transition">Terms of Service</Link>
-            <Link href="/cookie" className="hover:text-white transition">Cookie Policy</Link>
+            <Link href="/privacy" className="hover:text-white transition">
+              Privacy Policy
+            </Link>
+            <Link href="/terms" className="hover:text-white transition">
+              Terms of Service
+            </Link>
+            <Link href="/cookie" className="hover:text-white transition">
+              Cookie Policy
+            </Link>
           </div>
           <div className="flex items-center gap-4">
-            <Link href="#" className="hover:text-primary transition"><Twitter className="h-4 w-4" /></Link>
-            <Link href="#" className="hover:text-primary transition"><Facebook className="h-4 w-4" /></Link>
-            <Link href="#" className="hover:text-primary transition"><Instagram className="h-4 w-4" /></Link>
-            <Link href="#" className="hover:text-primary transition"><Youtube className="h-4 w-4" /></Link>
+            <Link href="#" className="hover:text-primary transition">
+              <Twitter className="h-4 w-4" />
+            </Link>
+            <Link href="#" className="hover:text-primary transition">
+              <Facebook className="h-4 w-4" />
+            </Link>
+            <Link href="#" className="hover:text-primary transition">
+              <Instagram className="h-4 w-4" />
+            </Link>
+            <Link href="#" className="hover:text-primary transition">
+              <Youtube className="h-4 w-4" />
+            </Link>
           </div>
         </div>
       </div>

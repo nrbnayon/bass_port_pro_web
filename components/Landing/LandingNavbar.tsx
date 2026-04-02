@@ -2,25 +2,45 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import {
-  Menu,
-  X,
-  Search,
-  Home,
-  MapPin,
-  Heart,
-  FileText,
-  MessageSquare,
-} from "lucide-react";
-import { useState, useEffect } from "react";
+import { Menu, X, Search, Fish, MapPin, Heart, FileText } from "lucide-react";
+import React, { useState, useEffect } from "react";
 
-const navLinks = [
-  { label: "Home", href: "#home", icon: Home },
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Mail02Icon } from "@hugeicons/core-free-icons";
+
+type NavLink = {
+  label: string;
+  href: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  icon: React.ElementType | any;
+};
+
+const navLinks: NavLink[] = [
+  { label: "Home", href: "#home", icon: Fish },
   { label: "Lakes", href: "#lakes", icon: MapPin },
   { label: "BassPorn", href: "#catches", icon: Heart },
   { label: "Reports", href: "#reports", icon: FileText },
-  { label: "Contact", href: "#footer", icon: MessageSquare },
+  { label: "Contact", href: "#footer", icon: Mail02Icon },
 ];
+
+const NavIcon = ({
+  icon,
+  className,
+}: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  icon: any;
+  className?: string;
+}) => {
+  if (
+    typeof icon === "function" ||
+    (icon && typeof icon === "object" && "render" in icon)
+  ) {
+    const Icon = icon as React.ElementType;
+    return <Icon className={className} />;
+  }
+  return <HugeiconsIcon icon={icon} className={className} />;
+};
+
 
 export default function LandingNavbar() {
   const [open, setOpen] = useState(false);
@@ -35,7 +55,9 @@ export default function LandingNavbar() {
       }
 
       // Check if scrolled to the bottom
-      const isBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 50;
+      const isBottom =
+        window.innerHeight + window.scrollY >=
+        document.documentElement.scrollHeight - 50;
       if (isBottom) {
         setActiveSection("footer");
         return;
@@ -56,7 +78,10 @@ export default function LandingNavbar() {
       });
     };
 
-    const observer = new IntersectionObserver(observerCallback, observerOptions);
+    const observer = new IntersectionObserver(
+      observerCallback,
+      observerOptions,
+    );
 
     window.addEventListener("scroll", handleScroll);
 
@@ -80,8 +105,7 @@ export default function LandingNavbar() {
             alt="BassPort"
             width={160}
             height={48}
-            style={{ height: "auto" }}
-            className="w-32 md:w-40"
+            className="w-32 md:w-40 h-auto"
             priority
           />
         </Link>
@@ -89,21 +113,20 @@ export default function LandingNavbar() {
         <div className="hidden lg:flex flex-1 items-center justify-center gap-6">
           <nav className="flex items-center gap-2">
             {navLinks.map((item) => {
-              const Icon = item.icon;
               const isActive = activeSection === item.href.replace("#", "");
-              
+
               return (
                 <Link
                   key={item.label}
                   href={item.href}
                   onClick={() => setActiveSection(item.href.replace("#", ""))}
                   className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-300 ${
-                    isActive 
-                      ? "bg-primary text-white shadow-lg shadow-primary/20 scale-105" 
+                    isActive
+                      ? "bg-primary text-white shadow-lg shadow-primary/20 scale-105"
                       : "text-white/80 hover:bg-white/10 hover:text-white"
                   }`}
                 >
-                  <Icon className="h-4 w-4" />
+                  <NavIcon icon={item.icon} className="h-4 w-4" />
                   {item.label}
                 </Link>
               );
@@ -149,19 +172,20 @@ export default function LandingNavbar() {
         <div className="mt-4 border-t border-white/10 bg-[#112640]/95 px-6 py-5 backdrop-blur-lg lg:hidden">
           <nav className="flex flex-col gap-2">
             {navLinks.map((item) => {
-              const Icon = item.icon;
               const isActive = activeSection === item.href.replace("#", "");
-              
+
               return (
                 <Link
                   key={item.label}
                   href={item.href}
                   className={`flex items-center gap-3 rounded-md px-3 py-3 text-sm font-medium transition ${
-                    isActive ? "bg-primary text-white" : "text-white/90 hover:bg-white/10"
+                    isActive
+                      ? "bg-primary text-white"
+                      : "text-white/90 hover:bg-white/10"
                   }`}
                   onClick={() => setOpen(false)}
                 >
-                  <Icon className="h-4 w-4" />
+                  <NavIcon icon={item.icon} className="h-4 w-4" />
                   {item.label}
                 </Link>
               );

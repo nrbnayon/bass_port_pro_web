@@ -64,8 +64,7 @@ export default function HeroSection() {
               alt="BassPort Logo"
               width={280}
               height={80}
-              style={{ height: "auto" }}
-              className="w-48 md:w-64 lg:w-72 drop-shadow-2xl"
+              className="w-48 md:w-64 lg:w-72 h-auto drop-shadow-2xl"
             />
           </motion.div>
 
@@ -105,7 +104,7 @@ export default function HeroSection() {
             </Link>
             <Link
               href="#catches"
-              className="flex items-center gap-2 rounded-lg border border-[#4B5563] bg-foreground px-8 py-4 text-sm font-bold text-white backdrop-blur-md transition hover:bg-foreground/60 hover:scale-105 active:scale-95"
+              className="flex items-center gap-2 rounded-lg border border-white/10 bg-[#FFFFFF0A] px-8 py-4 text-sm font-bold text-white backdrop-blur-md transition hover:bg-foreground/60 hover:scale-105 active:scale-95"
             >
               <HugeiconsIcon icon={Camera01Icon} /> BassPorn Gallery
             </Link>
@@ -132,7 +131,9 @@ export default function HeroSection() {
                   <div className="mb-4 flex items-center justify-center text-primary group-hover:scale-110 transition-transform duration-300">
                     <HugeiconsIcon icon={Icon} className="h-6 w-6" />
                   </div>
-                  <p className="text-3xl font-semibold text-white">{stat.value}</p>
+                  <p className="text-3xl font-semibold text-white">
+                    {stat.value}
+                  </p>
                   <p className="mt-1 text-sm font-medium text-white/60">
                     {stat.label}
                   </p>

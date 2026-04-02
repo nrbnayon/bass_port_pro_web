@@ -3,7 +3,18 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { ArrowLeft, Scale, ShieldCheck, UserCheck, ScrollText, AlertTriangle, CloudOff, RefreshCw, FileText, LucideIcon } from "lucide-react";
+import {
+  ArrowLeft,
+  Scale,
+  ShieldCheck,
+  UserCheck,
+  ScrollText,
+  AlertTriangle,
+  CloudOff,
+  RefreshCw,
+  FileText,
+  LucideIcon,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { termsOfService } from "@/data/legalData";
 
@@ -47,7 +58,9 @@ export default function TermsOfServicePage() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
           {/* Sidebar Navigation (Hidden on mobile) */}
           <aside className="hidden lg:block space-y-2 sticky top-24 self-start">
-            <h3 className="text-sm font-bold text-foreground/40 uppercase tracking-widest mb-4 px-4">Sections</h3>
+            <h3 className="text-sm font-bold text-foreground/40 uppercase tracking-widest mb-4 px-4">
+              Sections
+            </h3>
             {termsOfService.map((section, idx) => (
               <a
                 key={section.id}
@@ -69,7 +82,11 @@ export default function TermsOfServicePage() {
               {termsOfService.map((section, idx) => {
                 const Icon = iconMap[section.id] || FileText;
                 return (
-                  <section key={section.id} id={section.id} className="scroll-mt-24 group">
+                  <section
+                    key={section.id}
+                    id={section.id}
+                    className="scroll-mt-24 group"
+                  >
                     <div className="flex items-center gap-4 mb-4">
                       <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
                         <Icon className="h-5 w-5" />
