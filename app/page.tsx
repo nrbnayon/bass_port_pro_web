@@ -1,5 +1,5 @@
-import type { Metadata } from "next";
 import { LandingView } from "@/components/Layouts/LandingView";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Bass Fishing Intelligence Hub",
@@ -33,8 +33,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "BASSPORT Pro | Bass Fishing Intelligence Hub",
-    description:
-      "Lake intelligence and reports to help you catch bigger bass.",
+    description: "Lake intelligence and reports to help you catch bigger bass.",
     images: ["/icons/logo.png"],
   },
 };

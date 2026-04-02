@@ -5,7 +5,7 @@ import { footerLinks } from "@/data/landingData";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Mail02Icon } from "@hugeicons/core-free-icons";
 
-export default function LandingFooter() {
+export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
