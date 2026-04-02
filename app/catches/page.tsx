@@ -33,11 +33,13 @@ export default function CatchesPage() {
                 <HugeiconsIcon icon={Camera01Icon} className="h-4 w-4" />
                 Catches Gallery
               </div>
-              <h1 className="text-4xl font-bold tracking-tight text-[#1A2B42] md:text-6xl">
+              <h1 className="text-4xl font-bold tracking-tight text-foreground md:text-6xl">
                 Trophy Hall of Fame
               </h1>
               <p className="text-lg text-gray-600 max-w-2xl">
-                Explore the most impressive catches from our community. Every fish tells a story of passion, skill, and the right intelligence.
+                Explore the most impressive catches from our community. Every
+                fish tells a story of passion, skill, and the right
+                intelligence.
               </p>
             </div>
           </div>

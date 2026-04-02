@@ -132,7 +132,7 @@ export default function LakesSection() {
             <HugeiconsIcon icon={Location01Icon} className="h-4 w-4" />
             Lake intelligence Database
           </div>
-          <h2 className="mt-4 text-3xl font-semibold text-[#1A2B42] md:text-4xl lg:text-5xl">
+          <h2 className="mt-4 text-3xl font-semibold text-foreground md:text-4xl lg:text-5xl">
             Top Bass Fishing Lakes
           </h2>
           <p className="mt-4 max-w-2xl text-sm text-[#4B5563] md:text-base">
@@ -159,7 +159,7 @@ export default function LakesSection() {
                 placeholder="Search by lake name, state, species, or technique..."
                 value={search}
                 onChange={(e) => handleSearchChange(e.target.value)}
-                className="w-full rounded-xl border-none bg-[#F8FAFC] py-4 pl-12 pr-4 text-sm text-[#1A2B42] outline-none transition-all focus:ring-2 focus:ring-primary/20"
+                className="w-full rounded-xl border-none bg-[#F8FAFC] py-4 pl-12 pr-4 text-sm text-foreground outline-none transition-all focus:ring-2 focus:ring-primary"
               />
             </div>
 
@@ -168,7 +168,7 @@ export default function LakesSection() {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="appearance-none rounded-xl border-none bg-[#F8FAFC] py-4 pl-5 pr-12 text-sm font-medium text-[#1A2B42] outline-none cursor-pointer hover:bg-gray-100/50 transition-colors"
+                  className="appearance-none rounded-xl border-none bg-[#F8FAFC] py-4 pl-5 pr-12 text-sm font-medium text-foreground outline-none cursor-pointer hover:bg-gray-100/50 transition-colors focus:ring-2 focus:ring-primary"
                 >
                   {sortOptions.map((opt) => (
                     <option key={opt.value} value={opt.value}>
@@ -208,52 +208,83 @@ export default function LakesSection() {
                 className="mt-6 flex flex-col gap-6 pt-6 border-t border-gray-100 md:flex-row"
               >
                 <div className="flex-1 space-y-2">
-                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider ml-1">Region</label>
+                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider ml-1">
+                    Region
+                  </label>
                   <div className="relative">
                     <select
                       value={selectedRegion}
                       onChange={(e) => setSelectedRegion(e.target.value)}
-                      className="w-full appearance-none rounded-xl border-none bg-[#F8FAFC] py-3.5 px-5 text-sm font-medium text-[#1A2B42] outline-none cursor-pointer focus:ring-2 focus:ring-primary/10"
+                      className="w-full appearance-none rounded-xl border-none bg-[#F8FAFC] py-3.5 px-5 text-sm font-medium text-foreground outline-none cursor-pointer focus:ring-2 focus:ring-primary"
                     >
-                      {["All", "South", "West", "Midwest", "Northeast"].map((r) => (
-                        <option key={r} value={r}>{r}</option>
-                      ))}
+                      {["All", "South", "West", "Midwest", "Northeast"].map(
+                        (r) => (
+                          <option key={r} value={r}>
+                            {r}
+                          </option>
+                        ),
+                      )}
                     </select>
-                    <HugeiconsIcon icon={ArrowDown01Icon} className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                    <HugeiconsIcon
+                      icon={ArrowDown01Icon}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none"
+                    />
                   </div>
                 </div>
 
                 <div className="flex-1 space-y-2">
-                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider ml-1">State</label>
+                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider ml-1">
+                    State
+                  </label>
                   <div className="relative">
                     <select
                       value={selectedState}
                       onChange={(e) => setSelectedState(e.target.value)}
-                      className="w-full appearance-none rounded-xl border-none bg-[#F8FAFC] py-3.5 px-5 text-sm font-medium text-[#1A2B42] outline-none cursor-pointer focus:ring-2 focus:ring-primary/10"
+                      className="w-full appearance-none rounded-xl border-none bg-[#F8FAFC] py-3.5 px-5 text-sm font-medium text-foreground outline-none cursor-pointer focus:ring-2 focus:ring-primary"
                     >
                       {[
-                        "All", "Texas", "Alabama", "Florida", "Tennessee", "California", "Michigan", "Ohio", "South Carolina",
+                        "All",
+                        "Texas",
+                        "Alabama",
+                        "Florida",
+                        "Tennessee",
+                        "California",
+                        "Michigan",
+                        "Ohio",
+                        "South Carolina",
                       ].map((s) => (
-                        <option key={s} value={s}>{s}</option>
+                        <option key={s} value={s}>
+                          {s}
+                        </option>
                       ))}
                     </select>
-                    <HugeiconsIcon icon={ArrowDown01Icon} className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                    <HugeiconsIcon
+                      icon={ArrowDown01Icon}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none"
+                    />
                   </div>
                 </div>
 
                 <div className="flex-1 space-y-2">
-                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider ml-1">Condition</label>
+                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider ml-1">
+                    Condition
+                  </label>
                   <div className="relative">
                     <select
                       value={selectedCondition}
                       onChange={(e) => setSelectedCondition(e.target.value)}
-                      className="w-full appearance-none rounded-xl border-none bg-[#F8FAFC] py-3.5 px-5 text-sm font-medium text-[#1A2B42] outline-none cursor-pointer focus:ring-2 focus:ring-primary/10"
+                      className="w-full appearance-none rounded-xl border-none bg-[#F8FAFC] py-3.5 px-5 text-sm font-medium text-foreground outline-none cursor-pointer focus:ring-2 focus:ring-primary"
                     >
                       {["All", "Excellent", "Good", "Fair", "Poor"].map((c) => (
-                        <option key={c} value={c}>{c}</option>
+                        <option key={c} value={c}>
+                          {c}
+                        </option>
                       ))}
                     </select>
-                    <HugeiconsIcon icon={ArrowDown01Icon} className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                    <HugeiconsIcon
+                      icon={ArrowDown01Icon}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none"
+                    />
                   </div>
                 </div>
               </motion.div>
@@ -262,7 +293,7 @@ export default function LakesSection() {
         </motion.div>
 
         <div className="mt-4 flex items-center justify-between">
-          <p className="text-sm font-medium text-[#1A2B42]">
+          <p className="text-sm font-medium text-foreground">
             Showing{" "}
             <span className="font-semibold">{filteredLakes.length}</span> lakes
           </p>
@@ -309,7 +340,7 @@ export default function LakesSection() {
             <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gray-50 text-gray-400">
               <FilterX className="h-10 w-10" />
             </div>
-            <h3 className="mt-6 text-xl font-semibold text-[#1A2B42]">
+            <h3 className="mt-6 text-xl font-semibold text-foreground">
               No lakes found
             </h3>
             <p className="mt-2 text-[#64748B]">

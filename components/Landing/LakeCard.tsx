@@ -73,7 +73,7 @@ export default function LakeCard({ lake }: LakeCardProps) {
       </div>
 
       <div className="flex flex-1 flex-col p-5">
-        <h3 className="text-lg font-semibold text-[#1A2B42] group-hover:text-primary transition-colors leading-tight">
+        <h3 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors leading-tight">
           {lake.name}
         </h3>
         <p className="mt-2 line-clamp-2 text-[13px] leading-relaxed text-[#64748B]">
@@ -86,19 +86,19 @@ export default function LakeCard({ lake }: LakeCardProps) {
               icon={TemperatureIcon}
               className="h-5 w-5 text-[#EF4444]"
             />
-            <span className="mt-1 text-xs font-semibold text-[#1A2B42]">
+            <span className="mt-1 text-xs font-semibold text-foreground">
               {lake.temp}
             </span>
           </div>
           <div className="flex flex-col items-center justify-center rounded-xl bg-[#1111110D] py-3 transition-colors group-hover:bg-black/5">
             <HugeiconsIcon icon={ViewIcon} className="h-5 w-5 text-[#3B82F6]" />
-            <span className="mt-1 text-xs font-semibold text-[#1A2B42]">
+            <span className="mt-1 text-xs font-semibold text-foreground">
               {lake.clarity}
             </span>
           </div>
           <div className="flex flex-col items-center justify-center rounded-xl bg-[#1111110D] py-3 transition-colors group-hover:bg-black/5">
             <Fish className="h-5 w-5 text-[#22C55E]" />
-            <span className="mt-1 text-xs font-semibold text-[#1A2B42]">
+            <span className="mt-1 text-xs font-semibold text-foreground">
               {lake.catchRate}/hr
             </span>
           </div>
