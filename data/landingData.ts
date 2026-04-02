@@ -356,17 +356,17 @@ export const reports: ReportCard[] = [
 
 export const footerLinks = {
   quick: [
-    "Home",
-    "Lake Database",
-    "BassPort Gallery",
-    "Fishing Reports",
-    "Contact Us",
+    { label: "Home", href: "#home" },
+    { label: "Lake Database", href: "#lakes" },
+    { label: "BassPort Gallery", href: "#catches" },
+    { label: "Fishing Reports", href: "#reports" },
+    { label: "Contact Us", href: "#footer" },
   ],
   lakes: [
-    "Lake Guntersville",
-    "Lake Fork",
-    "Sam Rayburn",
-    "Lake Okeechobee",
-    "Lake Chickamauga",
+    { label: "Lake Guntersville", href: "#lakes" },
+    { label: "Lake Fork", href: "#lakes" },
+    { label: "Sam Rayburn", href: "#lakes" },
+    { label: "Lake Okeechobee", href: "#lakes" },
+    { label: "Lake Chickamauga", href: "#lakes" },
   ],
 };
