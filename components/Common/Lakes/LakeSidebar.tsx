@@ -4,8 +4,9 @@ import { motion } from "framer-motion";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Calendar03Icon,
-  RulerIcon,
+  DropletIcon,
   ChartBarLineIcon,
+  LocationIcon,
   Message01Icon,
 } from "@hugeicons/core-free-icons";
 import { Fish } from "lucide-react";
@@ -20,27 +21,31 @@ export default function LakeSidebar({ lake }: LakeSidebarProps) {
     {
       label: "Surface Area",
       value: `${lake.size.toLocaleString()} acres`,
-      icon: RulerIcon,
+      icon: DropletIcon,
     },
     { label: "Max Depth", value: "80 ft", icon: ChartBarLineIcon },
     { label: "Best Season", value: "Spring, Fall", icon: Calendar03Icon },
+    { label: "City", value: "Dhaka", icon: LocationIcon },
     { label: "Reviews", value: "518", icon: Message01Icon },
   ];
 
   return (
     <div className="flex flex-col gap-8">
-      <section className="rounded-2xl border border-gray-100 bg-white p-6 shadow-xs">
-        <h3 className="text-lg font-bold tracking-tight text-foreground border-b border-gray-50 pb-4 mb-6">
+      <section className="rounded-2xl border border-[#F3F4F6] bg-white p-5">
+        <h3 className="text-lg font-bold tracking-tight text-foreground border-b border-gray-100 pb-2 mb-3">
           Lake Facts
         </h3>
-        <ul className="space-y-6">
+        <ul className="space-y-5">
           {lakeFacts.map((fact) => (
-            <li key={fact.label} className="flex items-center justify-between">
-              <div className="flex items-center gap-3 text-gray-400">
+            <li
+              key={fact.label}
+              className="flex items-center justify-between border-b border-gray-100 pb-3 last:border-0 last:pb-0"
+            >
+              <div className="flex items-center gap-2 text-gray-500">
                 <HugeiconsIcon icon={fact.icon} className="h-5 w-5" />
-                <span className="text-[13px] font-semibold">{fact.label}</span>
+                <span className="text-sm font-semibold">{fact.label}</span>
               </div>
-              <span className="text-[13px] font-bold text-foreground">
+              <span className="text-sm font-bold text-foreground">
                 {fact.value}
               </span>
             </li>
@@ -48,20 +53,20 @@ export default function LakeSidebar({ lake }: LakeSidebarProps) {
         </ul>
       </section>
 
-      <section className="rounded-2xl border border-gray-100 bg-white p-6 shadow-xs">
-        <h3 className="text-lg font-bold tracking-tight text-foreground border-b border-gray-50 pb-4 mb-6">
+      <section className="rounded-2xl border border-[#F3F4F6] bg-white p-5">
+        <h3 className="text-lg font-bold tracking-tight text-foreground border-b border-gray-100 pb-4 mb-6">
           Target Species
         </h3>
-        <ul className="space-y-4">
+        <ul className="space-y-3">
           {lake.species.map((s, index) => (
             <motion.li
               key={s}
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.3, delay: index * 0.1 }}
-              className="flex items-center gap-3 rounded-xl bg-blue-50/50 p-3.5 text-blue-600 transition-colors hover:bg-blue-50"
+              className="flex items-center gap-2 rounded-xl bg-[#3060D91A] p-4 text-blue transition-colors hover:bg-blue-50"
             >
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100/50">
+              <div className="flex items-center justify-center rounded-lg">
                 <Fish className="h-5 w-5" strokeWidth={2} />
               </div>
               <span className="text-sm font-bold tracking-tight">{s}</span>

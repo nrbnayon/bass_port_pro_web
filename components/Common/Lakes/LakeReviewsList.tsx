@@ -2,8 +2,7 @@
 
 import { motion } from "framer-motion";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { StarIcon } from "@hugeicons/core-free-icons";
-import { Send } from "lucide-react";
+import { StarIcon, Message01Icon } from "@hugeicons/core-free-icons";
 
 const reviewsData = [
   {
@@ -62,7 +61,12 @@ export default function LakeReviewsList() {
             />
             <div className="absolute right-6 bottom-6">
               <button className="rounded-xl bg-primary px-8 py-3 text-sm font-bold text-white shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95 cursor-pointer flex items-center gap-1">
-                Submit Review <Send className="h-4 w-4" />
+                Submit Review{" "}
+                <HugeiconsIcon
+                  icon={Message01Icon}
+                  className="h-4 w-4"
+                  strokeWidth={2}
+                />
               </button>
             </div>
           </div>
