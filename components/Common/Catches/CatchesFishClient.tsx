@@ -29,7 +29,7 @@ const SORT_OPTIONS = [
   { label: "Most Popular", value: "popular" },
 ];
 
-export default function CatchesFish() {
+export default function CatchesFishClient() {
   const [catches, setCatches] = useState<CatchCard[]>([]);
   const [sortBy, setSortBy] = useState("recent");
   const [showFavouriteOnly, setShowFavouriteOnly] = useState(false);

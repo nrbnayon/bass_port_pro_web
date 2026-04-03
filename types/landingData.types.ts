@@ -47,12 +47,14 @@ export type ReportCard = {
   lake: string;
   score: string;
   temp: string;
-  catches: string;
-  text: string;
-  tags: string[];
+  catches?: string;
+  text?: string;
+  tags?: string[];
   avatarImage?: string;
   image?: string;
-  biggestCatch: string;
-  weather: string;
-  waterLevel: string;
+  biggestCatch?: string;
+  weather?: string;
+  waterLevel?: string; // This might be used as pressure or actually water level? The image shows Pressure.
+  clarity?: string;
+  pressure?: string;
 };

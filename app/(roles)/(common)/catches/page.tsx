@@ -1,6 +1,5 @@
-
 import { Metadata } from "next";
-import CatchesFish from "@/components/Common/Catches/CatchesFish";
+import CatchesFishClient from "@/components/Common/Catches/CatchesFishClient";
 import CTASection from "@/components/Landing/CTASection";
 
 export const metadata: Metadata = {
@@ -11,9 +10,9 @@ export const metadata: Metadata = {
 
 export default function CatchesPage() {
   return (
-    <>
-      <CatchesFish />
+    <main>
+      <CatchesFishClient />
       <CTASection />
-    </>
+    </main>
   );
 }

@@ -77,7 +77,9 @@ export default function ReportModal({
       avatarImage: "/images/avatar.png",
       biggestCatch: `${biggestCatch} lbs`,
       weather: weatherStatus,
-      waterLevel: pressure, // Mapping pressure to waterLevel for now as per type
+      waterLevel: "Normal", // Using default or derived
+      clarity: waterClarity,
+      pressure: pressure,
       image: imagePreview || undefined,
     };
 
