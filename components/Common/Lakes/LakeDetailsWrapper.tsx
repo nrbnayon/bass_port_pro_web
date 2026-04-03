@@ -3,7 +3,7 @@
 import { useState } from "react";
 import LakeDetailsTabs from "./LakeDetailsTabs";
 import LakeOverview from "./LakeOverview";
-import LakeReportsList from "./LakeReportsList";
+import LakeReportsList from "../Reports/LakeReportsList";
 import LakeReviewsList from "./LakeReviewsList";
 import LakeSidebar from "./LakeSidebar";
 import { LakeCard } from "@/types/landingData.types";

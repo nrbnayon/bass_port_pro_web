@@ -9,10 +9,12 @@ import {
   TemperatureIcon,
   Message01Icon,
 } from "@hugeicons/core-free-icons";
+import Image from "next/image";
 import { reports as allReports } from "@/data/landingData";
 import { LakeCard, ReportCard } from "@/types/landingData.types";
 import { TablePagination } from "@/components/Shared/TablePagination";
 import { toast } from "sonner";
+import ReportModal from "./ReportModal";
 
 interface LakeReportsListProps {
   lake: LakeCard;
@@ -20,9 +22,7 @@ interface LakeReportsListProps {
 
 export default function LakeReportsList({ lake }: LakeReportsListProps) {
   const [reports, setReports] = useState<ReportCard[]>(allReports);
-  const [reportText, setReportText] = useState("");
-  const [catches, setCatches] = useState("");
-  const [biggestCatch, setBiggestCatch] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 3;
 
@@ -39,84 +39,37 @@ export default function LakeReportsList({ lake }: LakeReportsListProps) {
     currentPage * itemsPerPage
   );
 
-  const handleSubmitReport = () => {
-    if (!reportText.trim() || !catches || !biggestCatch) {
-      toast.error("Please fill in all fields (Catches, Biggest Catch, and Description)");
-      return;
-    }
-
-    const newReport: ReportCard = {
-      id: `r${Date.now()}`,
-      angler: "You (Guest)",
-      date: new Date().toISOString().split("T")[0],
-      lake: lake.name,
-      score: "80%",
-      temp: lake.temp,
-      catches: `${catches} catches`,
-      text: reportText,
-      tags: ["New"],
-      avatarColor: "bg-primary",
-      biggestCatch: `${biggestCatch} lbs`,
-      weather: lake.weather,
-      waterLevel: "Stable",
-    };
-
+  const handleAddReport = (newReport: ReportCard) => {
     setReports([newReport, ...reports]);
-    setReportText("");
-    setCatches("");
-    setBiggestCatch("");
     toast.success("Fishing report shared successfully!");
     setCurrentPage(1);
   };
 
   return (
     <div className="flex flex-col gap-8">
-      {/* Submit Report Section */}
-      <section className="rounded-2xl border border-[#F3F4F6] bg-white p-6">
-        <h2 className="text-xl font-semibold tracking-tight text-foreground mb-4">
-          Share Your Fishing Report
+      {/* Header with Share Button */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <h2 className="text-xl font-bold tracking-tight text-foreground md:text-2xl">
+           Angler Activity ({filteredReports.length})
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <input
-            type="text"
-            value={catches}
-            onChange={(e) => setCatches(e.target.value)}
-            placeholder="Total Catches (e.g. 15)"
-            className="rounded-xl border border-gray-100 bg-gray-50/50 p-4 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
-          />
-          <input
-            type="text"
-            value={biggestCatch}
-            onChange={(e) => setBiggestCatch(e.target.value)}
-            placeholder="Biggest Catch weight (lbs)"
-            className="rounded-xl border border-gray-100 bg-gray-50/50 p-4 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
-          />
-        </div>
-        <div className="relative">
-          <textarea
-            value={reportText}
-            onChange={(e) => setReportText(e.target.value)}
-            className="w-full h-32 rounded-2xl border border-gray-100 bg-gray-50/50 p-6 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all resize-none"
-            placeholder="Describe the conditions, patterns, and techniques you used..."
-          />
-          <div className="absolute right-6 bottom-6">
-            <button
-              onClick={handleSubmitReport}
-              className="rounded-xl bg-primary px-8 py-3 text-sm font-bold text-white shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95 cursor-pointer flex items-center gap-1"
-            >
-              Share Report{" "}
-              <HugeiconsIcon icon={Message01Icon} className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
-      </section>
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="rounded-xl bg-primary px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95 cursor-pointer flex items-center gap-2"
+        >
+          <HugeiconsIcon icon={Message01Icon} className="h-4 w-4" />
+          Share Your Experience
+        </button>
+      </div>
+
+      <ReportModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSubmit={handleAddReport}
+        lake={lake}
+      />
 
       {/* Reports List Section */}
       <section>
-        <h2 className="text-xl font-bold tracking-tight text-foreground md:text-2xl mb-5">
-           Angler Activity ({filteredReports.length})
-        </h2>
-
         {filteredReports.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center text-gray-500 rounded-2xl border border-[#F3F4F6] bg-white">
             <HugeiconsIcon icon={Calendar01Icon} className="mb-4 h-12 w-12" />
@@ -139,11 +92,21 @@ export default function LakeReportsList({ lake }: LakeReportsListProps) {
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div className="flex items-center gap-3">
                       <div
-                        className={`flex h-12 w-12 items-center justify-center rounded-full ${report.avatarColor || "bg-primary"} text-white`}
+                        className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary/10 overflow-hidden ring-2 ring-primary/5"
                       >
-                        <span className="text-lg font-bold">
-                          {report.angler.charAt(0)}
-                        </span>
+                        {report.avatarImage ? (
+                          <Image
+                            src={report.avatarImage}
+                            alt={report.angler}
+                            width={48}
+                            height={48}
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <span className="text-lg font-bold text-primary">
+                            {report.angler.charAt(0)}
+                          </span>
+                        )}
                       </div>
                       <div>
                         <h3 className="text-lg font-semibold text-foreground leading-none mb-1.5">
@@ -175,7 +138,7 @@ export default function LakeReportsList({ lake }: LakeReportsListProps) {
                   </div>
 
                   <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-3">
                       <div className="flex items-center gap-2 rounded-lg bg-red-50 text-red-600 px-3 py-1.5 text-xs font-bold">
                         <HugeiconsIcon icon={TemperatureIcon} className="h-4 w-4" />
                         {report.temp}
@@ -185,16 +148,16 @@ export default function LakeReportsList({ lake }: LakeReportsListProps) {
                         {report.weather}
                       </div>
                       <div className="flex items-center gap-2 rounded-lg bg-emerald-50 text-emerald-600 px-3 py-1.5 text-xs font-bold">
-                        <span className="h-2 w-2 rounded-full bg-emerald-600" />
+                        <span className="h-2 w-2 rounded-full bg-emerald-600 animate-pulse" />
                         {report.waterLevel}
                       </div>
                     </div>
 
                     <div className="flex gap-2">
-                      {report.tags.map((tag) => (
+                      {report.tags.map((tag, i) => (
                         <span
-                          key={tag}
-                          className="rounded-full bg-gray-100 px-3 py-1 text-xs font-bold text-gray-500 uppercase tracking-tight"
+                          key={`${tag}-${i}`}
+                          className="rounded-full bg-gray-50 border border-gray-100 px-3 py-1 text-[10px] font-bold text-gray-500 uppercase tracking-tight"
                         >
                           {tag}
                         </span>

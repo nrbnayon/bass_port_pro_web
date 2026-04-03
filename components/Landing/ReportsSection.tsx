@@ -12,6 +12,7 @@ import {
 import { Fish } from "lucide-react";
 import { reports } from "@/data/landingData";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function ReportsSection() {
   return (
@@ -56,9 +57,21 @@ export default function ReportsSection() {
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-center gap-3">
                   <div
-                    className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-xl font-bold text-white ${report.avatarColor}`}
+                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary/10 overflow-hidden ring-2 ring-primary/5"
                   >
-                    {report.angler.charAt(0)}
+                    {report.avatarImage ? (
+                      <Image
+                        src={report.avatarImage}
+                        alt={report.angler}
+                        width={48}
+                        height={48}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-lg font-bold text-primary">
+                        {report.angler.charAt(0)}
+                      </span>
+                    )}
                   </div>
                   <div>
                     <h3 className="text-base font-bold text-foreground">
