@@ -58,10 +58,10 @@ export default function LakeOverview({ lake }: LakeOverviewProps) {
   return (
     <div className="flex flex-col gap-6">
       <section className="rounded-2xl border border-[#F3F4F6] bg-white p-6">
-        <h2 className="text-xl font-semibold tracking-tight text-foreground">
+        <h2 className="text-xl font-semibold tracking-tight text-foreground mb-3">
           About This Lake
         </h2>
-        <p className="mt-4 leading-relaxed text-secondary">
+        <p className="leading-relaxed text-secondary">
           {lake.description}
         </p>
       </section>

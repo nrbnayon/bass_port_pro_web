@@ -44,10 +44,10 @@ export default function LakeReportsList({ lake }: LakeReportsListProps) {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: index * 0.1 }}
-          className="group relative overflow-hidden rounded-2xl border border-gray-100 bg-white p-6 shadow-xs transition-all hover:shadow-md"
+          className="group relative overflow-hidden rounded-2xl border border-[#F3F4F6] bg-white p-6 transition-all hover:shadow-sm"
         >
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <div
                 className={`flex h-12 w-12 items-center justify-center rounded-full ${report.avatarColor || "bg-primary"} text-white`}
               >
@@ -56,10 +56,10 @@ export default function LakeReportsList({ lake }: LakeReportsListProps) {
                 </span>
               </div>
               <div>
-                <h3 className="text-lg font-bold text-foreground leading-none mb-1.5">
+                <h3 className="text-lg font-semibold text-foreground leading-none mb-1.5">
                   {report.angler}
                 </h3>
-                <div className="flex items-center gap-2 text-gray-400 text-[13px] font-medium">
+                <div className="flex items-center gap-2 text-gray-400 text-xs font-medium">
                   <HugeiconsIcon icon={Calendar01Icon} className="h-4 w-4" />
                   <span>{report.date}</span>
                 </div>
@@ -68,17 +68,17 @@ export default function LakeReportsList({ lake }: LakeReportsListProps) {
 
             <div className="flex items-center gap-6">
               <div className="flex flex-col items-end">
-                <span className="text-lg font-extrabold text-primary">
+                <span className="text-lg font-bold text-primary">
                   {report.catches}
                 </span>
-                <span className="text-[12px] font-bold uppercase tracking-wider text-gray-400 leading-none">
+                <span className="text-xs font-semibold uppercase tracking-wider text-gray-400 leading-none">
                   Biggest: 7.8 lbs
                 </span>
               </div>
             </div>
           </div>
 
-          <div className="mt-8 border-t border-gray-50 pt-8">
+          <div className="mt-4 border-t border-gray-50 pt-2">
             <p className="text-sm font-medium leading-relaxed text-secondary line-clamp-3">
               {report.text}
             </p>

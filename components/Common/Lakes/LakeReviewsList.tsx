@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { StarIcon } from "@hugeicons/core-free-icons";
+import { Send } from "lucide-react";
 
 const reviewsData = [
   {
@@ -36,9 +37,9 @@ const reviewsData = [
 
 export default function LakeReviewsList() {
   return (
-    <div className="flex flex-col gap-10">
-      <section className="rounded-2xl border border-gray-100 bg-white p-6 md:p-8 shadow-xs">
-        <h2 className="text-xl font-bold tracking-tight text-foreground md:text-2xl mb-6">
+    <div className="flex flex-col gap-8">
+      <section className="rounded-2xl border border-[#F3F4F6] bg-white p-6">
+        <h2 className="text-xl font-semibold tracking-tight text-foreground mb-4">
           Write a Review
         </h2>
 
@@ -47,7 +48,7 @@ export default function LakeReviewsList() {
             {[1, 2, 3, 4, 5].map((star) => (
               <button
                 key={star}
-                className="h-8 w-8 text-[#F59E0B] transition-transform hover:scale-110 active:scale-95"
+                className="h-8 w-8 text-[#FACC15] transition-transform hover:scale-110 active:scale-95 cursor-pointer"
               >
                 <HugeiconsIcon icon={StarIcon} className="h-8 w-8" />
               </button>
@@ -60,8 +61,8 @@ export default function LakeReviewsList() {
               placeholder="Share your experience fishing this lake..."
             />
             <div className="absolute right-6 bottom-6">
-              <button className="rounded-xl bg-primary px-8 py-3 text-sm font-bold text-white shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95">
-                Submit Review
+              <button className="rounded-xl bg-primary px-8 py-3 text-sm font-bold text-white shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95 cursor-pointer flex items-center gap-1">
+                Submit Review <Send className="h-4 w-4" />
               </button>
             </div>
           </div>
@@ -69,7 +70,7 @@ export default function LakeReviewsList() {
       </section>
 
       <section>
-        <h2 className="text-xl font-bold tracking-tight text-foreground md:text-2xl mb-8">
+        <h2 className="text-xl font-bold tracking-tight text-foreground md:text-2xl mb-5">
           Community Reviews (518)
         </h2>
 
@@ -80,17 +81,17 @@ export default function LakeReviewsList() {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="group relative flex flex-col gap-6 rounded-2xl border border-gray-100 bg-white p-6 md:p-8 shadow-xs transition-all hover:shadow-md"
+              className="group relative flex flex-col gap-6 rounded-2xl border border-[#F3F4F6] bg-white p-6 transition-all hover:shadow-sm"
             >
               <div className="flex items-center justify-between gap-6">
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3">
                   <div
                     className={`flex h-12 w-12 items-center justify-center rounded-full ${review.color} text-white`}
                   >
                     <span className="text-lg font-bold">{review.avatar}</span>
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-foreground leading-none mb-1.5">
+                    <h3 className="text-lg font-bold text-foreground leading-none mb-0.5">
                       {review.author}
                     </h3>
                     <span className="text-xs font-semibold text-gray-400 uppercase tracking-widest">
@@ -110,7 +111,7 @@ export default function LakeReviewsList() {
                 </div>
               </div>
 
-              <div className="mt-4 border-t border-gray-50 pt-6">
+              <div className="border-t border-gray-50 pt-2">
                 <p className="text-[15px] font-medium leading-relaxed text-secondary italic">
                   &quot;{review.text}&quot;
                 </p>
