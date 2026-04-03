@@ -110,7 +110,7 @@ export default function ReportModal({
           <div className="flex-1 overflow-y-auto px-5 pb-5 pt-2 custom-scrollbar">
             <div className="flex flex-col gap-3">
               <div className="flex flex-col gap-2">
-                <label className="text-sm font-bold text-gray-500 ml-1">
+                <label className="text-sm font-semibold text-gray-500 ml-1">
                   Lake <span className="text-red-500">*</span>
                 </label>
                 <div className="relative group">
@@ -144,25 +144,25 @@ export default function ReportModal({
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="flex flex-col gap-2">
-                  <label className="text-sm font-bold text-gray-500 ml-1">
+                  <label className="text-sm font-semibold text-gray-500 ml-1">
                     Water Temp (°F)
                   </label>
                   <input
                     type="number"
                     value={waterTemp}
                     onChange={(e) => setWaterTemp(e.target.value)}
-                    className="w-full rounded-2xl border border-gray-100 bg-white p-4 font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-solid"
+                    className="w-full rounded-2xl border border-gray-100 bg-white px-4 py-3 font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-solid"
                   />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label className="text-sm font-bold text-gray-500 ml-1">
+                  <label className="text-sm font-semibold text-gray-500 ml-1">
                     Water Clarity
                   </label>
                   <div className="relative">
                     <select
                       value={waterClarity}
                       onChange={(e) => setWaterClarity(e.target.value)}
-                      className="w-full rounded-2xl border border-gray-100 bg-white p-4 font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-solid appearance-none"
+                      className="w-full rounded-2xl border border-gray-100 bg-white px-4 py-3 font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-solid appearance-none"
                     >
                       <option value="Clear">Clear</option>
                       <option value="Stained">Stained</option>
@@ -189,14 +189,14 @@ export default function ReportModal({
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="flex flex-col gap-2">
-                  <label className="text-sm font-bold text-gray-500 ml-1">
+                  <label className="text-sm font-semibold text-gray-500 ml-1">
                     Weather
                   </label>
                   <div className="relative">
                     <select
                       value={weatherStatus}
                       onChange={(e) => setWeatherStatus(e.target.value)}
-                      className="w-full rounded-2xl border border-gray-100 bg-white p-4 font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-solid appearance-none"
+                      className="w-full rounded-2xl border border-gray-100 bg-white px-4 py-3 font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-solid appearance-none"
                     >
                       <option value="Sunny">Sunny</option>
                       <option value="Partly Cloudy">Partly Cloudy</option>
@@ -222,14 +222,14 @@ export default function ReportModal({
                   </div>
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label className="text-sm font-bold text-gray-500 ml-1">
+                  <label className="text-sm font-semibold text-gray-500 ml-1">
                     Pressure
                   </label>
                   <div className="relative">
                     <select
                       value={pressure}
                       onChange={(e) => setPressure(e.target.value)}
-                      className="w-full rounded-2xl border border-gray-100 bg-white p-4 font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-solid appearance-none"
+                      className="w-full rounded-2xl border border-gray-100 bg-white px-4 py-3 font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-solid appearance-none"
                     >
                       <option value="Stable">Stable</option>
                       <option value="Rising">Rising</option>
@@ -258,7 +258,7 @@ export default function ReportModal({
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="flex flex-col gap-2">
-                  <label className="text-sm font-bold text-gray-500 ml-1">
+                  <label className="text-sm font-semibold text-gray-500 ml-1">
                     Total Catches
                   </label>
                   <input
@@ -266,11 +266,11 @@ export default function ReportModal({
                     value={catches}
                     onChange={(e) => setCatches(e.target.value)}
                     placeholder="Total fish caught"
-                    className="w-full rounded-2xl border border-gray-100 bg-white p-4 font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-solid placeholder:text-gray-300"
+                    className="w-full rounded-2xl border border-gray-100 bg-white px-4 py-3 font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-solid placeholder:text-gray-300"
                   />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label className="text-sm font-bold text-gray-500 ml-1">
+                  <label className="text-sm font-semibold text-gray-500 ml-1">
                     Biggest (lbs)
                   </label>
                   <input
@@ -278,13 +278,13 @@ export default function ReportModal({
                     value={biggestCatch}
                     onChange={(e) => setBiggestCatch(e.target.value)}
                     placeholder="Weight of kicker"
-                    className="w-full rounded-2xl border border-gray-100 bg-white p-4 font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-solid placeholder:text-gray-300"
+                    className="w-full rounded-2xl border border-gray-100 bg-white px-4 py-3 font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-solid placeholder:text-gray-300"
                   />
                 </div>
               </div>
 
               <div className="flex flex-col gap-2">
-                <label className="text-sm font-bold text-gray-500 ml-1">
+                <label className="text-sm font-semibold text-gray-500 ml-1">
                   Techniques (comma separated)
                 </label>
                 <input
@@ -292,25 +292,25 @@ export default function ReportModal({
                   value={techniques}
                   onChange={(e) => setTechniques(e.target.value)}
                   placeholder="e.g., Texas Rig, Crankbait, Topwater"
-                  className="w-full rounded-2xl border border-gray-100 bg-white p-4 font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-solid placeholder:text-gray-300"
+                  className="w-full rounded-2xl border border-gray-100 bg-white px-4 py-3 font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-solid placeholder:text-gray-300"
                 />
               </div>
 
               <div className="flex flex-col gap-2">
-                <label className="text-sm font-bold text-gray-500 ml-1">
+                <label className="text-sm font-semibold text-gray-500 ml-1">
                   Report <span className="text-red-500">*</span>
                 </label>
                 <textarea
                   value={reportText}
                   onChange={(e) => setReportText(e.target.value)}
                   placeholder="Describe your fishing experience, patterns, and conditions..."
-                  className="w-full h-32 rounded-2xl border border-gray-100 bg-white p-6 font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-solid resize-none placeholder:text-gray-300"
+                  className="w-full h-32 rounded-2xl border border-gray-100 bg-white px-4 py-3 font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-solid resize-none placeholder:text-gray-300"
                 />
               </div>
 
               <button
                 onClick={handleSubmit}
-                className="mt-2 flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-4 text-base font-bold text-white shadow-xl shadow-primary/20 transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+                className="mt-2 flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-4 text-base font-semibold text-white shadow-xl shadow-primary/20 transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
               >
                 <HugeiconsIcon
                   icon={Message01Icon}

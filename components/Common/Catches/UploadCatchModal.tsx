@@ -168,7 +168,7 @@ export default function UploadCatchModal({
                         className="h-7 w-7"
                       />
                     </div>
-                    <p className="text-[15px] font-bold text-foreground">
+                    <p className="text-[15px] font-semibold text-foreground">
                       Click to select a photo
                     </p>
                     <p className="mt-1 text-xs font-semibold text-gray-400 uppercase tracking-widest">
@@ -180,7 +180,7 @@ export default function UploadCatchModal({
             </div>
 
             <div className="flex flex-col gap-1">
-              <label className="text-sm font-bold text-gray-500 ml-1">
+              <label className="text-sm font-semibold text-gray-500 ml-1">
                 Lake Name <span className="text-red-500">*</span>
               </label>
               <input
@@ -188,13 +188,13 @@ export default function UploadCatchModal({
                 value={lakeName}
                 onChange={(e) => setLakeName(e.target.value)}
                 placeholder="e.g., Lake Fork"
-                className="w-full rounded-2xl border border-gray-100 bg-white p-4 text-[15px] font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-solid placeholder:text-gray-300"
+                className="w-full rounded-2xl border border-gray-100 bg-white px-4 py-3 font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-solid placeholder:text-gray-300"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-1">
-                <label className="text-sm font-bold text-gray-500 ml-1">
+                <label className="text-sm font-semibold text-gray-500 ml-1">
                   Weight (lbs) <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -203,11 +203,11 @@ export default function UploadCatchModal({
                   value={weight}
                   onChange={(e) => setWeight(e.target.value)}
                   placeholder="e.g., 8.5"
-                  className="w-full rounded-2xl border border-gray-100 bg-white p-4 text-[15px] font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-solid placeholder:text-gray-300"
+                  className="w-full rounded-2xl border border-gray-100 bg-white px-4 py-3 font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-solid placeholder:text-gray-300"
                 />
               </div>
               <div className="flex flex-col gap-1">
-                <label className="text-sm font-bold text-gray-500 ml-1">
+                <label className="text-sm font-semibold text-gray-500 ml-1">
                   Length (inches) <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -216,21 +216,21 @@ export default function UploadCatchModal({
                   value={length}
                   onChange={(e) => setLength(e.target.value)}
                   placeholder="e.g., 22"
-                  className="w-full rounded-2xl border border-gray-100 bg-white p-4 text-[15px] font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-solid placeholder:text-gray-300"
+                  className="w-full rounded-2xl border border-gray-100 bg-white px-4 py-3 font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-solid placeholder:text-gray-300"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-1">
-                <label className="text-sm font-bold text-gray-500 ml-1">
+                <label className="text-sm font-semibold text-gray-500 ml-1">
                   Species
                 </label>
                 <div className="relative">
                   <select
                     value={species}
                     onChange={(e) => setSpecies(e.target.value)}
-                    className="w-full rounded-2xl border border-gray-100 bg-white p-4 text-[15px] font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-solid appearance-none"
+                    className="w-full rounded-2xl border border-gray-100 bg-white px-4 py-3 font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-solid appearance-none"
                   >
                     <option value="Largemouth Bass">Largemouth Bass</option>
                     <option value="Smallmouth Bass">Smallmouth Bass</option>
@@ -255,7 +255,7 @@ export default function UploadCatchModal({
                 </div>
               </div>
               <div className="flex flex-col gap-1">
-                <label className="text-sm font-bold text-gray-500 ml-1">
+                <label className="text-sm font-semibold text-gray-500 ml-1">
                   Technique
                 </label>
                 <input
@@ -263,26 +263,26 @@ export default function UploadCatchModal({
                   value={technique}
                   onChange={(e) => setTechnique(e.target.value)}
                   placeholder="e.g., Texas Rig"
-                  className="w-full rounded-2xl border border-gray-100 bg-white p-4 text-[15px] font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-solid placeholder:text-gray-300"
+                  className="w-full rounded-2xl border border-gray-100 bg-white px-4 py-3 font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-solid placeholder:text-gray-300"
                 />
               </div>
             </div>
 
             <div className="flex flex-col gap-1">
-              <label className="text-sm font-bold text-gray-500 ml-1">
+              <label className="text-sm font-semibold text-gray-500 ml-1">
                 Description
               </label>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Tell us about this catch"
-                className="w-full h-24 rounded-2xl border border-gray-100 bg-white p-5 text-[15px] font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-solid resize-none placeholder:text-gray-300"
+                className="w-full h-24 rounded-2xl border border-gray-100 bg-white px-4 py-3 font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-solid resize-none placeholder:text-gray-300"
               />
             </div>
 
             <button
               onClick={handleSubmit}
-              className="mt-4 flex w-full items-center justify-center gap-1 rounded-2xl bg-primary py-4 text-base font-bold text-white shadow-xl shadow-primary/20 transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+              className="mt-4 flex w-full items-center justify-center gap-1 rounded-2xl bg-primary py-4 text-base font-semibold text-white shadow-xl shadow-primary/20 transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
             >
               <HugeiconsIcon icon={CloudUploadIcon} className="h-5 w-5" />
               Upload Catch Photo
