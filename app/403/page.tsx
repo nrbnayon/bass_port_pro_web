@@ -18,9 +18,9 @@ const ForbiddenContent = () => {
             <ShieldAlert size={40} />
           </div>
         </div>
-        
+
         <div className="space-y-2">
-          <h1 className="text-3xl font-bold text-gray-900">Access Denied</h1>
+          <h1 className="text-3xl font-bold text-foreground">Access Denied</h1>
           <p className="text-gray-500">
             You do not have the necessary permissions to access this page.
           </p>
@@ -28,21 +28,23 @@ const ForbiddenContent = () => {
 
         {atom && (
           <div className="bg-red-50 p-3 rounded-lg border border-red-100">
-            <p className="text-xs font-mono text-red-600 uppercase tracking-widest font-bold mb-1">Missing Permission Atom</p>
+            <p className="text-xs font-mono text-red-600 uppercase tracking-widest font-bold mb-1">
+              Missing Permission Atom
+            </p>
             <p className="text-sm font-semibold text-red-800">{atom}</p>
           </div>
         )}
 
         <div className="grid grid-cols-2 gap-4 pt-4">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={() => router.back()}
             className="flex items-center gap-2 h-12 rounded-xl"
           >
             <ArrowLeft size={18} />
             Go Back
           </Button>
-          <Button 
+          <Button
             onClick={() => router.push("/")}
             className="flex items-center gap-2 h-12 rounded-xl bg-primary hover:bg-primary/90"
           >
@@ -61,7 +63,13 @@ const ForbiddenContent = () => {
 
 export default function ForbiddenPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          Loading...
+        </div>
+      }
+    >
       <ForbiddenContent />
     </Suspense>
   );

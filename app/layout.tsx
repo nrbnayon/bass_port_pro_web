@@ -150,7 +150,7 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth">
       <body
         className={`${poppins.variable} ${onest.variable} ${geistMono.variable} ${clashDisplay.variable} antialiased bg-background font-sans`}
         suppressHydrationWarning
