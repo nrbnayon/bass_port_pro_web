@@ -50,7 +50,7 @@ export default function TrophySection() {
 
         <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {!isLoading
-            ? catches.map((item, index) => (
+            ? catches.slice(0, 4).map((item, index) => (
                 <motion.article
                   key={item.id}
                   initial={{ opacity: 0, y: 20 }}

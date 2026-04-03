@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
@@ -40,7 +39,7 @@ export default function CatchDetailsModal({
           initial={{ opacity: 0, scale: 0.95, y: 10 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 10 }}
-          className="relative w-full max-w-5xl overflow-hidden rounded-[40px] bg-white shadow-2xl flex flex-col md:flex-row h-auto max-h-[90vh]"
+          className="relative w-full max-w-5xl overflow-hidden rounded-[32px] bg-white shadow-2xl flex flex-col md:flex-row h-auto max-h-[90vh]"
         >
           {/* Left Side: Image */}
           <div className="relative w-full md:w-1/2 aspect-square md:aspect-auto">
@@ -53,8 +52,8 @@ export default function CatchDetailsModal({
           </div>
 
           {/* Right Side: Details */}
-          <div className="w-full md:w-1/2 p-10 flex flex-col">
-            <div className="flex items-center justify-between mb-8">
+          <div className="w-full md:w-1/2 p-5 flex flex-col">
+            <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-4">
                 <div className="h-14 w-14 rounded-full bg-primary/10 overflow-hidden ring-4 ring-primary/5">
                   <Image
@@ -83,27 +82,27 @@ export default function CatchDetailsModal({
             </div>
 
             {/* Stats Boxes */}
-            <div className="grid grid-cols-2 gap-4 mb-8">
-              <div className="bg-[#FFEFE8] rounded-2xl p-6 text-center border border-primary/5">
+            <div className="grid grid-cols-2 gap-4 mb-5">
+              <div className="bg-[#FF6B3533] rounded-2xl p-5 text-center border border-primary/5">
                 <p className="text-[#FF6B35] text-2xl font-black">
                   {catchItem.weight.replace(" lbs", "")}
                 </p>
-                <p className="text-xs font-bold text-[#FF6B35]/60 uppercase tracking-widest mt-1">
+                <p className="text-xs font-bold text-[#FF6B35]/60 tracking-widest mt-1">
                   Pounds
                 </p>
               </div>
-              <div className="bg-[#E8EEFF] rounded-2xl p-6 text-center border border-blue-100/30">
+              <div className="bg-[#3060D933] rounded-2xl p-5 text-center border border-blue-100/30">
                 <p className="text-blue-600 text-2xl font-black">
                   {catchItem.length}
                 </p>
-                <p className="text-xs font-bold text-blue-600/60 uppercase tracking-widest mt-1">
+                <p className="text-xs font-bold text-blue-600/60 tracking-widest mt-1">
                   Length
                 </p>
               </div>
             </div>
 
             {/* Info List */}
-            <div className="space-y-4 mb-8">
+            <div className="space-y-2 mb-5">
               <div className="flex items-center gap-4 text-gray-600">
                 <div className="h-10 w-10 rounded-xl bg-gray-50 flex items-center justify-center text-primary">
                   <HugeiconsIcon icon={Location01Icon} className="h-5 w-5" />
