@@ -51,6 +51,7 @@ export type ReportCard = {
   text: string;
   tags: string[];
   avatarImage?: string;
+  image?: string;
   biggestCatch: string;
   weather: string;
   waterLevel: string;

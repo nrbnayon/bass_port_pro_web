@@ -144,13 +144,12 @@ export default function UploadCatchModal({
                 }`}
               >
                 {imagePreview ? (
-                  <div className="relative h-full w-full overflow-hidden rounded-2xl">
+                  <div className="relative h-44 w-full">
                     <Image
                       src={imagePreview}
                       alt="Preview"
-                      width={600}
-                      height={176}
-                      className="h-44 w-full object-cover"
+                      fill
+                      className="object-cover rounded-2xl"
                       unoptimized
                     />
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">

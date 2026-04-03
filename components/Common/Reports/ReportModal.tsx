@@ -3,9 +3,10 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Cancel01Icon, Message01Icon } from "@hugeicons/core-free-icons";
+import { Cancel01Icon, Message01Icon, Camera01Icon, CloudUploadIcon } from "@hugeicons/core-free-icons";
 import { LakeCard, ReportCard } from "@/types/landingData.types";
 import { toast } from "sonner";
+import Image from "next/image";
 
 interface ReportModalProps {
   isOpen: boolean;
@@ -37,6 +38,18 @@ export default function ReportModal({
   const [weatherStatus, setWeatherStatus] = useState(lake?.weather || "Sunny");
   const [pressure, setPressure] = useState("Stable");
   const [techniques, setTechniques] = useState("");
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleSubmit = () => {
     if (!reportText.trim() || !catches || !biggestCatch || !selectedLake) {
@@ -65,6 +78,7 @@ export default function ReportModal({
       biggestCatch: `${biggestCatch} lbs`,
       weather: weatherStatus,
       waterLevel: pressure, // Mapping pressure to waterLevel for now as per type
+      image: imagePreview || undefined,
     };
 
     onSubmit(newReport);
@@ -109,6 +123,58 @@ export default function ReportModal({
           {/* Form Content - Scrollable */}
           <div className="flex-1 overflow-y-auto px-5 pb-5 pt-2 custom-scrollbar">
             <div className="flex flex-col gap-3">
+              {/* Image Upload Area */}
+              <div className="relative group">
+                <input
+                  type="file"
+                  id="report-image"
+                  className="hidden"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                />
+                <label
+                  htmlFor="report-image"
+                  className={`relative flex min-h-[160px] cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed transition-all hover:border-primary/50 hover:bg-primary/5 ${
+                    imagePreview
+                      ? "border-transparent p-0"
+                      : "border-gray-200 p-6"
+                  }`}
+                >
+                  {imagePreview ? (
+                    <div className="relative h-40 w-full overflow-hidden rounded-2xl">
+                      <Image
+                        src={imagePreview}
+                        alt="Preview"
+                        fill
+                        className="object-cover rounded-2xl"
+                        unoptimized
+                      />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <HugeiconsIcon
+                          icon={Camera01Icon}
+                          className="h-8 w-8 text-white"
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-gray-50 text-gray-400 transition-colors group-hover:bg-primary/10 group-hover:text-primary">
+                        <HugeiconsIcon
+                          icon={CloudUploadIcon}
+                          className="h-6 w-6"
+                        />
+                      </div>
+                      <p className="text-sm font-semibold text-foreground">
+                        Click to add a photo to your report
+                      </p>
+                      <p className="mt-1 text-[10px] font-semibold text-gray-400 uppercase tracking-widest">
+                        JPG, PNG up to 10MB
+                      </p>
+                    </>
+                  )}
+                </label>
+              </div>
+
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-semibold text-gray-500 ml-1">
                   Lake <span className="text-red-500">*</span>
