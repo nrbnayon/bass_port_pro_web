@@ -74,13 +74,13 @@ export function UsersTable({ users, onEditPermissions }: UsersTableProps) {
                   {user.permissions?.slice(0, 3).map((p: string) => (
                     <span
                       key={p}
-                      className="bg-gray-100 border border-gray-300 rounded px-2 py-0.5 text-xs text-gray-600 font-mono"
+                      className="bg-gray-100 border border-gray-300 rounded px-2 py-0.5 text-xs text-secondary font-mono"
                     >
                       {p}
                     </span>
                   ))}
                   {user.permissions?.length > 3 && (
-                    <span className="bg-gray-100 border border-gray-300 rounded px-2 py-0.5 text-xs text-gray-600 font-mono">
+                    <span className="bg-gray-100 border border-gray-300 rounded px-2 py-0.5 text-xs text-secondary font-mono">
                       +{user.permissions.length - 3} more
                     </span>
                   )}

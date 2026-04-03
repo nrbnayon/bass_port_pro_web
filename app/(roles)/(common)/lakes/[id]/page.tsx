@@ -24,9 +24,9 @@ export default async function LakeDetailsPage({ params }: { params: Promise<{ id
   }
 
   return (
-    <div className="flex flex-col gap-0 min-h-screen bg-[#FDFEFE]">
+    <div className="flex flex-col gap-0 min-h-screen bg-white">
       <LakeDetailsHero lake={lake} />
-      <div className="container-1620 py-10 md:py-16">
+      <div className="py-5">
          <LakeDetailsWrapper lake={lake} />
       </div>
       <CTASection />

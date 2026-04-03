@@ -15,17 +15,17 @@ export default function LakeDetailsTabs({ activeTab, setActiveTab }: LakeDetails
   ];
 
   return (
-    <div className="flex px-4 md:px-0 mt-6 md:mt-10 border-b border-gray-100 overflow-x-auto scrollbar-none">
-      <div className="flex items-center gap-10">
+    <div className="flex px-4 md:px-0 border-b border-gray-100 overflow-x-auto scrollbar-none">
+      <div className="flex items-center gap-10 w-full md:max-w-[1320px] mx-auto">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className="relative pb-4 text-sm font-semibold tracking-wide transition-colors whitespace-nowrap"
+            className="relative pb-3 text-sm font-semibold tracking-wide transition-colors whitespace-nowrap cursor-pointer"
           >
             <span
               className={`${
-                activeTab === tab.id ? "text-primary" : "text-gray-400 hover:text-gray-600"
+                activeTab === tab.id ? "text-primary" : "text-black hover:text-primary/90"
               }`}
             >
               {tab.label}

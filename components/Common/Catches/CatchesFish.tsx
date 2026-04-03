@@ -33,7 +33,7 @@ export default function CatchesFish() {
               <h1 className="text-4xl font-bold tracking-tight text-foreground md:text-6xl">
                 Trophy Hall of Fame
               </h1>
-              <p className="text-lg text-gray-600 max-w-2xl">
+              <p className="text-lg text-secondary max-w-2xl">
                 Explore the most impressive catches from our community. Every
                 fish tells a story of passion, skill, and the right
                 intelligence.
