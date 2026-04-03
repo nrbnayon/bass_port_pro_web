@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -19,6 +19,9 @@ import UploadCatchModal from "./UploadCatchModal";
 import CatchDetailsModal from "./CatchDetailsModal";
 import { toast } from "sonner";
 import { Fish } from "lucide-react";
+import { CatchGridSkeleton } from "@/components/Skeleton/CatchGridSkeleton";
+import { TablePagination } from "@/components/Shared/TablePagination";
+import { useSearchParams } from "next/navigation";
 
 const SORT_OPTIONS = [
   { label: "Most Recent", value: "recent" },
@@ -27,12 +30,100 @@ const SORT_OPTIONS = [
 ];
 
 export default function CatchesFish() {
-  const [catches, setCatches] = useState<CatchCard[]>(initialCatches);
+  const [catches, setCatches] = useState<CatchCard[]>([]);
   const [sortBy, setSortBy] = useState("recent");
   const [showFavouriteOnly, setShowFavouriteOnly] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [selectedCatch, setSelectedCatch] = useState<CatchCard | null>(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const searchParams = useSearchParams();
+  const searchQuery = searchParams.get("search")?.toLowerCase() || "";
+
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(12);
+
+  useEffect(() => {
+    // Initialize catches and simulate loading
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCatches(
+      initialCatches.map((c) => ({
+        ...c,
+        isFavourite: c.isFavourite || false,
+      })),
+    );
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 800);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const handleToggleFavourite = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCatches((prev) => {
+      const updated = prev.map((c) =>
+        c.id === id ? { ...c, isFavourite: !c.isFavourite } : c,
+      );
+      const item = updated.find((c) => c.id === id);
+      if (item?.isFavourite) {
+        toast.success("Added to favourites!");
+      } else {
+        toast.success("Removed from favourites");
+      }
+      return updated;
+    });
+  };
+
+  const filteredAndSortedCatches = useMemo(() => {
+    let result = [...catches];
+
+    // Filter by favourite
+    if (showFavouriteOnly) {
+      result = result.filter((c) => c.isFavourite);
+    }
+
+    // Filter by search query
+    if (searchQuery) {
+      result = result.filter(
+        (c) =>
+          c.angler.toLowerCase().includes(searchQuery) ||
+          c.lake.toLowerCase().includes(searchQuery) ||
+          c.species.toLowerCase().includes(searchQuery) ||
+          c.technique.toLowerCase().includes(searchQuery),
+      );
+    }
+
+    // Sort
+    result.sort((a, b) => {
+      if (sortBy === "biggest") {
+        const weightA = parseFloat(a.weight);
+        const weightB = parseFloat(b.weight);
+        return weightB - weightA;
+      }
+      if (sortBy === "popular") {
+        return b.likes - a.likes;
+      }
+      // default: recent (date)
+      return new Date(b.date).getTime() - new Date(a.date).getTime();
+    });
+
+    return result;
+  }, [catches, sortBy, showFavouriteOnly, searchQuery]);
+
+  // Paginated Results
+  const totalItems = filteredAndSortedCatches.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const paginatedCatches = filteredAndSortedCatches.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage,
+  );
+
+  // Reset to first page when filtering/sorting/searching changes
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCurrentPage(1);
+  }, [sortBy, showFavouriteOnly, searchQuery]);
 
   const handleUploadSubmit = (newCatch: CatchCard) => {
     setCatches([newCatch, ...catches]);
@@ -110,8 +201,10 @@ export default function CatchesFish() {
       </section>
 
       {/* Grid Content */}
-      <main className="w-full px-4 md:max-w-[1320px] mx-auto">
-        {catches.length === 0 ? (
+      <main className="w-full px-4 md:max-w-[1320px] mx-auto min-h-[600px]">
+        {isLoading ? (
+          <CatchGridSkeleton count={8} />
+        ) : paginatedCatches.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-32 bg-white rounded-[40px] border border-gray-100 text-center">
             <div className="h-20 w-20 rounded-full bg-gray-50 flex items-center justify-center text-gray-300 mb-6">
               <HugeiconsIcon
@@ -128,93 +221,132 @@ export default function CatchesFish() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            <AnimatePresence mode="popLayout">
-              {catches.map((item, index) => (
-                <motion.article
-                  key={item.id}
-                  layout
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ duration: 0.4, delay: index * 0.05 }}
-                  className="group relative cursor-pointer border border-[#F3F4F6] rounded-2xl overflow-hidden hover:border-primary/20 hover:shadow-lg hover:scale-105 transition-all duration-300"
-                  onClick={() => openDetails(item)}
-                >
-                  {/* Card Main */}
-                  <div className="relative h-[300px] overflow-hidden rounded-t-2xl bg-gray-900 transition-all group-hover:shadow-xs">
-                    <Image
-                      src={item.image}
-                      alt={item.angler}
-                      fill
-                      className="object-cover transition-transform"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
+          <>
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <AnimatePresence mode="popLayout">
+                {paginatedCatches.map((item, index) => (
+                  <motion.article
+                    key={item.id}
+                    layout
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.4, delay: index * 0.05 }}
+                    className="group relative cursor-pointer border border-[#F3F4F6] rounded-2xl overflow-hidden hover:border-primary/20 hover:shadow-lg hover:scale-105 transition-all duration-300"
+                    onClick={() => openDetails(item)}
+                  >
+                    {/* Card Main */}
+                    <div className="relative h-[300px] overflow-hidden rounded-t-2xl bg-gray-900 transition-all group-hover:shadow-xs">
+                      <Image
+                        src={item.image}
+                        alt={item.angler}
+                        fill
+                        className="object-cover transition-transform"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
 
-                    {/* Weight Badge */}
-                    <div className="absolute left-3 top-3 z-10">
-                      <span className="rounded-full bg-primary px-3 py-1 text-xs font-semibold text-white shadow-xl shadow-primary/20">
-                        {item.weight}
-                      </span>
-                    </div>
+                      {/* Weight Badge */}
+                      <div className="absolute left-3 top-3 z-10">
+                        <span className="rounded-full bg-primary px-3 py-1 text-xs font-semibold text-white shadow-xl shadow-primary/20">
+                          {item.weight}
+                        </span>
+                      </div>
 
-                    <button className="absolute right-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-[#D9D9D94D] text-white backdrop-blur-md transition-all hover:bg-white hover:text-red-500 cursor-pointer">
-                      <HugeiconsIcon icon={FavouriteIcon} className="h-5 w-5" />
-                    </button>
-
-                    <div className="absolute inset-x-0 bottom-0 p-3 text-white">
-                      <h3 className="font-semibold tracking-tight">
-                        {item.angler}
-                      </h3>
-                      <div className="flex items-center gap-1.5 text-white/80">
+                      <button
+                        onClick={(e) => handleToggleFavourite(item.id, e)}
+                        className={`absolute right-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full backdrop-blur-md transition-all cursor-pointer ${
+                          item.isFavourite
+                            ? "bg-primary text-white"
+                            : "bg-[#D9D9D94D] text-white hover:bg-white hover:text-red-500"
+                        }`}
+                      >
                         <HugeiconsIcon
-                          icon={Location01Icon}
-                          className="h-3.5 w-3.5"
+                          icon={FavouriteIcon}
+                          className="h-5 w-5"
                         />
-                        <p className="text-xs font-bold">{item.lake}</p>
-                      </div>
-                    </div>
-                  </div>
+                      </button>
 
-                  {/* Card Meta Footer */}
-                  <div className="my-3 px-2">
-                    <div className="flex items-center justify-between">
-                      <div className="w-full flex flex-col">
-                        <div className="flex items-center justify-between w-full">
-                          <h3 className="text-sm font-black text-foreground">
-                            {item.species}
-                          </h3>
-                          <div className="flex items-center gap-1">
-                            <HugeiconsIcon
-                              icon={FavouriteIcon}
-                              className="h-3.5 w-3.5 text-gray-300 group-hover:text-red-500"
-                            />
-                            <span className="text-xs font-black text-foreground group-hover:text-red-500">
-                              {item.likes}
-                            </span>
-                          </div>
+                      <div className="absolute inset-x-0 bottom-0 p-3 text-white">
+                        <h3 className="font-semibold tracking-tight">
+                          {item.angler}
+                        </h3>
+                        <div className="flex items-center gap-1.5 text-white/80">
+                          <HugeiconsIcon
+                            icon={Location01Icon}
+                            className="h-3.5 w-3.5"
+                          />
+                          <p className="text-xs font-bold">{item.lake}</p>
                         </div>
-                        <div className="flex items-center gap-4 mt-2">
-                          <div className="flex items-center gap-1.5 text-[11px] font-bold text-gray-400 uppercase tracking-wider">
-                            <HugeiconsIcon
-                              icon={RulerIcon}
-                              className="h-4 w-4"
-                            />
-                            {item.length}
+                      </div>
+                    </div>
+
+                    {/* Card Meta Footer */}
+                    <div className="my-3 px-2">
+                      <div className="flex items-center justify-between">
+                        <div className="w-full flex flex-col">
+                          <div className="flex items-center justify-between w-full">
+                            <h3 className="text-sm font-black text-foreground">
+                              {item.species}
+                            </h3>
+                            <div className="flex items-center gap-1">
+                              <HugeiconsIcon
+                                icon={FavouriteIcon}
+                                className={`h-3.5 w-3.5 transition-colors ${
+                                  item.isFavourite
+                                    ? "text-red-500"
+                                    : "text-gray-300"
+                                }`}
+                              />
+                              <span
+                                className={`text-xs font-black transition-colors ${
+                                  item.isFavourite
+                                    ? "text-red-500"
+                                    : "text-foreground"
+                                }`}
+                              >
+                                {item.likes + (item.isFavourite ? 1 : 0)}
+                              </span>
+                            </div>
                           </div>
-                          <div className="flex items-center gap-1.5 text-[11px] font-bold text-gray-400 uppercase tracking-wider">
-                            <Fish className="h-4 w-4" />
-                            {item.technique}
+                          <div className="flex items-center gap-4 mt-2">
+                            <div className="flex items-center gap-1.5 text-[11px] font-bold text-gray-400 uppercase tracking-wider">
+                              <HugeiconsIcon
+                                icon={RulerIcon}
+                                className="h-4 w-4"
+                              />
+                              {item.length}
+                            </div>
+                            <div className="flex items-center gap-1.5 text-[11px] font-bold text-gray-400 uppercase tracking-wider">
+                              <Fish className="h-4 w-4" />
+                              {item.technique}
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </motion.article>
-              ))}
-            </AnimatePresence>
-          </div>
+                  </motion.article>
+                ))}
+              </AnimatePresence>
+            </div>
+
+            {/* Pagination */}
+            {totalItems > 12 && (
+              <div className="mt-12">
+                <TablePagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  totalItems={totalItems}
+                  itemsPerPage={itemsPerPage}
+                  onPageChange={(page) => setCurrentPage(page)}
+                  onPageSizeChange={(size) => setItemsPerPage(size)}
+                  showPageSize={true}
+                  pageSizeOptions={[12, 24, 48, 96]}
+                  className="border-none bg-transparent px-0"
+                />
+              </div>
+            )}
+          </>
         )}
       </main>
 

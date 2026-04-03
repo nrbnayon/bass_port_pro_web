@@ -60,8 +60,8 @@ export default function Navbar() {
     }
 
     router.replace(`?${params.toString()}`, { scroll: false });
-
-    if (value && window.scrollY < 200) {
+ 
+    if (value && window.scrollY < 200 && pathname === "/") {
       const lakesSection = document.getElementById("lakes");
       if (lakesSection) {
         lakesSection.scrollIntoView({ behavior: "smooth" });

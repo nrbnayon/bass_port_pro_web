@@ -30,6 +30,7 @@ export type CatchCard = {
   likes: number;
   avatarImage: string;
   description: string;
+  isFavourite?: boolean;
 };
 
 export type FeatureCard = {
