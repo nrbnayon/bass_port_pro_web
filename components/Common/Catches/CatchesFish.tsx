@@ -11,14 +11,11 @@ import {
 } from "@hugeicons/core-free-icons";
 import { catches } from "@/data/landingData";
 import Link from "next/link";
-import LandingNavbar from "@/components/Landing/LandingNavbar";
-import LandingFooter from "@/components/Landing/LandingFooter";
 
-export default function CatchesPage() {
+export default function CatchesFish() {
   return (
-    <div className="min-h-screen bg-white">
-      <LandingNavbar />
-      <main className="py-32">
+    <div>
+      <main className="py-32 min-h-screen bg-white">
         <div className="container-1620">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
             <div className="flex flex-col items-start gap-4">
@@ -84,7 +81,6 @@ export default function CatchesPage() {
           </div>
         </div>
       </main>
-      <LandingFooter />
     </div>
   );
 }

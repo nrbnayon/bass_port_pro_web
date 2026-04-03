@@ -9,7 +9,8 @@ export default function OfflinePage() {
           You are Offline
         </h1>
         <p className="text-secondary dark:text-gray-400 max-w-md mx-auto">
-          It looks like you've lost your internet connection. Please check your network and try again.
+          It looks like you&apos;ve lost your internet connection. Please check
+          your network and try again.
         </p>
         <button
           onClick={() => window.location.reload()}
