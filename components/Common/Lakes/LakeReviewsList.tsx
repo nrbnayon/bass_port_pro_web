@@ -1,10 +1,23 @@
 "use client";
 
-import { motion } from "framer-motion";
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { StarIcon, Message01Icon } from "@hugeicons/core-free-icons";
+import { TablePagination } from "@/components/Shared/TablePagination";
+import { toast } from "sonner";
 
-const reviewsData = [
+interface Review {
+  id: string;
+  author: string;
+  date: string;
+  rating: number;
+  text: string;
+  avatar: string;
+  color: string;
+}
+
+const INITIAL_REVIEWS: Review[] = [
   {
     id: "r1",
     author: "Bass Hunter 42",
@@ -32,9 +45,67 @@ const reviewsData = [
     avatar: "P",
     color: "bg-[#2196F3]",
   },
+  {
+    id: "r4",
+    author: "Lake Lover",
+    date: "2026-02-10",
+    rating: 3,
+    text: "Decent spot, but the boat ramp needs maintenance. Caught a few small ones near the dam.",
+    avatar: "L",
+    color: "bg-[#9C27B0]",
+  },
+  {
+    id: "r5",
+    author: "Night Caster",
+    date: "2026-02-05",
+    rating: 4,
+    text: "Night fishing here is outstanding. The topwater action just before dawn is something every angler should experience.",
+    avatar: "N",
+    color: "bg-[#3F51B5]",
+  },
 ];
 
 export default function LakeReviewsList() {
+  const [reviews, setReviews] = useState<Review[]>(INITIAL_REVIEWS);
+  const [rating, setRating] = useState(0);
+  const [hoveredRating, setHoveredRating] = useState(0);
+  const [reviewText, setReviewText] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 3;
+
+  const totalPages = Math.ceil(reviews.length / itemsPerPage);
+  const currentReviews = reviews.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handleSubmit = () => {
+    if (rating === 0) {
+      toast.error("Please select a rating");
+      return;
+    }
+    if (!reviewText.trim()) {
+      toast.error("Please write a review");
+      return;
+    }
+
+    const newReview: Review = {
+      id: `r${Date.now()}`,
+      author: "You (Guest)",
+      date: new Date().toISOString().split("T")[0],
+      rating,
+      text: reviewText,
+      avatar: "Y",
+      color: "bg-primary",
+    };
+
+    setReviews([newReview, ...reviews]);
+    setRating(0);
+    setReviewText("");
+    toast.success("Review submitted successfully!");
+    setCurrentPage(1);
+  };
+
   return (
     <div className="flex flex-col gap-8">
       <section className="rounded-2xl border border-[#F3F4F6] bg-white p-6">
@@ -47,20 +118,35 @@ export default function LakeReviewsList() {
             {[1, 2, 3, 4, 5].map((star) => (
               <button
                 key={star}
-                className="h-8 w-8 text-[#FACC15] transition-transform hover:scale-110 active:scale-95 cursor-pointer"
+                onMouseEnter={() => setHoveredRating(star)}
+                onMouseLeave={() => setHoveredRating(0)}
+                onClick={() => setRating(star)}
+                className="transition-transform hover:scale-110 active:scale-95 cursor-pointer"
               >
-                <HugeiconsIcon icon={StarIcon} className="h-8 w-8" />
+                <HugeiconsIcon
+                  icon={StarIcon}
+                  className={`h-8 w-8 transition-colors ${
+                    star <= (hoveredRating || rating)
+                      ? "text-[#FACC15] fill-[#FACC15]"
+                      : "text-gray-200"
+                  }`}
+                />
               </button>
             ))}
           </div>
 
           <div className="relative">
             <textarea
+              value={reviewText}
+              onChange={(e) => setReviewText(e.target.value)}
               className="w-full h-40 rounded-2xl border border-gray-100 bg-gray-50/50 p-6 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all resize-none"
               placeholder="Share your experience fishing this lake..."
             />
             <div className="absolute right-6 bottom-6">
-              <button className="rounded-xl bg-primary px-8 py-3 text-sm font-bold text-white shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95 cursor-pointer flex items-center gap-1">
+              <button
+                onClick={handleSubmit}
+                className="rounded-xl bg-primary px-8 py-3 text-sm font-bold text-white shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95 cursor-pointer flex items-center gap-1"
+              >
                 Submit Review{" "}
                 <HugeiconsIcon
                   icon={Message01Icon}
@@ -75,54 +161,75 @@ export default function LakeReviewsList() {
 
       <section>
         <h2 className="text-xl font-bold tracking-tight text-foreground md:text-2xl mb-5">
-          Community Reviews (518)
+          Community Reviews ({reviews.length})
         </h2>
 
         <div className="space-y-6">
-          {reviewsData.map((review, index) => (
-            <motion.div
-              key={review.id}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="group relative flex flex-col gap-6 rounded-2xl border border-[#F3F4F6] bg-white p-6 transition-all hover:shadow-sm"
-            >
-              <div className="flex items-center justify-between gap-6">
-                <div className="flex items-center gap-3">
-                  <div
-                    className={`flex h-12 w-12 items-center justify-center rounded-full ${review.color} text-white`}
-                  >
-                    <span className="text-lg font-bold">{review.avatar}</span>
+          <AnimatePresence mode="popLayout">
+            {currentReviews.map((review, index) => (
+              <motion.div
+                key={review.id}
+                layout
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.4, delay: index * 0.05 }}
+                className="group relative flex flex-col gap-6 rounded-2xl border border-[#F3F4F6] bg-white p-6 transition-all hover:shadow-sm"
+              >
+                <div className="flex items-center justify-between gap-6">
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`flex h-12 w-12 items-center justify-center rounded-full ${review.color} text-white`}
+                    >
+                      <span className="text-lg font-bold">{review.avatar}</span>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-foreground leading-none mb-0.5">
+                        {review.author}
+                      </h3>
+                      <span className="text-xs font-semibold text-gray-400 uppercase tracking-widest">
+                        {review.date}
+                      </span>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-lg font-bold text-foreground leading-none mb-0.5">
-                      {review.author}
-                    </h3>
-                    <span className="text-xs font-semibold text-gray-400 uppercase tracking-widest">
-                      {review.date}
-                    </span>
+
+                  <div className="flex items-center gap-1">
+                    {[...Array(5)].map((_, i) => (
+                      <HugeiconsIcon
+                        key={i}
+                        icon={StarIcon}
+                        className={`h-4 w-4 ${
+                          i < review.rating
+                            ? "text-[#FACC15] fill-[#FACC15]"
+                            : "text-gray-200"
+                        }`}
+                      />
+                    ))}
                   </div>
                 </div>
 
-                <div className="flex items-center gap-1 text-[#F59E0B]">
-                  {[...Array(5)].map((_, i) => (
-                    <HugeiconsIcon
-                      key={i}
-                      icon={StarIcon}
-                      className={`h-4 w-4 ${i < review.rating ? "fill-[#F59E0B]" : "text-gray-200"}`}
-                    />
-                  ))}
+                <div className="border-t border-gray-50 pt-3">
+                  <p className="text-[15px] font-medium leading-relaxed text-secondary italic">
+                    &quot;{review.text}&quot;
+                  </p>
                 </div>
-              </div>
-
-              <div className="border-t border-gray-50 pt-2">
-                <p className="text-[15px] font-medium leading-relaxed text-secondary italic">
-                  &quot;{review.text}&quot;
-                </p>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </div>
+
+        {totalPages > 1 && (
+          <div className="mt-8">
+            <TablePagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={reviews.length}
+              itemsPerPage={itemsPerPage}
+              onPageChange={(page) => setCurrentPage(page)}
+              className="border-none bg-transparent px-0"
+            />
+          </div>
+        )}
       </section>
     </div>
   );
