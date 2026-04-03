@@ -20,9 +20,9 @@ type NavLink = {
 const navLinks: NavLink[] = [
   { label: "Home", href: "/", id: "home", icon: Fish },
   { label: "Lakes", href: "/lakes", id: "lakes", icon: MapPin },
-  { label: "BassPorn", href: "#catches", icon: Heart },
-  { label: "Reports", href: "#reports", icon: FileText },
-  { label: "Contact", href: "#footer", icon: Mail02Icon },
+  { label: "BassPorn", href: "/catches", id: "catches", icon: Heart },
+  { label: "Reports", href: "/reports", id: "reports", icon: FileText },
+  { label: "Contact", href: "/contact", id: "contact", icon: Mail02Icon },
 ];
 
 const NavIcon = ({
