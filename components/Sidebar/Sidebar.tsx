@@ -27,7 +27,8 @@ interface DashboardWrapperProps {
 export default function DashboardWrapper({ children }: DashboardWrapperProps) {
   const pathname = usePathname();
   // Use centralized user hook
-  const { name, role, permissions, hasPermission, isAuthenticated, logout } = useUser();
+  const { name, role, permissions, hasPermission, isAuthenticated, logout } =
+    useUser();
 
   // State management
   const [open, setOpen] = useState(true);
@@ -70,7 +71,7 @@ export default function DashboardWrapper({ children }: DashboardWrapperProps) {
 
       return false;
     },
-    [pathname]
+    [pathname],
   );
 
   // Toggle expanded state
@@ -78,7 +79,7 @@ export default function DashboardWrapper({ children }: DashboardWrapperProps) {
     setExpandedItems((prev) =>
       prev.includes(label)
         ? prev.filter((item) => item !== label)
-        : [...prev, label]
+        : [...prev, label],
     );
   }, []);
 
@@ -89,7 +90,8 @@ export default function DashboardWrapper({ children }: DashboardWrapperProps) {
         link.subLinks &&
         link.subLinks.some(
           (subLink) =>
-            pathname === subLink.href || pathname.startsWith(subLink.href + "/")
+            pathname === subLink.href ||
+            pathname.startsWith(subLink.href + "/"),
         )
       ) {
         if (!expandedItems.includes(link.label)) {
@@ -115,7 +117,7 @@ export default function DashboardWrapper({ children }: DashboardWrapperProps) {
       const deltaX = e.clientX - startX;
       const newWidth = Math.min(
         Math.max(startWidth + deltaX, minWidth),
-        maxWidth
+        maxWidth,
       );
 
       setSidebarWidth(newWidth);
@@ -185,47 +187,50 @@ export default function DashboardWrapper({ children }: DashboardWrapperProps) {
     setShowLogoutModal(false);
   };
 
-  const renderIcon = useCallback((Icon: SidebarLink["icon"], isActive: boolean) => {
-    const iconClasses = cn(
+  const renderIcon = useCallback(
+    (Icon: SidebarLink["icon"], isActive: boolean) => {
+      const iconClasses = cn(
         "h-6 w-6 shrink-0 transition-colors duration-200",
         isActive
           ? "text-white font-semibold"
-          : "text-foreground group-hover:text-foreground font-semibold"
-    );
-
-    // 1. If it's a valid React Element (pre-rendered JSX like <Bell />)
-    if (React.isValidElement(Icon)) {
-      const iconElement = Icon as React.ReactElement<{ className?: string }>;
-      return React.cloneElement(iconElement, {
-        className: cn(iconElement.props.className, iconClasses)
-      });
-    }
-
-    // 2. If it's a Component function
-    if (typeof Icon === 'function') {
-      const IconComponent = Icon as React.ElementType;
-      return <IconComponent className={iconClasses} />;
-    }
-
-    // 3. If it's a Component object (like ForwardRef from Lucide/Hugeicons)
-    if (typeof Icon === 'object' && Icon !== null && (Icon as any).$$typeof) {
-      const IconComponent = Icon as any as React.ElementType;
-      return <IconComponent className={iconClasses} />;
-    }
-
-    // 4. If it's a raw Hugeicon data object
-    if (typeof Icon === 'object' && Icon !== null) {
-      return (
-        <HugeiconsIcon
-          icon={Icon as any}
-          strokeWidth={2}
-          className={iconClasses}
-        />
+          : "text-foreground group-hover:text-foreground font-semibold",
       );
-    }
 
-    return null;
-  }, []);
+      // 1. If it's a valid React Element (pre-rendered JSX like <Bell />)
+      if (React.isValidElement(Icon)) {
+        const iconElement = Icon as React.ReactElement<{ className?: string }>;
+        return React.cloneElement(iconElement, {
+          className: cn(iconElement.props.className, iconClasses),
+        });
+      }
+
+      // 2. If it's a Component function
+      if (typeof Icon === "function") {
+        const IconComponent = Icon as React.ElementType;
+        return <IconComponent className={iconClasses} />;
+      }
+
+      // 3. If it's a Component object (like ForwardRef from Lucide/Hugeicons)
+      if (typeof Icon === "object" && Icon !== null && (Icon as any).$$typeof) {
+        const IconComponent = Icon as any as React.ElementType;
+        return <IconComponent className={iconClasses} />;
+      }
+
+      // 4. If it's a raw Hugeicon data object
+      if (typeof Icon === "object" && Icon !== null) {
+        return (
+          <HugeiconsIcon
+            icon={Icon as any}
+            strokeWidth={2}
+            className={iconClasses}
+          />
+        );
+      }
+
+      return null;
+    },
+    [],
+  );
 
   const getRoleBadgeColor = (role: string) => {
     const r = role?.toLowerCase();
@@ -249,7 +254,7 @@ export default function DashboardWrapper({ children }: DashboardWrapperProps) {
 
   const getRoleDisplayName = (role: string) => {
     if (!role) return "User";
-    
+
     const r = role.toLowerCase();
     switch (r) {
       case "admin":
@@ -274,9 +279,7 @@ export default function DashboardWrapper({ children }: DashboardWrapperProps) {
   if (!isAuthenticated) {
     return (
       <div className="w-full min-h-screen bg-gray">
-        <div className="p-0 flex flex-col gap-2 flex-1 w-full">
-          {children}
-        </div>
+        <div className="p-0 flex flex-col gap-2 flex-1 w-full">{children}</div>
       </div>
     );
   }
@@ -285,7 +288,7 @@ export default function DashboardWrapper({ children }: DashboardWrapperProps) {
     <div
       className={cn(
         "rounded-md flex flex-col md:flex-row bg-gray w-full flex-1 mx-auto",
-        "min-h-screen md:h-screen md:overflow-hidden relative"
+        "min-h-screen md:h-screen md:overflow-hidden relative",
       )}
     >
       <div className="relative overflow-visible flex">
@@ -298,7 +301,7 @@ export default function DashboardWrapper({ children }: DashboardWrapperProps) {
           <SidebarBody
             className={cn(
               "justify-between gap-10 border-0.5",
-              "bg-white text-foreground"
+              "bg-white text-foreground",
             )}
           >
             <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
@@ -316,7 +319,7 @@ export default function DashboardWrapper({ children }: DashboardWrapperProps) {
 
                   const filteredSubLinks = link.subLinks?.filter(
                     (subLink) =>
-                      !subLink.permission || hasPermission(subLink.permission)
+                      !subLink.permission || hasPermission(subLink.permission),
                   );
 
                   const shouldShowSublinks =
@@ -339,7 +342,7 @@ export default function DashboardWrapper({ children }: DashboardWrapperProps) {
                         if (hasSubLinks && !isExpanded) {
                           setTimeout(() => {
                             setHoveredItem((prev) =>
-                              prev === link.label ? null : prev
+                              prev === link.label ? null : prev,
                             );
                           }, 200);
                         }
@@ -358,7 +361,7 @@ export default function DashboardWrapper({ children }: DashboardWrapperProps) {
                             "flex items-center gap-3 p-3 rounded-md transition-all duration-200 group flex-1 relative",
                             isActive
                               ? "bg-primary text-white font-semibold"
-                              : "hover:text-foreground hover:bg-primary/30"
+                              : "hover:text-foreground hover:bg-primary/30",
                           )}
                         >
                           <span className="shrink-0">
@@ -384,7 +387,7 @@ export default function DashboardWrapper({ children }: DashboardWrapperProps) {
                               }}
                               className={cn(
                                 "p-1 rounded transition-all duration-200 hover:bg-gray-200",
-                                isActive && "text-white"
+                                isActive && "text-white",
                               )}
                             >
                               {isExpanded ? (
@@ -412,7 +415,7 @@ export default function DashboardWrapper({ children }: DashboardWrapperProps) {
                             if (!isExpanded) {
                               setTimeout(() => {
                                 setHoveredItem((prev) =>
-                                  prev === link.label ? null : prev
+                                  prev === link.label ? null : prev,
                                 );
                               }, 200);
                             }
@@ -436,7 +439,7 @@ export default function DashboardWrapper({ children }: DashboardWrapperProps) {
                                   "flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-200 text-sm",
                                   isSubLinkActive
                                     ? "bg-gradient-purple text-white font-semibold"
-                                    : "text-secondary hover:text-primary hover:bg-gray-50"
+                                    : "text-secondary hover:text-primary hover:bg-gray-50",
                                 )}
                               >
                                 <span className="text-sm whitespace-pre">
@@ -487,8 +490,8 @@ export default function DashboardWrapper({ children }: DashboardWrapperProps) {
                       </p>
                       <p
                         className={cn(
-                          "text-[13px] truncate uppercase tracking-tight",
-                          getRoleBadgeColor(role || "customer")
+                          "text-xs truncate uppercase tracking-tight",
+                          getRoleBadgeColor(role || "customer"),
                         )}
                       >
                         {getRoleDisplayName(role || "customer")}
@@ -525,7 +528,7 @@ export default function DashboardWrapper({ children }: DashboardWrapperProps) {
           onClick={handleToggleClick}
           className={cn(
             "absolute hidden md:flex top-4 z-20 cursor-pointer p-2 rounded-full bg-gray border border-gray-300 shadow-none hover:bg-gray-50 transition-all duration-200",
-            open ? "-right-4" : "-right-4"
+            open ? "-right-4" : "-right-4",
           )}
         >
           {open ? (

@@ -23,6 +23,13 @@ export type CatchCard = {
   lake: string;
   weight: string;
   image: string;
+  species: string;
+  length: string;
+  technique: string;
+  date: string;
+  likes: number;
+  avatarImage: string;
+  description: string;
 };
 
 export type FeatureCard = {

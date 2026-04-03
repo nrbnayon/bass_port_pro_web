@@ -90,7 +90,7 @@ export default function LakeCard({ lake }: LakeCardProps) {
           <h3 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors leading-tight">
             {lake.name}
           </h3>
-          <p className="mt-2 line-clamp-2 text-[13px] leading-relaxed text-[#64748B]">
+          <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-[#64748B]">
             {lake.description}
           </p>
 

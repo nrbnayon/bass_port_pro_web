@@ -15,6 +15,9 @@ interface Policy {
   description: string;
 }
 
+// Generate a unique ID for a new policy
+const generatePolicyId = () => Date.now().toString();
+
 const MOCK_POLICIES: Policy[] = [
   {
     id: "1",
@@ -61,7 +64,7 @@ export default function PrivacyPolicyClient() {
   };
 
   const handleAddPolicy = () => {
-    const newId = Date.now().toString();
+    const newId = generatePolicyId();
     setPolicies([
       ...policies,
       { id: newId, title: "", description: "" },

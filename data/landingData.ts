@@ -246,6 +246,13 @@ export const catches: CatchCard[] = [
     lake: "Falcon Lake",
     weight: "13.1 lbs",
     image: "/images/trophy_c1.png",
+    species: "Largemouth Bass",
+    length: "24.5\"",
+    technique: "Texas Rig",
+    date: "2026-03-15",
+    likes: 234,
+    avatarImage: "/images/avatar.png",
+    description: "Monster largemouth caught on a 10\" worm in 15ft of water. Personal best!"
   },
   {
     id: "c2",
@@ -253,6 +260,13 @@ export const catches: CatchCard[] = [
     lake: "Clear Lake",
     weight: "11.3 lbs",
     image: "/images/trophy_c2.png",
+    species: "Largemouth Bass",
+    length: "22\"",
+    technique: "Swim Jig",
+    date: "2026-03-20",
+    likes: 187,
+    avatarImage: "/images/avatar.png",
+    description: "Solid kicker for the tournament bag. This lake never disappoints!"
   },
   {
     id: "c3",
@@ -260,14 +274,84 @@ export const catches: CatchCard[] = [
     lake: "Lake Okeechobee",
     weight: "10.2 lbs",
     image: "/images/trophy_c3.png",
+    species: "Largemouth Bass",
+    length: "23\"",
+    technique: "Live Shiner",
+    date: "2026-03-25",
+    likes: 312,
+    avatarImage: "/images/avatar.png",
+    description: "The Big O produced a beautiful double-digit bass today. Pure power."
   },
   {
     id: "c4",
     angler: "ChickamaugaChamp",
-    lake: "Lake Chicksmuga",
+    lake: "Lake Chickamauga",
     weight: "9.4 lbs",
     image: "/images/trophy_c4.png",
+    species: "Largemouth Bass",
+    length: "21.5\"",
+    technique: "Crankbait",
+    date: "2026-04-01",
+    likes: 521,
+    avatarImage: "/images/avatar.png",
+    description: "Morning bite was aggressive on deep diving cranks. What a rush!"
   },
+  {
+    id: "c5",
+    angler: "TournamentPro",
+    lake: "Lake Fork",
+    weight: "12.4 lbs",
+    image: "/images/trophy_c1.png",
+    species: "Largemouth Bass",
+    length: "24.5\"",
+    technique: "Jig & Craw",
+    date: "2026-02-23",
+    likes: 445,
+    avatarImage: "/images/avatar.png",
+    description: "Slow dragging a jig on a primary point. Felt like a snag until it moved!"
+  },
+  {
+    id: "c6",
+    angler: "SmallmouthSpec",
+    lake: "Lake St. Clair",
+    weight: "6.8 lbs",
+    image: "/images/trophy_c2.png",
+    species: "Smallmouth Bass",
+    length: "22.5\"",
+    technique: "Drop Shot",
+    date: "2026-03-10",
+    likes: 312,
+    avatarImage: "/images/avatar.png",
+    description: "Huge bronze back caught in 18ft of water. Hardest fighting fish pound for pound."
+  },
+  {
+    id: "c7",
+    angler: "SpotHunter",
+    lake: "Lake Lanier",
+    weight: "5.5 lbs",
+    image: "/images/trophy_c3.png",
+    species: "Spotted Bass",
+    length: "21\"",
+    technique: "Ned Rig",
+    date: "2026-03-18",
+    likes: 198,
+    avatarImage: "/images/avatar.png",
+    description: "Winter spotted bass are fat and healthy. Clear water finesse fishing at its best."
+  },
+  {
+    id: "c8",
+    angler: "StripedKiller",
+    lake: "Lake Texoma",
+    weight: "28.5 lbs",
+    image: "/images/trophy_c4.png",
+    species: "Striped Bass",
+    length: "42\"",
+    technique: "Topwater Plug",
+    date: "2026-04-02",
+    likes: 678,
+    avatarImage: "/images/avatar.png",
+    description: "Massive stripper blitz at sunrise. This fish took 100 yards of line on the first run!"
+  }
 ];
 
 export const features: FeatureCard[] = [

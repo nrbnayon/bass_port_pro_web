@@ -188,20 +188,21 @@
     background-repeat: no-repeat;
   }
 
-  /* Scrollbar */
-  .scrollbar-hide {
+  /* Scrollbar Utilities */
+  .scrollbar-hide, .scrollbar-none {
     -ms-overflow-style: none;
     scrollbar-width: none;
     &::-webkit-scrollbar { display: none; }
   }
 
-  .scrollbar-custom {
+  /* Optimized Custom Scrollbar Utility */
+  .custom-scrollbar, .scrollbar-custom {
     scrollbar-width: thin;
     scrollbar-color: var(--border) transparent;
-    &::-webkit-scrollbar       { width: 4px; height: 4px; }
+    &::-webkit-scrollbar { width: 6px; height: 6px; }
     &::-webkit-scrollbar-track { background: transparent; }
     &::-webkit-scrollbar-thumb { background: var(--border); border-radius: 100vh; }
-    &::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+    &::-webkit-scrollbar-thumb:hover { background: var(--muted-foreground); }
   }
 
   /* Transitions */

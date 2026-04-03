@@ -17,6 +17,12 @@ interface Review {
   color: string;
 }
 
+// Generate a unique ID for a new review record
+const generateReviewId = () => `r${Date.now()}`;
+
+// Get current date string in YYYY-MM-DD format
+const getCurrentDateString = () => new Date().toISOString().split("T")[0];
+
 const INITIAL_REVIEWS: Review[] = [
   {
     id: "r1",
@@ -90,9 +96,9 @@ export default function LakeReviewsList() {
     }
 
     const newReview: Review = {
-      id: `r${Date.now()}`,
+      id: generateReviewId(),
       author: "You (Guest)",
-      date: new Date().toISOString().split("T")[0],
+      date: getCurrentDateString(),
       rating,
       text: reviewText,
       avatar: "Y",
