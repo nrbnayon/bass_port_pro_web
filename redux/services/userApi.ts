@@ -83,6 +83,7 @@ export interface SystemSettings {
 // ─── API Slice ────────────────────────────────────────────────────────────────
 
 export const userApi = apiSlice.injectEndpoints({
+  overrideExisting: process.env.NODE_ENV === "development",
   endpoints: (builder) => ({
     // ── Own profile ──────────────────────────────────────────────────────────
 

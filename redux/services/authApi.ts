@@ -61,6 +61,7 @@ interface ResetPasswordResponse {
 
 // Inject endpoints into the API slice
 export const authApi = apiSlice.injectEndpoints({
+  overrideExisting: process.env.NODE_ENV === "development",
   endpoints: (builder) => ({
     // Signin endpoint
     signin: builder.mutation<SigninResponse, SigninRequest>({
