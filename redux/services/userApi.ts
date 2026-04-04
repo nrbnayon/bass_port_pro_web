@@ -1,4 +1,4 @@
-import { apiSlice } from './apiSlice';
+import { apiSlice } from "./apiSlice";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -43,7 +43,7 @@ export interface GetUsersParams {
   page?: number;
   limit?: number;
   sortBy?: string;
-  sortOrder?: 'asc' | 'desc';
+  sortOrder?: "asc" | "desc";
 }
 
 export interface UpdateProfilePayload {
@@ -93,7 +93,7 @@ export const userApi = apiSlice.injectEndpoints({
 
     updateMyProfile: builder.mutation<ApiResponse<User>, FormData>({
       query: (formData) => ({
-        url: "/user/update-profile",
+        url: "/auth/me",
         method: "PUT",
         body: formData,
         formData: true,
