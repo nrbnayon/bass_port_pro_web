@@ -37,15 +37,16 @@ export default function LakeCard({ lake }: LakeCardProps) {
     >
       <Link
         href={`/lakes/${lake.id}`}
-        className="flex flex-col h-full overflow-hidden rounded-2xl bg-white border-x border-b border-t-0 border-solid border-[#F3F4F6] transition-all hover:shadow-xs hover:ring-1 hover:ring-primary/20"
+        className="flex flex-col h-full overflow-hidden rounded-2xl bg-white border-x border-b border-t-0 border-solid border-[#F3F4F6] transition-all hover:shadow-xs hover:ring-1 hover:ring-primary/20 isolation-auto"
+        style={{ isolation: "isolate" }}
       >
-        <div className="relative aspect-[4/3] overflow-hidden">
+        <div className="relative aspect-[4/3] overflow-hidden rounded-t-2xl">
           <Image
             src={lake.image}
             alt={lake.name}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-110"
+            className="object-cover transition-transform duration-500 group-hover:scale-110 transform-gpu"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#00000088] via-transparent to-transparent opacity-60" />
 
@@ -62,7 +63,7 @@ export default function LakeCard({ lake }: LakeCardProps) {
               e.preventDefault();
               e.stopPropagation();
             }}
-            className="absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-[#D9D9D94D] text-white backdrop-blur-sm transition-colors hover:bg-white hover:text-primary cursor-pointer"
+            className="absolute right-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-[#D9D9D94D] text-white backdrop-blur-sm transition-colors hover:bg-white hover:text-primary cursor-pointer"
           >
             <HugeiconsIcon
               icon={FavouriteIcon}

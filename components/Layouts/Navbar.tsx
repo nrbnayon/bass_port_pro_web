@@ -23,7 +23,7 @@ const navLinks: NavLink[] = [
   { label: "Lakes", href: "/lakes", id: "lakes", icon: MapPin },
   { label: "BassPorn", href: "/catches", id: "catches", icon: Heart },
   { label: "Reports", href: "/reports", id: "reports", icon: FileText },
-  { label: "Contact", href: "/contact-us", id: "contact", icon: Mail02Icon },
+  { label: "Contact", href: "/contact-us", id: "footer", icon: Mail02Icon },
 ];
 
 const NavIcon = ({
