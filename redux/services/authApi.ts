@@ -123,7 +123,7 @@ export const authApi = apiSlice.injectEndpoints({
       invalidatesTags: ["Auth"],
     }),
 
-    // Get current user
+    // Get current user - profile
     getCurrentUser: builder.query<unknown, void>({
       query: () => "/auth/me",
       providesTags: ["Auth"],

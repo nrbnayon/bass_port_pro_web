@@ -1,5 +1,7 @@
 import { apiSlice } from './apiSlice';
 
+// ─── Types ────────────────────────────────────────────────────────────────────
+
 export interface User {
   _id: string;
   name: string;
@@ -10,40 +12,199 @@ export interface User {
   avatar?: string;
   phone?: string;
   location?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
+
+export interface ApiResponse<T> {
+  success: boolean;
+  message: string;
+  data: T;
+}
+
+export interface PaginatedApiResponse<T> {
+  success: boolean;
+  message: string;
+  data: T[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+  };
+}
+
+export interface GetUsersParams {
+  search?: string;
+  role?: string;
+  status?: string;
+  page?: number;
+  limit?: number;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+}
+
+export interface UpdateProfilePayload {
+  name?: string;
+  phone?: string;
+  location?: string;
+  avatar?: File;
+}
+
+export interface ChangePasswordPayload {
+  current_password: string;
+  new_password: string;
+  confirm_password: string;
+}
+
+export interface AdminUpdateUserPayload {
+  id: string;
+  name?: string;
+  role?: string;
+  status?: string;
+  permissions?: string[];
+  phone?: string;
+  location?: string;
+}
+
+export interface SystemSettings {
+  _id?: string;
+  key?: string;
+  autoApproveMode: boolean;
+  emailNotifications: boolean;
+  twoFactorAuth: boolean;
+  maintenanceMode: boolean;
+  lastUpdatedBy?: string;
+  updatedAt?: string;
+}
+
+// ─── API Slice ────────────────────────────────────────────────────────────────
 
 export const userApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getUsers: builder.query<User[], void>({
-      query: () => '/users',
-      providesTags: (result) =>
-        result
-          ? [...result.map(({ _id }) => ({ type: 'User' as const, id: _id })), { type: 'User', id: 'LIST' }]
-          : [{ type: 'User', id: 'LIST' }],
+    // ── Own profile ──────────────────────────────────────────────────────────
+
+    getMyProfile: builder.query<ApiResponse<User>, void>({
+      query: () => "/auth/me",
+      providesTags: [{ type: "User", id: "ME" }],
     }),
-    updateUser: builder.mutation<User, { id: string; permissions: string[] }>({
-      query: ({ id, permissions }) => ({
-        url: `/users/${id}`,
-        method: 'PUT',
-        body: { permissions },
+
+    updateMyProfile: builder.mutation<ApiResponse<User>, FormData>({
+      query: (formData) => ({
+        url: "/user/update-profile",
+        method: "PUT",
+        body: formData,
+        formData: true,
       }),
-      invalidatesTags: (result, error, { id }) => [
-        { type: 'User', id },
-        { type: 'User', id: 'LIST' },
-      ],
+      invalidatesTags: [{ type: "User", id: "ME" }],
     }),
-    deleteUser: builder.mutation<void, string>({
+
+    changePassword: builder.mutation<ApiResponse<null>, ChangePasswordPayload>({
+      query: (body) => ({
+        url: "/auth/me/change-password",
+        method: "PUT",
+        body,
+      }),
+    }),
+
+    // ── Admin: list / CRUD ───────────────────────────────────────────────────
+
+    getAllUsers: builder.query<PaginatedApiResponse<User>, GetUsersParams>({
+      query: (params = {}) => {
+        const searchParams = new URLSearchParams();
+        if (params.search) searchParams.set("search", params.search);
+        if (params.role) searchParams.set("role", params.role);
+        if (params.status) searchParams.set("status", params.status);
+        if (params.page) searchParams.set("page", String(params.page));
+        if (params.limit) searchParams.set("limit", String(params.limit));
+        if (params.sortBy) searchParams.set("sortBy", params.sortBy);
+        if (params.sortOrder) searchParams.set("sortOrder", params.sortOrder);
+        const qs = searchParams.toString();
+        return `/users${qs ? `?${qs}` : ""}`;
+      },
+      providesTags: (result) =>
+        result?.data
+          ? [
+              ...result.data.map(({ _id }) => ({
+                type: "User" as const,
+                id: _id,
+              })),
+              { type: "User", id: "LIST" },
+            ]
+          : [{ type: "User", id: "LIST" }],
+    }),
+
+    getUserById: builder.query<ApiResponse<User>, string>({
+      query: (id) => `/users/${id}`,
+      providesTags: (result, error, id) => [{ type: "User", id }],
+    }),
+
+    updateUserById: builder.mutation<ApiResponse<User>, AdminUpdateUserPayload>(
+      {
+        query: ({ id, ...body }) => ({
+          url: `/users/${id}`,
+          method: "PUT",
+          body,
+        }),
+        invalidatesTags: (result, error, { id }) => [
+          { type: "User", id },
+          { type: "User", id: "LIST" },
+        ],
+      },
+    ),
+
+    deleteUser: builder.mutation<ApiResponse<null>, string>({
       query: (id) => ({
         url: `/users/${id}`,
-        method: 'DELETE',
+        method: "DELETE",
       }),
-      invalidatesTags: [{ type: 'User', id: 'LIST' }],
+      invalidatesTags: [{ type: "User", id: "LIST" }],
+    }),
+
+    createUser: builder.mutation<
+      ApiResponse<User>,
+      Partial<User> & { password: string }
+    >({
+      query: (body) => ({
+        url: "/users",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: [{ type: "User", id: "LIST" }],
+    }),
+
+    // ── Admin: System Settings ───────────────────────────────────────────────
+
+    getSystemSettings: builder.query<ApiResponse<SystemSettings>, void>({
+      query: () => "/settings",
+      providesTags: ["Settings"],
+    }),
+
+    updateSystemSettings: builder.mutation<
+      ApiResponse<SystemSettings>,
+      Partial<SystemSettings>
+    >({
+      query: (body) => ({
+        url: "/settings",
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: ["Settings"],
     }),
   }),
 });
 
 export const {
-  useGetUsersQuery,
-  useUpdateUserMutation,
+  useGetMyProfileQuery,
+  useUpdateMyProfileMutation,
+  useChangePasswordMutation,
+  useGetAllUsersQuery,
+  useGetUserByIdQuery,
+  useUpdateUserByIdMutation,
   useDeleteUserMutation,
+  useCreateUserMutation,
+  useGetSystemSettingsQuery,
+  useUpdateSystemSettingsMutation,
 } = userApi;

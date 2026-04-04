@@ -5,8 +5,10 @@ import type { RootState } from '../store';
 export interface User {
   name: string;
   email: string;
-  role: string | "admin" | "user"; // Enhanced type safety
+  role: string | "admin" | "user";
   avatar?: string | null;
+  phone?: string;
+  location?: string;
   permissions?: string[];
 }
 
@@ -48,13 +50,23 @@ export const authSlice = createSlice({
       state.isAuthenticated = false;
     },
 
-    updateTokens: (state, action: PayloadAction<{ accessToken: string, tokenExpiresAt?: number }>) => {
+    updateTokens: (state, action: PayloadAction<{ accessToken: string; tokenExpiresAt?: number }>) => {
       state.accessToken = action.payload.accessToken;
-    }
+    },
+
+    // Sync profile changes (name, avatar, phone, location) into auth state
+    updateProfile: (
+      state,
+      action: PayloadAction<Partial<Pick<User, 'name' | 'avatar' | 'phone' | 'location'>>>
+    ) => {
+      if (state.user) {
+        state.user = { ...state.user, ...action.payload };
+      }
+    },
   },
 });
 
-export const { setCredentials, logout, updateTokens } = authSlice.actions;
+export const { setCredentials, logout, updateTokens, updateProfile } = authSlice.actions;
 
 export default authSlice.reducer;
 

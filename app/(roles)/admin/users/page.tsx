@@ -1,27 +1,26 @@
 "use client";
 
-import { useState } from "react";
 import { useUser } from "@/hooks/useUser";
-import { UsersTable } from "@/components/AuthProtected/Admin/Users/UsersTable";
-import { UserPermissionsModal } from "@/components/AuthProtected/Admin/Users/UserPermissionsModal";
-import { useGetUsersQuery } from "@/redux/services/userApi";
+import { useGetAllUsersQuery } from "@/redux/services/userApi";
 
 export default function UsersPage() {
   const { hasPermission } = useUser();
-  const { data: users = [], isLoading, isError } = useGetUsersQuery();
-  const [selectedUser, setSelectedUser] = useState<any | null>(null);
+  const { isLoading, isError } = useGetAllUsersQuery({});
 
   // Fallback check (proxy.ts should handle this, but client side check is extra safety)
   if (!hasPermission("manage_users")) {
-    return <div className="p-10 text-xl font-bold text-red-500">Access Denied: You do require manage_users permission</div>;
+    return (
+      <div className="p-10 text-xl font-bold text-red-500">
+        Access Denied: You do require manage_users permission
+      </div>
+    );
   }
 
-  const handleEditPermissions = (user: any) => {
-    setSelectedUser(user);
-  };
-
   if (isLoading) return <div className="p-10">Loading users...</div>;
-  if (isError) return <div className="p-10 text-red-500">Failed to load users from API</div>;
+  if (isError)
+    return (
+      <div className="p-10 text-red-500">Failed to load users from API</div>
+    );
 
   return (
     <div className="p-6">
@@ -32,17 +31,9 @@ export default function UsersPage() {
         </button>
       </div>
 
-      <UsersTable 
-        users={users.map(u => ({ ...u, id: u._id }))} 
-        onEditPermissions={handleEditPermissions} 
-      />
-      
-      {selectedUser && (
-        <UserPermissionsModal 
-           user={selectedUser} 
-           onClose={() => setSelectedUser(null)} 
-        />
-      )}
+      <div className="p-4 border border-dashed border-slate-700 rounded-lg text-center text-slate-500">
+        Users table is temporarily disabled.
+      </div>
     </div>
   );
 }
