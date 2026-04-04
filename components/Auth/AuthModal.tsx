@@ -22,6 +22,10 @@ import {
   emailValidationSchema,
   resetPasswordValidationSchema,
 } from "@/lib/formDataValidation";
+import { useSigninMutation } from "@/redux/services/authApi";
+import { useAppDispatch } from "@/redux/hooks";
+import { setCredentials } from "@/redux/features/authSlice";
+import { useRouter } from "next/navigation";
 
 export type AuthView =
   | "login"
@@ -179,6 +183,13 @@ export default function AuthModal({
   );
 }
 
+const setAuthCookies = (accessToken: string, role: string) => {
+  if (typeof document !== "undefined") {
+    document.cookie = `accessToken=${accessToken}; path=/; max-age=604800`;
+    document.cookie = `userRole=${role}; path=/; max-age=604800`;
+  }
+};
+
 /* ================= LOGIN VIEW ================= */
 function LoginView({
   setView,
@@ -211,14 +222,40 @@ function LoginView({
     }
   }, [values, setData]);
 
-  const onSubmit = async (data: z.infer<typeof signinValidationSchema>) => {
+  const [signin, { isLoading }] = useSigninMutation();
+  const dispatch = useAppDispatch();
+  const router = useRouter();
+
+  const onSubmit = async (formData: z.infer<typeof signinValidationSchema>) => {
     try {
-      console.log("Logging in...", data);
-      await new Promise((r) => setTimeout(r, 1000));
+      const result = await signin(formData).unwrap();
+      
+      dispatch(
+        setCredentials({
+          user: {
+            name: result.name,
+            email: result.email,
+            role: result.role,
+            permissions: result.permissions,
+          },
+          accessToken: result.accessToken,
+        })
+      );
+
+      // We explicitly set cookies for SSR/middleware if the backend doesn't set HTTP-only.
+      setAuthCookies(result.accessToken, result.role);
+
       toast.success("Welcome back!");
       onClose();
-    } catch {
-      toast.error("Invalid credentials");
+
+      if (result.role === "admin") {
+        router.push("/admin/dashboard");
+      } else {
+        router.push("/");
+      }
+    } catch (error: unknown) {
+      const err = error as { data?: { message?: string } };
+      toast.error(err?.data?.message || "Invalid credentials");
     }
   };
 
@@ -311,10 +348,10 @@ function LoginView({
         </div>
 
         <button
-          disabled={isSubmitting}
+          disabled={isSubmitting || isLoading}
           className="w-full bg-primary text-white font-bold py-4 rounded-2xl shadow-lg shadow-primary/20 hover:scale-[1.01] active:scale-[0.99] transition-all disabled:opacity-50 cursor-pointer"
         >
-          {isSubmitting ? "Signing In..." : "Sign In"}
+          {isSubmitting || isLoading ? "Signing In..." : "Sign In"}
         </button>
       </form>
 
@@ -621,7 +658,7 @@ function OTPView({
   purpose: "signup" | "forgot-password";
 }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [otp, setOtp] = useState(["", "", "", ""]);
+  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
 
   const handleChange = (index: number, value: string) => {
     if (value.length > 1) value = value[value.length - 1];
@@ -632,7 +669,7 @@ function OTPView({
     setOtp(newOtp);
 
     // Auto focus next input
-    if (value && index < 3) {
+    if (value && index < 5) {
       const nextInput = document.getElementById(`otp-${index + 1}`);
       nextInput?.focus();
     }
@@ -650,7 +687,7 @@ function OTPView({
 
   const handleContinue = async () => {
     if (otp.some((v) => v === "")) {
-      toast.error("Please enter the full 4-digit code");
+      toast.error("Please enter the full 6-digit code");
       return;
     }
     setIsSubmitting(true);

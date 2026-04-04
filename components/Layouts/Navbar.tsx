@@ -9,6 +9,9 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Mail02Icon } from "@hugeicons/core-free-icons";
 import AuthModal, { AuthView } from "@/components/Auth/AuthModal";
+import { ConfirmationModal } from "@/components/Shared/ConfirmationModal";
+import { useUser } from "@/hooks/useUser";
+import { LogOut } from "lucide-react";
 
 type NavLink = {
   label: string;
@@ -48,10 +51,12 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
   const [authModal, setAuthModal] = useState<{ isOpen: boolean; view: AuthView }>({ isOpen: false, view: "login" });
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const searchQuery = searchParams.get("search") || "";
+  const { isAuthenticated, role, name, avatar, logout } = useUser();
 
   const handleSearchChange = (value: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -194,18 +199,53 @@ export default function Navbar() {
           </div>
 
           <div className="hidden items-center gap-4 lg:flex">
-            <button
-              onClick={() => openAuth("login")}
-              className="text-sm font-semibold text-white/80 transition hover:text-white cursor-pointer"
-            >
-              Sign In
-            </button>
-            <button
-              onClick={() => openAuth("signup")}
-              className="rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90 shadow-lg shadow-primary/20 cursor-pointer"
-            >
-              Join Free
-            </button>
+            {isAuthenticated ? (
+              <div className="flex items-center gap-4">
+                {role === "admin" && (
+                  <Link
+                    href="/admin/dashboard"
+                    className="rounded-lg bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/20"
+                  >
+                    Dashboard
+                  </Link>
+                )}
+                
+                <div className="group relative flex items-center gap-2">
+                  <Link href={role === "admin" ? "/admin/profile" : "/profile"} className="flex flex-row items-center gap-2 bg-[#D1D5DB]/20 pl-1.5 pr-4 py-1.5 rounded-full border border-white/10 hover:bg-white/20 transition-colors">
+                    {avatar ? (
+                      <Image src={avatar} alt="Avatar" width={28} height={28} className="rounded-full w-7 h-7 object-cover" />
+                    ) : (
+                      <div className="flex w-7 h-7 items-center justify-center rounded-full bg-[#FF7043] text-white font-bold text-sm">
+                        {name ? name.charAt(0).toUpperCase() : "U"}
+                      </div>
+                    )}
+                    <span className="text-sm font-semibold text-white">{name || "User"}</span>
+                  </Link>
+                  <button 
+                    onClick={() => setIsLogoutModalOpen(true)} 
+                    className="text-white/80 hover:text-white transition-colors cursor-pointer p-1"
+                    title="Logout"
+                  >
+                    <LogOut className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <>
+                <button
+                  onClick={() => openAuth("login")}
+                  className="text-sm font-semibold text-white/80 transition hover:text-white cursor-pointer"
+                >
+                  Sign In
+                </button>
+                <button
+                  onClick={() => openAuth("signup")}
+                  className="rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90 shadow-lg shadow-primary/20 cursor-pointer"
+                >
+                  Join Free
+                </button>
+              </>
+            )}
           </div>
 
           <button
@@ -258,20 +298,55 @@ export default function Navbar() {
                     className="w-full rounded-lg border border-white/10 bg-white/10 py-2 pl-10 pr-4 text-sm text-white focus:outline-none"
                   />
                 </div>
-                <div className="flex items-center gap-3 pt-2">
-                  <button
-                    onClick={() => openAuth("login")}
-                    className="flex-1 rounded-lg border border-white/25 px-4 py-2.5 text-center text-sm font-semibold text-white cursor-pointer"
-                  >
-                    Sign In
-                  </button>
-                  <button
-                    onClick={() => openAuth("signup")}
-                    className="flex-1 rounded-lg bg-primary px-4 py-2.5 text-center text-sm font-semibold text-white cursor-pointer"
-                  >
-                    Join Free
-                  </button>
-                </div>
+                {isAuthenticated ? (
+                  <div className="flex flex-col gap-3 pt-2">
+                    {role === "admin" && (
+                      <Link
+                        href="/admin/dashboard"
+                        onClick={() => setOpen(false)}
+                        className="bg-white/10 rounded-lg px-4 py-2 text-sm font-semibold text-white text-center transition hover:bg-white/20"
+                      >
+                        Dashboard
+                      </Link>
+                    )}
+                    <Link
+                      href={role === "admin" ? "/admin/profile" : "/profile"} 
+                      onClick={() => setOpen(false)}
+                      className="flex items-center gap-3 bg-[#D1D5DB]/20 pl-2 pr-4 py-2 rounded-full border border-white/10 hover:bg-white/20 transition-colors w-fit"
+                    >
+                      {avatar ? (
+                        <Image src={avatar} alt="Avatar" width={32} height={32} className="rounded-full w-8 h-8 object-cover" />
+                      ) : (
+                        <div className="flex w-8 h-8 items-center justify-center rounded-full bg-[#FF7043] text-white font-bold text-sm">
+                          {name ? name.charAt(0).toUpperCase() : "U"}
+                        </div>
+                      )}
+                      <span className="text-sm font-semibold text-white">{name || "User"}</span>
+                    </Link>
+                    <button 
+                      onClick={() => { setIsLogoutModalOpen(true); setOpen(false); }} 
+                      className="flex items-center gap-2 text-white/80 hover:text-white transition-colors cursor-pointer p-2 w-fit"
+                    >
+                      <LogOut className="w-5 h-5" />
+                      <span className="text-sm font-medium">Logout</span>
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-3 pt-2">
+                    <button
+                      onClick={() => openAuth("login")}
+                      className="flex-1 rounded-lg border border-white/25 px-4 py-2.5 text-center text-sm font-semibold text-white cursor-pointer"
+                    >
+                      Sign In
+                    </button>
+                    <button
+                      onClick={() => openAuth("signup")}
+                      className="flex-1 rounded-lg bg-primary px-4 py-2.5 text-center text-sm font-semibold text-white cursor-pointer"
+                    >
+                      Join Free
+                    </button>
+                  </div>
+                )}
               </div>
             </nav>
           </div>
@@ -282,6 +357,19 @@ export default function Navbar() {
         isOpen={authModal.isOpen}
         initialView={authModal.view}
         onClose={() => setAuthModal((prev) => ({ ...prev, isOpen: false }))}
+      />
+
+      <ConfirmationModal
+        isOpen={isLogoutModalOpen}
+        onClose={() => setIsLogoutModalOpen(false)}
+        onConfirm={() => {
+          setIsLogoutModalOpen(false);
+          logout();
+        }}
+        title="Sign Out"
+        message="Are you sure you want to sign out of BassInsight?"
+        confirmText="Sign Out"
+        isDestructive={true}
       />
     </>
   );

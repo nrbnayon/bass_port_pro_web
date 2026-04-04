@@ -1,5 +1,5 @@
 // redux/services/authApi.ts
-import { apiSlice } from './apiSlice';
+import { apiSlice } from "./apiSlice";
 
 interface SigninRequest {
   email: string;
@@ -11,11 +11,10 @@ interface SigninResponse {
   name: string;
   email: string;
   role: string | "admin" | "manager" | "agent" | "customer" | "user";
-  permissions: string[];
+  permissions?: string[];
   accessToken: string;
   refreshToken: string;
 }
-
 
 interface SignupRequest {
   name: string;
@@ -65,63 +64,69 @@ export const authApi = apiSlice.injectEndpoints({
     // Signin endpoint
     signin: builder.mutation<SigninResponse, SigninRequest>({
       query: (credentials) => ({
-        url: '/auth/login',
-        method: 'POST',
+        url: "/auth/login",
+        method: "POST",
         body: credentials,
       }),
-      invalidatesTags: ['Auth'],
+      invalidatesTags: ["Auth"],
     }),
 
     // Signup endpoint
     signup: builder.mutation<SignupResponse, SignupRequest>({
       query: (credentials) => ({
-        url: '/auth/register',
-        method: 'POST',
+        url: "/auth/register",
+        method: "POST",
         body: credentials,
       }),
-      invalidatesTags: ['Auth'],
+      invalidatesTags: ["Auth"],
     }),
-    
+
     // Verify OTP endpoint
     verifyOtp: builder.mutation<VerifyOtpResponse, VerifyOtpRequest>({
       query: (otpData) => ({
-        url: '/auth/verify-otp',
-        method: 'POST',
+        url: "/auth/verify-otp",
+        method: "POST",
         body: otpData,
       }),
     }),
-    
+
     // Forgot password endpoint
-    forgotPassword: builder.mutation<ForgotPasswordResponse, ForgotPasswordRequest>({
+    forgotPassword: builder.mutation<
+      ForgotPasswordResponse,
+      ForgotPasswordRequest
+    >({
       query: (data) => ({
-        url: '/auth/forgot-password',
-        method: 'POST',
+        url: "/auth/forgot-password",
+        method: "POST",
         body: data,
       }),
     }),
 
     // Reset password endpoint
-    resetPassword: builder.mutation<ResetPasswordResponse, ResetPasswordRequest>({
+    resetPassword: builder.mutation<
+      ResetPasswordResponse,
+      ResetPasswordRequest
+    >({
       query: (data) => ({
-        url: '/auth/reset-password',
-        method: 'POST',
+        url: "/auth/reset-password",
+        method: "POST",
         body: data,
       }),
     }),
-    
+
     // Logout endpoint
     logout: builder.mutation<{ message: string }, void>({
       query: () => ({
-        url: '/auth/logout',
-        method: 'POST',
+        url: "/auth/logout",
+        method: "POST",
       }),
-      invalidatesTags: ['Auth'],
+      invalidatesTags: ["Auth"],
     }),
-    
+
     // Get current user
-    getCurrentUser: builder.query<any, void>({
-      query: () => '/auth/me',
-      providesTags: ['Auth'],
+    getCurrentUser: builder.query<unknown, void>({
+      query: () => "/auth/me",
+      providesTags: ["Auth"],
     }),
   }),
 });
