@@ -10,12 +10,13 @@ import {
 import { Fish } from "lucide-react";
 import { reports as initialReports } from "@/data/landingData";
 import { ReportCard as ReportCardType } from "@/types/landingData.types";
-import ReportCard from "@/components/Common/Reports/ReportCard";
-import ReportModal from "@/components/Common/Reports/ReportModal";
+
 import { toast } from "sonner";
 import { useSearchParams } from "next/navigation";
 import { TablePagination } from "@/components/Shared/TablePagination";
 import { ReportListSkeleton } from "@/components/Skeleton/ReportListSkeleton";
+import ReportCard from "./ReportCard";
+import ReportModal from "./ReportModal";
 
 export default function ReportsContentClient() {
   const [reports, setReports] = useState<ReportCardType[]>(initialReports);

@@ -53,6 +53,7 @@ const ForgetPassword = () => {
       await forgotPassword({ email: data.email }).unwrap();
       toast.success("OTP sent to your email.");
       router.push(`/verify-otp?flow=reset&email=${encodeURIComponent(data.email)}`); 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error("Failed to send OTP:", error);
       toast.error(error?.data?.message || "Something went wrong. Please try again.");
@@ -66,6 +67,7 @@ const ForgetPassword = () => {
       await forgotPassword({ email }).unwrap();
       toast.success("OTP resent to your email.");
       setCountdown(60);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       toast.error(error?.data?.message || "Resend failed.");
     }

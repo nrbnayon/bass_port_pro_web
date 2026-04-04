@@ -22,7 +22,13 @@ import {
   emailValidationSchema,
   resetPasswordValidationSchema,
 } from "@/lib/formDataValidation";
-import { useSigninMutation } from "@/redux/services/authApi";
+import { 
+  useSigninMutation,
+  useSignupMutation,
+  useVerifyOtpMutation,
+  useForgotPasswordMutation,
+  useResetPasswordMutation,
+} from "@/redux/services/authApi";
 import { useAppDispatch } from "@/redux/hooks";
 import { setCredentials } from "@/redux/features/authSlice";
 import { useRouter } from "next/navigation";
@@ -51,6 +57,7 @@ export default function AuthModal({
   const [otpPurpose, setOtpPurpose] = useState<"signup" | "forgot-password">(
     "signup",
   );
+  const [verifiedOtp, setVerifiedOtp] = useState("");
 
   // Persist form data across unexpected closes
   const [loginData, setLoginData] = useState({ email: "", password: "", rememberMe: false });
@@ -117,10 +124,10 @@ export default function AuthModal({
         );
       case "otp":
         return (
-          <OTPView setView={setView} email={emailForOTP} purpose={otpPurpose} />
+          <OTPView setView={setView} email={emailForOTP} purpose={otpPurpose} setVerifiedOtp={setVerifiedOtp} />
         );
       case "reset-password":
-        return <ResetPasswordView setView={setView} email={emailForOTP} />;
+        return <ResetPasswordView setView={setView} email={emailForOTP} otp={verifiedOtp} />;
       case "success":
         return (
           <SuccessView
@@ -402,15 +409,22 @@ function SignupView({
     }
   }, [values, setData]);
 
-  const onSubmit = async (data: z.infer<typeof signupValidationSchema>) => {
+  const [signup, { isLoading }] = useSignupMutation();
+
+  const onSubmit = async (formData: z.infer<typeof signupValidationSchema>) => {
     try {
-      console.log("Signing up...", data);
-      await new Promise((r) => setTimeout(r, 1000));
-      setEmail(data.email);
+      await signup({
+        name: formData.full_name,
+        email: formData.email,
+        password: formData.password
+      }).unwrap();
+      setEmail(formData.email);
       setPurpose("signup");
       setView("otp");
-    } catch {
-      toast.error("Something went wrong");
+      toast.success("Verification code sent to your email");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Sign up failed. Please try again.");
     }
   };
 
@@ -531,10 +545,10 @@ function SignupView({
         </div>
 
         <button
-          disabled={isSubmitting}
+          disabled={isSubmitting || isLoading}
           className="w-full bg-primary text-white font-bold py-4 rounded-2xl shadow-lg shadow-primary/20 hover:scale-[1.01] active:scale-[0.99] transition-all disabled:opacity-50 mt-4 cursor-pointer"
         >
-          {isSubmitting ? "Creating Account..." : "Create Account"}
+          {isSubmitting || isLoading ? "Creating Account..." : "Create Account"}
         </button>
       </form>
 
@@ -584,15 +598,18 @@ function ForgotPasswordView({
     }
   }, [values, setData]);
 
-  const onSubmit = async (data: z.infer<typeof emailValidationSchema>) => {
+  const [forgotPasswordUrl, { isLoading }] = useForgotPasswordMutation();
+
+  const onSubmit = async (formData: z.infer<typeof emailValidationSchema>) => {
     try {
-      console.log("Requesting reset for...", data);
-      await new Promise((r) => setTimeout(r, 1000));
-      setEmail(data.email);
+      await forgotPasswordUrl(formData).unwrap();
+      setEmail(formData.email);
       setPurpose("forgot-password");
       setView("otp");
-    } catch {
-      toast.error("Something went wrong");
+      toast.success("Verification code sent to your email");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Failed to process request");
     }
   };
 
@@ -630,10 +647,10 @@ function ForgotPasswordView({
         </div>
 
         <button
-          disabled={isSubmitting}
+          disabled={isSubmitting || isLoading}
           className="w-full bg-primary text-white font-bold py-4 rounded-2xl shadow-lg shadow-primary/20 hover:scale-[1.01] active:scale-[0.99] transition-all disabled:opacity-50 cursor-pointer"
         >
-          {isSubmitting ? "Processing..." : "Reset Password"}
+          {isSubmitting || isLoading ? "Processing..." : "Reset Password"}
         </button>
       </form>
 
@@ -652,14 +669,18 @@ function OTPView({
   setView,
   email,
   purpose,
+  setVerifiedOtp,
 }: {
   setView: (v: AuthView) => void;
   email: string;
   purpose: "signup" | "forgot-password";
+  setVerifiedOtp: (o: string) => void;
 }) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [countdown, setCountdown] = useState(180);
+
+  const [verifyOtpMutation, { isLoading: isVerifying }] = useVerifyOtpMutation();
+  const [forgotPasswordUrl, { isLoading: isResending }] = useForgotPasswordMutation();
 
   useEffect(() => {
     if (countdown > 0) {
@@ -698,21 +719,33 @@ function OTPView({
       toast.error("Please enter the full 6-digit code");
       return;
     }
-    setIsSubmitting(true);
-    await new Promise((r) => setTimeout(r, 1000));
-    setIsSubmitting(false);
-
-    if (purpose === "signup") {
-      setView("success");
-    } else {
-      setView("reset-password");
+    const joinedOtp = otp.join("");
+    
+    try {
+      await verifyOtpMutation({ email, otp: joinedOtp }).unwrap();
+      toast.success("OTP verified successfully!");
+      if (purpose === "signup") {
+        setView("success");
+      } else {
+        setVerifiedOtp(joinedOtp);
+        setView("reset-password");
+      }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Invalid OTP. Please try again.");
     }
   };
 
-  const handleResend = () => {
+  const handleResend = async () => {
     if (countdown > 0) return;
-    toast.success("New code sent to your email!");
-    setCountdown(180);
+    try {
+      await forgotPasswordUrl({ email }).unwrap();
+      toast.success("New code sent to your email!");
+      setCountdown(180);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch(err: any) {
+      toast.error(err?.data?.message || "Failed to resend OTP");
+    }
   };
 
   return (
@@ -741,22 +774,22 @@ function OTPView({
 
       <button
         onClick={handleContinue}
-        disabled={isSubmitting}
+        disabled={isVerifying}
         className="w-full bg-primary text-white font-bold py-4 rounded-2xl shadow-lg shadow-primary/20 hover:scale-[1.01] active:scale-[0.99] transition-all disabled:opacity-50 mb-4 cursor-pointer"
       >
-        {isSubmitting ? "Verifying..." : "Continue"}
+        {isVerifying ? "Verifying..." : "Continue"}
       </button>
 
       <button
         onClick={handleResend}
-        disabled={countdown > 0}
+        disabled={countdown > 0 || isResending}
         className={`w-full font-bold py-4 rounded-2xl transition-all ${
           countdown > 0
             ? "bg-gray-50 text-gray-400 cursor-not-allowed"
             : "bg-gray-50 text-gray-500 hover:bg-gray-100 cursor-pointer"
         }`}
       >
-        {countdown > 0 ? `Resend code in ${Math.floor(countdown / 60)}:${(countdown % 60).toString().padStart(2, "0")}` : "Resend"}
+        {countdown > 0 ? `Resend code in ${Math.floor(countdown / 60)}:${(countdown % 60).toString().padStart(2, "0")}` : (isResending ? "Sending..." : "Resend")}
       </button>
     </div>
   );
@@ -766,9 +799,11 @@ function OTPView({
 function ResetPasswordView({
   setView,
   email,
+  otp,
 }: {
   setView: (v: AuthView) => void;
   email: string;
+  otp: string;
 }) {
   const [showPassword, setShowPassword] = useState(false);
   const {
@@ -780,16 +815,22 @@ function ResetPasswordView({
     defaultValues: { email: email, newPassword: "", confirmPassword: "" },
   });
 
+  const [resetPasswordUrl, { isLoading }] = useResetPasswordMutation();
+
   const onSubmit = async (
     data: z.infer<typeof resetPasswordValidationSchema>,
   ) => {
     try {
-      console.log("Resetting password...", data);
-      await new Promise((r) => setTimeout(r, 1000));
+      await resetPasswordUrl({
+        email,
+        otp,
+        newPassword: data.newPassword
+      }).unwrap();
       toast.success("Password updated successfully!");
       setView("success");
-    } catch {
-      toast.error("Something went wrong");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Failed to reset password");
     }
   };
 
@@ -864,10 +905,10 @@ function ResetPasswordView({
         </div>
 
         <button
-          disabled={isSubmitting}
+          disabled={isSubmitting || isLoading}
           className="w-full bg-primary text-white font-bold py-4 rounded-2xl shadow-lg shadow-primary/20 hover:scale-[1.01] active:scale-[0.99] transition-all disabled:opacity-50 mt-4 cursor-pointer"
         >
-          {isSubmitting ? "Updating..." : "Update Password"}
+          {isSubmitting || isLoading ? "Updating..." : "Update Password"}
         </button>
       </form>
     </div>
