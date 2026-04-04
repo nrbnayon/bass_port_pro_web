@@ -13,8 +13,8 @@ export default function AuthLayout({
       {/* Shared Logo for Auth Pages */}
       <Link href="/" className="lg:absolute top-8 left-8 lg:p-0 z-50 flex items-center gap-2 hover:opacity-80 transition-opacity">
         <Image
-          src="/icons/logo.svg"
-          alt="Obliq Logo"
+          src="/icons/logo1.png"
+          alt="Logo"
           width={110}
           height={40}
           className="h-auto"

@@ -11,8 +11,8 @@ export default function SuccessPage() {
       {/* Logo */}
       <Link href="/" className="absolute top-8 left-8 hover:opacity-80 transition-opacity">
         <Image
-          src="/icons/logo.svg"
-          alt="Obliq Logo"
+          src="/icons/logo1.png"
+          alt="Logo"
           width={110}
           height={40}
           className="h-auto"

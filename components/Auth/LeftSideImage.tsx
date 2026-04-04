@@ -29,7 +29,7 @@ export const LeftSideImage = ({ image = "/icons/logo1.png" }: ImageProps) => {
   );
 };
 
-export const RightSideImage = ({ image = "/icons/404.gif" }: ImageProps) => {
+export const RightSideImage = ({ image = "/icons/success.svg" }: ImageProps) => {
   return (
     <div className="hidden lg:block relative flex-[1.1] h-full p-4">
       <div className="relative w-full h-full rounded-[40px] overflow-hidden bg-[#F8F9FA]">
@@ -43,7 +43,7 @@ export const RightSideImage = ({ image = "/icons/404.gif" }: ImageProps) => {
             src={image}
             alt="Auth Visual"
             fill
-            className="object-cover"
+            className="object-contain"
             priority
             sizes="50vw"
           />
