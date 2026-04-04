@@ -7,7 +7,7 @@ interface ImageProps {
   image?: string;
 }
 
-export const LeftSideImage = ({ image = "/icons/logo.svg" }: ImageProps) => {
+export const LeftSideImage = ({ image = "/icons/logo1.png" }: ImageProps) => {
   return (
     <div className="hidden lg:block lg:flex-1 relative h-full overflow-hidden border-r-2 border-gray-100">
       <motion.div
@@ -29,7 +29,7 @@ export const LeftSideImage = ({ image = "/icons/logo.svg" }: ImageProps) => {
   );
 };
 
-export const RightSideImage = ({ image = "/images/auth-right.png" }: ImageProps) => {
+export const RightSideImage = ({ image = "/icons/404.gif" }: ImageProps) => {
   return (
     <div className="hidden lg:block relative flex-[1.1] h-full p-4">
       <div className="relative w-full h-full rounded-[40px] overflow-hidden bg-[#F8F9FA]">

@@ -45,6 +45,8 @@ export default function DashboardWrapper({ children }: DashboardWrapperProps) {
   const minWidth = 80;
   const maxWidth = 400;
 
+  type HugeIconType = Parameters<typeof HugeiconsIcon>[0]["icon"];
+
   // Filter links based on user permissions
   const filteredLinks = useMemo(() => {
     return sidebarLinks.filter((link) => {
@@ -211,8 +213,12 @@ export default function DashboardWrapper({ children }: DashboardWrapperProps) {
       }
 
       // 3. If it's a Component object (like ForwardRef from Lucide/Hugeicons)
-      if (typeof Icon === "object" && Icon !== null && (Icon as any).$$typeof) {
-        const IconComponent = Icon as any as React.ElementType;
+      if (
+        typeof Icon === "object" &&
+        Icon !== null &&
+        (Icon as { $$typeof?: symbol }).$$typeof
+      ) {
+        const IconComponent = Icon as unknown as React.ElementType;
         return <IconComponent className={iconClasses} />;
       }
 
@@ -220,7 +226,7 @@ export default function DashboardWrapper({ children }: DashboardWrapperProps) {
       if (typeof Icon === "object" && Icon !== null) {
         return (
           <HugeiconsIcon
-            icon={Icon as any}
+            icon={Icon as HugeIconType}
             strokeWidth={2}
             className={iconClasses}
           />
