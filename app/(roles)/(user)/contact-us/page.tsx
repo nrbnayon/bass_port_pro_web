@@ -1,6 +1,6 @@
 import { Metadata } from "next";
-import ContactUsClient from "@/components/Common/ContactUs/ContactUsClient";
 import CTASection from "@/components/Landing/CTASection";
+import ContactUsClient from "@/components/AuthProtected/User/ContactUs/ContactUsClient";
 
 export const metadata: Metadata = {
   title: "Contact Us - BassInsight",

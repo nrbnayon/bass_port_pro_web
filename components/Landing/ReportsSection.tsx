@@ -45,7 +45,7 @@ export default function ReportsSection() {
         </div>
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 mt-8">
-          {reports.map((report, index) => (
+          {reports.slice(0, 3).map((report, index) => (
             <motion.article
               key={report.id}
               initial={{ opacity: 0, y: 20 }}
@@ -56,9 +56,7 @@ export default function ReportsSection() {
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-center gap-3">
-                  <div
-                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary/10 overflow-hidden ring-2 ring-primary/5"
-                  >
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary/10 overflow-hidden ring-2 ring-primary/5">
                     {report.avatarImage ? (
                       <Image
                         src={report.avatarImage}
@@ -112,12 +110,12 @@ export default function ReportsSection() {
 
               <div className="mt-5 flex-1">
                 <p className="line-clamp-3 text-sm leading-relaxed text-muted-foreground">
-                  {report.text}
+                  {report.text || ""}
                 </p>
               </div>
 
               <div className="mt-4 flex flex-wrap gap-2">
-                {report.tags.map((tag) => (
+                {report.tags?.map((tag) => (
                   <span
                     key={tag}
                     className="rounded-full bg-[#3060D91A] px-3 py-1 text-xs font-semibold text-blue"

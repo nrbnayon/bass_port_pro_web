@@ -1,8 +1,9 @@
 import { lakes } from "@/data/landingData";
 import { notFound } from "next/navigation";
-import LakeDetailsHero from "@/components/Common/Lakes/LakeDetailsHero";
-import LakeDetailsWrapper from "@/components/Common/Lakes/LakeDetailsWrapper";
+
 import CTASection from "@/components/Landing/CTASection";
+import LakeDetailsHero from "@/components/AuthProtected/User/Lakes/LakeDetailsHero";
+import LakeDetailsWrapper from "@/components/AuthProtected/User/Lakes/LakeDetailsWrapper";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

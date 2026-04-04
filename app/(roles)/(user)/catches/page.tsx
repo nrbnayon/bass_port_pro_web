@@ -1,6 +1,6 @@
 import { Metadata } from "next";
-import CatchesFishClient from "@/components/Common/Catches/CatchesFishClient";
 import CTASection from "@/components/Landing/CTASection";
+import CatchesFishClient from "@/components/AuthProtected/User/Catches/CatchesFishClient";
 
 export const metadata: Metadata = {
   title: "Catches Fish Gallery - BASSPORT Pro",

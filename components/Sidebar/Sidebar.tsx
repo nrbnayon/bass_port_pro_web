@@ -27,7 +27,7 @@ interface DashboardWrapperProps {
 export default function DashboardWrapper({ children }: DashboardWrapperProps) {
   const pathname = usePathname();
   // Use centralized user hook
-  const { name, role, permissions, hasPermission, isAuthenticated, logout } =
+  const { name, role, hasPermission, isAuthenticated, logout } =
     useUser();
 
   // State management

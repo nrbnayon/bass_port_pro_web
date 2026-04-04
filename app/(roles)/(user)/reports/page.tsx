@@ -1,6 +1,6 @@
 import { Metadata } from "next";
-import ReportsContentClient from "@/components/Common/Reports/ReportsContentClient";
 import CTASection from "@/components/Landing/CTASection";
+import ReportsContentClient from "@/components/AuthProtected/User/Reports/ReportsContentClient";
 
 export const metadata: Metadata = {
   title: "Reports | BassInsight",

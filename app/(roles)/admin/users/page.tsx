@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useUser } from "@/hooks/useUser";
-import { UsersTable } from "@/components/Admin/Users/UsersTable";
-import { UserPermissionsModal } from "@/components/Admin/Users/UserPermissionsModal";
+import { UsersTable } from "@/components/AuthProtected/Admin/Users/UsersTable";
+import { UserPermissionsModal } from "@/components/AuthProtected/Admin/Users/UserPermissionsModal";
 import { useGetUsersQuery } from "@/redux/services/userApi";
 
 export default function UsersPage() {

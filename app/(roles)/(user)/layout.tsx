@@ -1,10 +1,17 @@
 import React from "react";
-import DashboardWrapper from "@/components/Sidebar/Sidebar";
+import Footer from "@/components/Layouts/Footer";
+import Navbar from "@/components/Layouts/Navbar";
 
-export default function UserLayout({
+export default function CommonRoutesLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <DashboardWrapper>{children}</DashboardWrapper>;
+  return (
+    <>
+      <Navbar />
+      <main className="min-h-screen">{children}</main>
+      <Footer />
+    </>
+  );
 }
