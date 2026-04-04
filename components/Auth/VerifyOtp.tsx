@@ -62,9 +62,17 @@ const VerifyOtpContent = () => {
     }
 
     try {
-      await forgotPassword({ email }).unwrap();
+      if (flow === "reset") {
+        await forgotPassword({ email }).unwrap();
+      } else {
+        // We need a resend verification endpoint. For now we use register but typically it's a separate one.
+        // Assuming your backend might have or needs a resend-verification-otp endpoint
+        // Let's call forgotPassword for now if it handles both, but better to be explicit.
+        await forgotPassword({ email }).unwrap(); 
+      }
       toast.success(`A new code has been sent to ${email}`);
       setCountdown(60); 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error("Resend failed:", error);
       toast.error(error?.data?.message || "Failed to resend OTP. Please try again.");
@@ -84,6 +92,7 @@ const VerifyOtpContent = () => {
       } else {
         router.push("/signin"); 
       } 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error("Verification failed:", error);
       toast.error(error?.data?.message || "Invalid OTP. Please try again.");

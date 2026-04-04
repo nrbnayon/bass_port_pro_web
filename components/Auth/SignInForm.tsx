@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 
 import { Button } from "@/components/ui/button";
@@ -23,24 +23,26 @@ import { signinValidationSchema } from "@/lib/formDataValidation";
 
 type FormValues = z.infer<typeof signinValidationSchema>;
 
-interface SignInFormProps {
-  isAdmin?: boolean;
-}
-
-const setClientCookie = (name: string, value: string, maxAgeSeconds?: number) => {
+const setClientCookie = (
+  name: string,
+  value: string,
+  maxAgeSeconds?: number,
+) => {
   if (typeof document === "undefined") return;
 
   const secureFlag = process.env.NODE_ENV === "production" ? "; Secure" : "";
-  const maxAgePart = typeof maxAgeSeconds === "number" ? `; Max-Age=${maxAgeSeconds}` : "";
+  const maxAgePart =
+    typeof maxAgeSeconds === "number" ? `; Max-Age=${maxAgeSeconds}` : "";
   document.cookie = `${name}=${encodeURIComponent(value)}; Path=/; SameSite=Lax${secureFlag}${maxAgePart}`;
 };
 
-export const SignInForm = ({ isAdmin = false }: SignInFormProps) => {
+export const SignInForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [signin, { isLoading }] = useSigninMutation();
-
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirect");
   const {
     register,
     handleSubmit,
@@ -56,10 +58,12 @@ export const SignInForm = ({ isAdmin = false }: SignInFormProps) => {
     },
   });
 
-  const handleTrimChange = (field: "email" | "password") => (e: React.ChangeEvent<HTMLInputElement>) => {
-    const trimmed = e.target.value.trim();
-    setValue(field, trimmed, { shouldValidate: true });
-  };
+  const handleTrimChange =
+    (field: "email" | "password") =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const trimmed = e.target.value.trim();
+      setValue(field, trimmed, { shouldValidate: true });
+    };
 
   const onSubmit = async (data: FormValues) => {
     const cleanData = {
@@ -72,10 +76,18 @@ export const SignInForm = ({ isAdmin = false }: SignInFormProps) => {
       const response = await signin(cleanData).unwrap();
 
       const maxAgeSeconds = cleanData.rememberMe ? 7 * 24 * 60 * 60 : undefined;
+      setClientCookie("accessToken", response.accessToken, maxAgeSeconds);
+      if (response.refreshToken) {
+        setClientCookie("refreshToken", response.refreshToken, maxAgeSeconds);
+      }
       setClientCookie("userRole", response.role, maxAgeSeconds);
       setClientCookie("userEmail", response.email, maxAgeSeconds);
       setClientCookie("userName", response.name || "User", maxAgeSeconds);
-      setClientCookie("userPermissions", JSON.stringify(response.permissions || []), maxAgeSeconds);
+      setClientCookie(
+        "userPermissions",
+        JSON.stringify(response.permissions || []),
+        maxAgeSeconds,
+      );
 
       setClientCookie("authSession", "1", maxAgeSeconds);
 
@@ -90,18 +102,15 @@ export const SignInForm = ({ isAdmin = false }: SignInFormProps) => {
       dispatch(
         setCredentials({
           user: userPayload,
-          accessToken: response.accessToken, 
+          accessToken: response.accessToken,
           refreshToken: response.refreshToken,
-        })
+        }),
       );
-
 
       toast.success("Logged in successfully!");
 
-      if (userPayload.role === "customer") {
-        router.push("/customer/portal");
-      } else if (userPayload.role === "user") {
-        router.push("/user/dashboard");
+      if (userPayload.role === "user") {
+        router.push(redirect || "/");
       } else {
         router.push("/admin/dashboard");
       }
@@ -111,7 +120,8 @@ export const SignInForm = ({ isAdmin = false }: SignInFormProps) => {
         typeof error === "object" &&
         error !== null &&
         "data" in error &&
-        typeof (error as { data?: { message?: string } }).data?.message === "string"
+        typeof (error as { data?: { message?: string } }).data?.message ===
+          "string"
           ? (error as { data?: { message?: string } }).data?.message
           : "Signin failed. Please try again.";
       toast.error(message);
@@ -139,7 +149,10 @@ export const SignInForm = ({ isAdmin = false }: SignInFormProps) => {
         <div className="space-y-4">
           {/* Email */}
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-base font-medium text-[#1F232A]">
+            <Label
+              htmlFor="email"
+              className="text-base font-medium text-[#1F232A]"
+            >
               Email
             </Label>
             <Input
@@ -149,7 +162,7 @@ export const SignInForm = ({ isAdmin = false }: SignInFormProps) => {
               autoComplete="email"
               className={cn(
                 "h-14 rounded-2xl border-gray-200 focus:border-primary px-5 text-base",
-                errors.email && "border-destructive focus:border-destructive"
+                errors.email && "border-destructive focus:border-destructive",
               )}
               {...register("email")}
               onChange={handleTrimChange("email")}
@@ -163,7 +176,10 @@ export const SignInForm = ({ isAdmin = false }: SignInFormProps) => {
 
           {/* Password */}
           <div className="space-y-2">
-            <Label htmlFor="password" className="text-base font-medium text-[#1F232A]">
+            <Label
+              htmlFor="password"
+              className="text-base font-medium text-[#1F232A]"
+            >
               Password
             </Label>
             <div className="relative">
@@ -174,7 +190,8 @@ export const SignInForm = ({ isAdmin = false }: SignInFormProps) => {
                 autoComplete="current-password"
                 className={cn(
                   "h-14 rounded-2xl border-gray-200 focus:border-primary px-5 pr-14 text-base",
-                  errors.password && "border-destructive focus:border-destructive"
+                  errors.password &&
+                    "border-destructive focus:border-destructive",
                 )}
                 {...register("password")}
                 onChange={handleTrimChange("password")}
@@ -185,7 +202,11 @@ export const SignInForm = ({ isAdmin = false }: SignInFormProps) => {
                 className="absolute right-5 inset-y-0 text-gray-400 hover:text-primary transition-colors z-10 p-1 flex items-center justify-center"
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
-                {showPassword ? <Eye className="h-5 w-5" /> : <EyeOff className="h-5 w-5" />}
+                {showPassword ? (
+                  <Eye className="h-5 w-5" />
+                ) : (
+                  <EyeOff className="h-5 w-5" />
+                )}
               </button>
             </div>
             {errors.password?.message && (
@@ -230,15 +251,13 @@ export const SignInForm = ({ isAdmin = false }: SignInFormProps) => {
           disabled={isLoading}
           className="w-full h-14 bg-primary hover:bg-primary/90 text-white text-lg font-semibold rounded-2xl shadow-lg shadow-primary/20"
         >
-          {isLoading ? (
-            <Loader2 className="h-5 w-5 animate-spin" />
-          ) : (
-            "Log in"
-          )}
+          {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : "Log in"}
         </Button>
 
         <div className="text-center pt-2">
-          <span className="text-secondary font-onest text-lg">Don't have an account? </span>
+          <span className="text-secondary font-onest text-lg">
+            Don&apos;t have an account?{" "}
+          </span>
           <Link
             href="/signup"
             className="text-primary font-bold font-onest text-lg hover:underline ml-1"

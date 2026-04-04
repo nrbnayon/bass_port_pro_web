@@ -659,6 +659,14 @@ function OTPView({
 }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const [countdown, setCountdown] = useState(180);
+
+  useEffect(() => {
+    if (countdown > 0) {
+      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [countdown]);
 
   const handleChange = (index: number, value: string) => {
     if (value.length > 1) value = value[value.length - 1];
@@ -702,7 +710,9 @@ function OTPView({
   };
 
   const handleResend = () => {
+    if (countdown > 0) return;
     toast.success("New code sent to your email!");
+    setCountdown(180);
   };
 
   return (
@@ -739,9 +749,14 @@ function OTPView({
 
       <button
         onClick={handleResend}
-        className="w-full bg-gray-50 text-gray-500 font-bold py-4 rounded-2xl hover:bg-gray-100 transition-all cursor-pointer"
+        disabled={countdown > 0}
+        className={`w-full font-bold py-4 rounded-2xl transition-all ${
+          countdown > 0
+            ? "bg-gray-50 text-gray-400 cursor-not-allowed"
+            : "bg-gray-50 text-gray-500 hover:bg-gray-100 cursor-pointer"
+        }`}
       >
-        Resend
+        {countdown > 0 ? `Resend code in ${Math.floor(countdown / 60)}:${(countdown % 60).toString().padStart(2, "0")}` : "Resend"}
       </button>
     </div>
   );
