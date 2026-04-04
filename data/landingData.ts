@@ -476,7 +476,7 @@ export const footerLinks = {
     { label: "Lake Database", href: "#lakes" },
     { label: "BassPort Gallery", href: "#catches" },
     { label: "Fishing Reports", href: "#reports" },
-    { label: "Contact Us", href: "#footer" },
+    { label: "Contact Us", href: "/contact-us" },
   ],
   lakes: [
     { label: "Lake Guntersville", href: "#lakes" },

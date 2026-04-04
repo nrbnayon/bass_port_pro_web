@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   PlusSignIcon,
   ArrowDown01Icon,
-  FilterIcon,
+  DashboardSquare01Icon,
 } from "@hugeicons/core-free-icons";
 import { Fish } from "lucide-react";
 import { reports as initialReports } from "@/data/landingData";
@@ -13,21 +13,70 @@ import { ReportCard as ReportCardType } from "@/types/landingData.types";
 import ReportCard from "@/components/Common/Reports/ReportCard";
 import ReportModal from "@/components/Common/Reports/ReportModal";
 import { toast } from "sonner";
+import { useSearchParams } from "next/navigation";
+import { TablePagination } from "@/components/Shared/TablePagination";
+import { ReportListSkeleton } from "@/components/Skeleton/ReportListSkeleton";
 
 export default function ReportsContentClient() {
   const [reports, setReports] = useState<ReportCardType[]>(initialReports);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedLake, setSelectedLake] = useState("All Lakes");
+  const [isLoading, setIsLoading] = useState(true);
+  const searchParams = useSearchParams();
+  const searchQuery = searchParams.get("search")?.toLowerCase() || "";
+
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(6);
+
+  useEffect(() => {
+    // Simulate loading
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 800);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleAddReport = (newReport: ReportCardType) => {
     setReports([newReport, ...reports]);
     toast.success("Fishing report shared successfully!");
   };
 
-  const filteredReports =
-    selectedLake === "All Lakes"
-      ? reports
-      : reports.filter((r) => r.lake === selectedLake);
+  const filteredReports = useMemo(() => {
+    let result = [...reports];
+
+    // Filter by lake
+    if (selectedLake !== "All Lakes") {
+      result = result.filter((r) => r.lake === selectedLake);
+    }
+
+    // Filter by search query
+    if (searchQuery) {
+      result = result.filter(
+        (r) =>
+          r.angler?.toLowerCase().includes(searchQuery) ||
+          r.lake?.toLowerCase().includes(searchQuery) ||
+          r.text?.toLowerCase().includes(searchQuery) ||
+          (r.tags && r.tags.some((tag) => tag.toLowerCase().includes(searchQuery))),
+      );
+    }
+
+    return result;
+  }, [reports, selectedLake, searchQuery]);
+
+  // Paginated Results
+  const totalItems = filteredReports.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const paginatedReports = filteredReports.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage,
+  );
+
+  // Reset to first page when filtering or searching changes
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCurrentPage(1);
+  }, [selectedLake, searchQuery]);
 
   // Get unique lakes for filter
   const uniqueLakes = [
@@ -60,7 +109,7 @@ export default function ReportsContentClient() {
                 <select
                   value={selectedLake}
                   onChange={(e) => setSelectedLake(e.target.value)}
-                  className="appearance-none bg-gray-100 text-foreground rounded-lg px-8 py-3 text-sm font-semibold pr-12 focus:outline-none focus:ring-4 focus:ring-[#FF6B35]/10 transition-all border-none cursor-pointer hover:bg-gray-200"
+                  className="appearance-none bg-gray-100 text-foreground rounded-lg px-8 py-3 text-sm font-semibold pr-12 focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all border-none cursor-pointer hover:bg-gray-200"
                 >
                   {uniqueLakes.map((lake) => (
                     <option key={lake} value={lake}>
@@ -91,26 +140,50 @@ export default function ReportsContentClient() {
 
       {/* Grid Content */}
       <main className="w-full px-4 md:max-w-[1320px] mx-auto min-h-[600px]">
-        <div className="w-full">
-          {/* Reports List */}
-          <div className="flex flex-col">
-            {filteredReports.map((report, index) => (
-              <ReportCard key={report.id} report={report} index={index} />
-            ))}
+        {isLoading ? (
+          <div className="w-full">
+            <ReportListSkeleton count={3} />
+          </div>
+        ) : paginatedReports.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-32 bg-white rounded-[40px] border border-gray-100 text-center">
+            <div className="h-20 w-20 rounded-full bg-gray-50 flex items-center justify-center text-gray-300 mb-6">
+              <HugeiconsIcon
+                icon={DashboardSquare01Icon}
+                className="h-10 w-10"
+              />
+            </div>
+            <h3 className="text-2xl font-bold text-foreground">
+              No reports found
+            </h3>
+            <p className="text-gray-400 font-medium mt-2">
+              Try adjusting your search or filters to see more results.
+            </p>
+          </div>
+        ) : (
+          <div className="w-full">
+            {/* Reports List */}
+            <div className="flex flex-col gap-6">
+              {paginatedReports.map((report, index) => (
+                <ReportCard key={report.id} report={report} index={index} />
+              ))}
+            </div>
 
-            {filteredReports.length === 0 && (
-              <div className="text-center py-20 bg-white rounded-[24px] border border-dashed border-gray-200 shadow-sm">
-                <HugeiconsIcon
-                  icon={FilterIcon}
-                  className="w-12 h-12 text-gray-300 mx-auto mb-4"
+            {/* Pagination Component */}
+            {totalItems > itemsPerPage && (
+              <div className="mt-12">
+                <TablePagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  totalItems={totalItems}
+                  itemsPerPage={itemsPerPage}
+                  onPageChange={(page) => setCurrentPage(page)}
+                  onPageSizeChange={(size) => setItemsPerPage(size)}
+                  className="border-none bg-transparent px-0"
                 />
-                <p className="text-gray-400 font-bold">
-                  No reports found for this lake.
-                </p>
               </div>
             )}
           </div>
-        </div>
+        )}
       </main>
 
       {/* Modal */}

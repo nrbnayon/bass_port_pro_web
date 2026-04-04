@@ -110,7 +110,7 @@ export default function ReportModal({
           className="relative w-full max-w-2xl bg-white sm:rounded-2xl shadow-2xl p-0 my-auto h-full sm:h-auto max-h-none sm:max-h-[92vh] flex flex-col overflow-hidden"
         >
           {/* Header - Fixed */}
-          <div className="sticky top-0 z-10 flex items-center justify-between bg-white p-5">
+          <div className="sticky top-0 z-10 flex items-center justify-between bg-white px-5 py-3">
             <h2 className="text-xl font-semibold text-foreground tracking-tight">
               Submit Fishing Report
             </h2>
@@ -124,7 +124,7 @@ export default function ReportModal({
 
           {/* Form Content - Scrollable */}
           <div className="flex-1 overflow-y-auto px-5 pb-5 pt-2 custom-scrollbar">
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-2">
               {/* Image Upload Area */}
               <div className="relative group">
                 <input
@@ -375,18 +375,21 @@ export default function ReportModal({
                   className="w-full h-32 rounded-2xl border border-gray-100 bg-white px-4 py-3 font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-solid resize-none placeholder:text-gray-300"
                 />
               </div>
-
-              <button
-                onClick={handleSubmit}
-                className="mt-2 flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-4 text-base font-semibold text-white shadow-xl shadow-primary/20 transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
-              >
-                <HugeiconsIcon
-                  icon={Message01Icon}
-                  className="h-5 w-5 rotate-[-10deg]"
-                />
-                Send Message
-              </button>
             </div>
+          </div>
+
+          {/* Footer - Fixed */}
+          <div className="sticky bottom-0 z-10 bg-white px-5 py-3 border-t border-gray-50">
+            <button
+              onClick={handleSubmit}
+              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-4 text-base font-semibold text-white shadow-xl shadow-primary/20 transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+            >
+              <HugeiconsIcon
+                icon={Message01Icon}
+                className="h-5 w-5 rotate-[-10deg]"
+              />
+              Send Message
+            </button>
           </div>
         </motion.div>
       </div>
