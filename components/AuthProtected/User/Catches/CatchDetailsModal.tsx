@@ -11,6 +11,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import Image from "next/image";
 import { CatchCard } from "@/types/landingData.types";
+import { toast } from "sonner";
 
 interface CatchDetailsModalProps {
   isOpen: boolean;
@@ -23,7 +24,15 @@ export default function CatchDetailsModal({
   onClose,
   catchItem,
 }: CatchDetailsModalProps) {
+
   if (!isOpen || !catchItem) return null;
+
+  const handleToggleFavourite = () => {
+
+    // Future: Add backend API call here
+    // const response = await toggleFavouriteApi({ id: catchItem.id, type: 'catch' });
+    toast.success("Catch liked successfully");
+  };
 
   return (
     <AnimatePresence>
@@ -155,7 +164,10 @@ export default function CatchDetailsModal({
 
             {/* Like Button */}
             <div className="mt-8">
-              <button className="flex items-center gap-3 rounded-2xl bg-gray-50 px-6 py-3 transition-colors hover:bg-red-50 hover:text-red-500 group cursor-pointer">
+              <button
+                onClick={handleToggleFavourite}
+                className="flex items-center gap-3 rounded-2xl bg-gray-50 px-6 py-3 transition-colors hover:bg-red-50 hover:text-red-500 group cursor-pointer"
+              >
                 <HugeiconsIcon
                   icon={FavouriteIcon}
                   className="h-5 w-5 text-gray-300 group-hover:text-red-500 transition-colors"

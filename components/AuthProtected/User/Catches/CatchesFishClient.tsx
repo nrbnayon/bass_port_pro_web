@@ -23,6 +23,7 @@ import { CatchGridSkeleton } from "@/components/Skeleton/CatchGridSkeleton";
 import { TablePagination } from "@/components/Shared/TablePagination";
 import { useSearchParams } from "next/navigation";
 
+
 const SORT_OPTIONS = [
   { label: "Most Recent", value: "recent" },
   { label: "Biggest Catch", value: "biggest" },
@@ -61,6 +62,7 @@ export default function CatchesFishClient() {
 
   const handleToggleFavourite = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
+
     setCatches((prev) => {
       const updated = prev.map((c) =>
         c.id === id ? { ...c, isFavourite: !c.isFavourite } : c,

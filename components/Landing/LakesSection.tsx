@@ -12,7 +12,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import { lakes } from "@/data/landingData";
 import { FilterX } from "lucide-react";
-import LakeCard from "./LakeCard";
+import LakeCard from "../AuthProtected/User/Lakes/LakeCard";
 import { TablePagination } from "@/components/Shared/TablePagination";
 import { LakeGridSkeleton } from "@/components/Skeleton/LakeGridSkeleton";
 import AuthModal, { AuthView } from "@/components/Auth/AuthModal";

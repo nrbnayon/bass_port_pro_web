@@ -12,14 +12,35 @@ import {
 } from "@hugeicons/core-free-icons";
 import { catches } from "@/data/landingData";
 import Link from "next/link";
+import { useUser } from "@/hooks/useUser";
+import AuthModal from "@/components/Auth/AuthModal";
+import { toast } from "sonner";
 
 export default function TrophySection() {
   const [isLoading, setIsLoading] = useState(true);
+  const { isAuthenticated } = useUser();
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsLoading(false);
   }, []);
+
+  const handleToggleFavourite = (id: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!isAuthenticated) {
+      setIsAuthModalOpen(true);
+      return;
+    }
+    // Future: Add backend API call here
+    // const response = await toggleFavouriteApi({ id, type: 'catch' });
+    toast.success("Catch added to favourites!");
+  };
+
   return (
+    <>
     <section id="catches" className="bg-white">
       <div className="container-1620">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
@@ -74,7 +95,10 @@ export default function TrophySection() {
                     </span>
                   </div>
 
-                  <button className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-md transition-all hover:bg-white hover:text-[#FF6B35] cursor-pointer">
+                  <button
+                    onClick={(e) => handleToggleFavourite(item.id, e)}
+                    className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-md transition-all hover:bg-white hover:text-[#FF6B35] cursor-pointer"
+                  >
                     <HugeiconsIcon
                       icon={FavouriteIcon}
                       className="h-5 w-5"
@@ -104,5 +128,11 @@ export default function TrophySection() {
         </div>
       </div>
     </section>
+
+    <AuthModal
+      isOpen={isAuthModalOpen}
+      onClose={() => setIsAuthModalOpen(false)}
+    />
+  </>
   );
 }

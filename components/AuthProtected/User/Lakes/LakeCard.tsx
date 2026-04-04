@@ -37,6 +37,19 @@ export default function LakeCard({ lake }: LakeCardProps) {
       router.push(`/lakes/${lake.id}`);
     }
   };
+
+  const handleFavouriteClick = (e: React.MouseEvent) => {
+    if (!isAuthenticated) {
+      e.preventDefault();
+      e.stopPropagation();
+      setAuthModal({ isOpen: true, view: "login" });
+    } else {
+      e.preventDefault();
+      e.stopPropagation();
+      // Handle favourite logic here
+    }
+  };
+
   const conditionColor = {
     Excellent: "bg-[#22C55E]",
     Good: "bg-[#3B82F6]",
@@ -77,10 +90,7 @@ export default function LakeCard({ lake }: LakeCardProps) {
           </div>
 
           <div
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-            }}
+            onClick={handleFavouriteClick}
             className="absolute right-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-[#D9D9D94D] text-white backdrop-blur-sm transition-colors hover:bg-white hover:text-primary cursor-pointer"
           >
             <HugeiconsIcon

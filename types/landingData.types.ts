@@ -15,6 +15,7 @@ export type LakeCard = {
   description: string;
   condition: "Excellent" | "Good" | "Fair" | "Poor";
   clarity: "Clear" | "Stained" | "Muddy";
+  isFavourite?: boolean;
 };
 
 export type CatchCard = {

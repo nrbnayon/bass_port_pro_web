@@ -12,15 +12,24 @@ import {
 import Link from "next/link";
 import { LakeCard } from "@/types/landingData.types";
 import { Star } from "lucide-react";
+import { toast } from "sonner";
 
 interface LakeDetailsHeroProps {
   lake: LakeCard;
 }
 
 export default function LakeDetailsHero({ lake }: LakeDetailsHeroProps) {
+
   const reviewCount = useMemo(() => (lake.id.length * 15 + 412), [lake.id]);
 
+  const handleToggleFavourite = () => {
+    // Future: Add backend API call here
+    // const response = await toggleFavouriteApi({ id: lake.id, type: 'lake' });
+    toast.success(`${lake.name} added to favourites!`);
+  };
+
   return (
+    <>
     <section className="relative h-[400px] md:h-[500px] w-full overflow-hidden mt-16 md:mt-22">
       {/* Background Image */}
       <Image
@@ -97,7 +106,10 @@ export default function LakeDetailsHero({ lake }: LakeDetailsHeroProps) {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.4 }}
           >
-            <button className="flex h-12 w-12 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-md transition-all hover:bg-white hover:text-primary shadow-lg group cursor-pointer">
+            <button
+              onClick={handleToggleFavourite}
+              className="flex h-12 w-12 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-md transition-all hover:bg-white hover:text-primary shadow-lg group cursor-pointer"
+            >
               <HugeiconsIcon
                 icon={FavouriteIcon}
                 className="h-6 w-6 transition-transform group-active:scale-90"
@@ -107,5 +119,6 @@ export default function LakeDetailsHero({ lake }: LakeDetailsHeroProps) {
         </div>
       </div>
     </section>
+  </>
   );
 }
