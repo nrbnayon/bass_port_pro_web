@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { RightSideImage } from "@/components/Auth/LeftSideImage";
@@ -25,7 +25,9 @@ export default function AuthLayout({
       {/* Left Column - Form Container */}
       <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8 lg:p-12 relative z-10 overflow-y-auto h-full scrollbar-hidden">
         <div className="auth-card shadow-lg my-12 w-full max-w-xl p-8 sm:p-12 md:p-16">
-          {children}
+          <Suspense fallback={<div>Loading...</div>}>
+            {children}
+          </Suspense>
         </div>
       </div>
 

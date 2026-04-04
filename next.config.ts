@@ -4,10 +4,21 @@ const nextConfig: NextConfig = {
   // Add empty turbopack config to silence the warning
   turbopack: {},
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",
         hostname: "res.cloudinary.com",
+      },
+      {
+        protocol: "http",
+        hostname: "localhost",
+        port: "5000",
+      },
+      {
+        protocol: "http",
+        hostname: "10.10.12.11",
+        port: "5000",
       },
     ],
   },
@@ -39,4 +50,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default nextConfig;

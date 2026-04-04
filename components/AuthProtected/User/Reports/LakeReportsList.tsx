@@ -154,7 +154,7 @@ export default function LakeReportsList({ lake }: LakeReportsListProps) {
                     </div>
 
                     <div className="flex gap-2">
-                      {report.tags.map((tag, i) => (
+                      {report.tags?.map((tag, i) => (
                         <span
                           key={`${tag}-${i}`}
                           className="rounded-full bg-gray-50 border border-gray-100 px-3 py-1 text-[10px] font-bold text-gray-500 uppercase tracking-tight"

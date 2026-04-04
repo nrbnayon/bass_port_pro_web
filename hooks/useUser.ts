@@ -59,6 +59,7 @@ export function useUser() {
       const rawEmail = getCookie("userEmail");
       const permissionsStr = getCookie("userPermissions");
       const userName = getCookie("userName");
+      const userAvatar = getCookie("userAvatar");
       const email = rawEmail ? decodeURIComponent(rawEmail) : "";
 
       if (role) {
@@ -118,7 +119,7 @@ export function useUser() {
                   name: userName ? decodeURIComponent(userName) : "User",
                   email,
                   role,
-                  avatar: null,
+                  avatar: userAvatar ? decodeURIComponent(userAvatar) : null,
                   permissions: p,
                 },
                 accessToken,

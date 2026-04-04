@@ -8,10 +8,14 @@ export const metadata: Metadata = {
     "Catches Fish Gallery Explore the best catches of the day with BASSPORT Pro",
 };
 
+import { Suspense } from "react";
+
 export default function CatchesPage() {
   return (
     <main>
-      <CatchesFishClient />
+      <Suspense fallback={<div>Loading catches...</div>}>
+        <CatchesFishClient />
+      </Suspense>
       <CTASection />
     </main>
   );

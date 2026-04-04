@@ -8,10 +8,14 @@ export const metadata: Metadata = {
     "Real-time conditions and catch reports from anglers - BassInsight",
 };
 
+import { Suspense } from "react";
+
 export default function ReportsPage() {
   return (
     <main>
-      <ReportsContentClient />
+      <Suspense fallback={<div>Loading reports...</div>}>
+        <ReportsContentClient />
+      </Suspense>
       <CTASection />
     </main>
   );

@@ -11,6 +11,7 @@ interface SigninResponse {
   name: string;
   email: string;
   role: string | "admin" | "manager" | "agent" | "customer" | "user";
+  avatar?: string | null;
   permissions?: string[];
   accessToken: string;
   refreshToken: string;

@@ -218,14 +218,16 @@ export default function Navbar() {
                 
                 <div className="group relative flex items-center gap-2">
                   <Link href={role === "admin" ? "/admin/profile" : "/profile"} className="flex flex-row items-center gap-2 bg-[#D1D5DB]/20 pl-1.5 pr-4 py-1.5 rounded-full border border-white/10 hover:bg-white/20 transition-colors">
-                    {avatar ? (
-                      <Image src={avatar} alt="Avatar" width={28} height={28} className="rounded-full w-7 h-7 object-cover" />
-                    ) : (
-                      <div className="flex w-7 h-7 items-center justify-center rounded-full bg-[#FF7043] text-white font-bold text-sm">
-                        {name ? name.charAt(0).toUpperCase() : "U"}
-                      </div>
-                    )}
-                    <span className="text-sm font-semibold text-white">{name || "User"}</span>
+                    <div className="relative w-7 h-7">
+                      {avatar ? (
+                        <Image src={avatar} alt="Avatar" fill className="rounded-full object-cover" unoptimized />
+                      ) : (
+                        <div className="flex w-full h-full items-center justify-center rounded-full bg-[#FF7043] text-white font-bold text-xs">
+                          {name ? name.charAt(0).toUpperCase() : "U"}
+                        </div>
+                      )}
+                    </div>
+                    <span className="text-xs font-semibold text-white truncate max-w-[100px]">{name || "User"}</span>
                   </Link>
                   <button 
                     onClick={() => setIsLogoutModalOpen(true)} 
@@ -328,13 +330,15 @@ export default function Navbar() {
                       onClick={() => setOpen(false)}
                       className="flex items-center gap-3 bg-[#D1D5DB]/20 pl-2 pr-4 py-2 rounded-full border border-white/10 hover:bg-white/20 transition-colors w-fit"
                     >
-                      {avatar ? (
-                        <Image src={avatar} alt="Avatar" width={32} height={32} className="rounded-full w-8 h-8 object-cover" />
-                      ) : (
-                        <div className="flex w-8 h-8 items-center justify-center rounded-full bg-[#FF7043] text-white font-bold text-sm">
-                          {name ? name.charAt(0).toUpperCase() : "U"}
-                        </div>
-                      )}
+                      <div className="relative w-8 h-8">
+                        {avatar ? (
+                          <Image src={avatar} alt="Avatar" fill className="rounded-full object-cover" unoptimized />
+                        ) : (
+                          <div className="flex w-full h-full items-center justify-center rounded-full bg-[#FF7043] text-white font-bold text-sm">
+                            {name ? name.charAt(0).toUpperCase() : "U"}
+                          </div>
+                        )}
+                      </div>
                       <span className="text-sm font-semibold text-white">{name || "User"}</span>
                     </Link>
                     <button 

@@ -196,10 +196,20 @@ export default function AuthModal({
   );
 }
 
-const setAuthCookies = (accessToken: string, role: string) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const setAuthCookies = (result: any) => {
   if (typeof document !== "undefined") {
-    document.cookie = `accessToken=${accessToken}; path=/; max-age=604800`;
-    document.cookie = `userRole=${role}; path=/; max-age=604800`;
+    const maxAge = 7 * 24 * 60 * 60; // 7 days
+    document.cookie = `accessToken=${result.accessToken}; path=/; max-age=${maxAge}`;
+    document.cookie = `userRole=${result.role}; path=/; max-age=${maxAge}`;
+    document.cookie = `userName=${encodeURIComponent(result.name)}; path=/; max-age=${maxAge}`;
+    document.cookie = `userEmail=${encodeURIComponent(result.email)}; path=/; max-age=${maxAge}`;
+    if (result.avatar) {
+      document.cookie = `userAvatar=${encodeURIComponent(result.avatar)}; path=/; max-age=${maxAge}`;
+    }
+    if (result.permissions) {
+      document.cookie = `userPermissions=${encodeURIComponent(JSON.stringify(result.permissions))}; path=/; max-age=${maxAge}`;
+    }
   }
 };
 
@@ -251,6 +261,7 @@ function LoginView({
             name: result.name,
             email: result.email,
             role: result.role,
+            avatar: result.avatar,
             permissions: result.permissions,
           },
           accessToken: result.accessToken,
@@ -258,7 +269,7 @@ function LoginView({
       );
 
       // We explicitly set cookies for SSR/middleware if the backend doesn't set HTTP-only.
-      setAuthCookies(result.accessToken, result.role);
+      setAuthCookies(result);
 
       toast.success("Welcome back!");
       onClose();
