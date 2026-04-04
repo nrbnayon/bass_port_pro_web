@@ -1,13 +1,17 @@
-
 import { Metadata } from "next";
+import ContactUsClient from "@/components/Common/ContactUs/ContactUsClient";
+import CTASection from "@/components/Landing/CTASection";
 
 export const metadata: Metadata = {
-  title: "Contact Us - BASSPORT Pro",
-  description: "Contact us to get in touch with BASSPORT Pro.",
+  title: "Contact Us - BassInsight",
+  description: "Get in touch with BassInsight. We'd love to hear from you.",
 };
 
 export default function ContactUsPage() {
   return (
-    <div>ContactUsPage</div>
-  )
+    <main className="bg-white">
+      <ContactUsClient />
+      <CTASection />
+    </main>
+  );
 }

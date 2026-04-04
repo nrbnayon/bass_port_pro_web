@@ -13,13 +13,15 @@ export default function Footer() {
       <div className="container-1620">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-4">
           <div>
-            <Image
-              src="/icons/logo.png"
-              alt="BassPort"
-              width={140}
-              height={40}
-              className="h-auto w-[140px]"
-            />
+            <Link href="/">
+              <Image
+                src="/icons/logo.png"
+                alt="BassPort"
+                width={140}
+                height={40}
+                className="h-auto w-[140px]"
+              />
+            </Link>
             <p className="mt-4 text-sm leading-relaxed text-white/70">
               Your premium bass fishing intelligence platform. Discover the
               right lake, right conditions, and right timing.

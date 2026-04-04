@@ -22,7 +22,7 @@ const navLinks: NavLink[] = [
   { label: "Lakes", href: "/lakes", id: "lakes", icon: MapPin },
   { label: "BassPorn", href: "/catches", id: "catches", icon: Heart },
   { label: "Reports", href: "/reports", id: "reports", icon: FileText },
-  { label: "Contact", href: "/contact", id: "contact", icon: Mail02Icon },
+  { label: "Contact", href: "/contact-us", id: "contact", icon: Mail02Icon },
 ];
 
 const NavIcon = ({
@@ -60,7 +60,7 @@ export default function Navbar() {
     }
 
     router.replace(`?${params.toString()}`, { scroll: false });
- 
+
     if (value && window.scrollY < 200 && pathname === "/") {
       const lakesSection = document.getElementById("lakes");
       if (lakesSection) {
