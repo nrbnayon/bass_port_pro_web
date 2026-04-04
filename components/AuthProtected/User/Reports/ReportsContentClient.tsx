@@ -17,14 +17,23 @@ import { TablePagination } from "@/components/Shared/TablePagination";
 import { ReportListSkeleton } from "@/components/Skeleton/ReportListSkeleton";
 import ReportCard from "./ReportCard";
 import ReportModal from "./ReportModal";
+import { useUser } from "@/hooks/useUser";
+import AuthModal, { AuthView } from "@/components/Auth/AuthModal";
+import { usePathname } from "next/navigation";
 
 export default function ReportsContentClient() {
   const [reports, setReports] = useState<ReportCardType[]>(initialReports);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedLake, setSelectedLake] = useState("All Lakes");
   const [isLoading, setIsLoading] = useState(true);
+  const { isAuthenticated } = useUser();
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   const searchQuery = searchParams.get("search")?.toLowerCase() || "";
+  const [authModal, setAuthModal] = useState<{ isOpen: boolean; view: AuthView }>({
+    isOpen: false,
+    view: "login",
+  });
 
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
@@ -128,7 +137,13 @@ export default function ReportsContentClient() {
 
               {/* Submit Button */}
               <button
-                onClick={() => setIsModalOpen(true)}
+                onClick={() => {
+                  if (!isAuthenticated) {
+                    setAuthModal({ isOpen: true, view: "login" });
+                  } else {
+                    setIsModalOpen(true);
+                  }
+                }}
                 className="flex items-center gap-2 rounded-lg bg-primary px-8 py-3 text-sm font-semibold text-white transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer shadow-lg shadow-primary/10"
               >
                 <HugeiconsIcon icon={PlusSignIcon} className="h-4 w-4" />
@@ -192,6 +207,12 @@ export default function ReportsContentClient() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleAddReport}
+      />
+      <AuthModal
+        isOpen={authModal.isOpen}
+        initialView={authModal.view}
+        redirectTo={pathname}
+        onClose={() => setAuthModal((prev) => ({ ...prev, isOpen: false }))}
       />
     </div>
   );

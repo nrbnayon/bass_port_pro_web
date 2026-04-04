@@ -1,12 +1,29 @@
+"use client";
 import Image from "next/image";
 import Link from "next/link";
 import { Send, Twitter, Facebook, Instagram, Youtube } from "lucide-react";
 import { footerLinks } from "@/data/landingData";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Mail02Icon } from "@hugeicons/core-free-icons";
+import { useState } from "react";
+import AuthModal, { AuthView } from "@/components/Auth/AuthModal";
+import { useUser } from "@/hooks/useUser";
 
 export default function Footer() {
   const year = new Date().getFullYear();
+  const { isAuthenticated } = useUser();
+  const [authModal, setAuthModal] = useState<{ isOpen: boolean; view: AuthView }>({
+    isOpen: false,
+    view: "login",
+  });
+
+  const handleLinkClick = (e: React.MouseEvent, href: string) => {
+    const protectedRoutes = ["/lakes", "/catches", "/reports"];
+    if (protectedRoutes.includes(href) && !isAuthenticated) {
+      e.preventDefault();
+      setAuthModal({ isOpen: true, view: "login" });
+    }
+  };
 
   return (
     <footer id="footer" className="bg-foreground py-12 text-white">
@@ -42,6 +59,7 @@ export default function Footer() {
                 <li key={item.label}>
                   <Link
                     href={item.href}
+                    onClick={(e) => handleLinkClick(e, item.href)}
                     className="transition hover:text-primary"
                   >
                     {item.label}
@@ -58,6 +76,7 @@ export default function Footer() {
                 <li key={item.label}>
                   <Link
                     href={item.href}
+                    onClick={(e) => handleLinkClick(e, item.href)}
                     className="transition hover:text-primary"
                   >
                     {item.label}
@@ -117,6 +136,11 @@ export default function Footer() {
           </div>
         </div>
       </div>
+      <AuthModal
+        isOpen={authModal.isOpen}
+        initialView={authModal.view}
+        onClose={() => setAuthModal((prev) => ({ ...prev, isOpen: false }))}
+      />
     </footer>
   );
 }

@@ -45,12 +45,13 @@ interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialView?: AuthView;
+  redirectTo?: string;
 }
-
 export default function AuthModal({
   isOpen,
   onClose,
   initialView = "login",
+  redirectTo,
 }: AuthModalProps) {
   const [view, setView] = useState<AuthView>(initialView);
   const [emailForOTP, setEmailForOTP] = useState("");
@@ -58,6 +59,14 @@ export default function AuthModal({
     "signup",
   );
   const [verifiedOtp, setVerifiedOtp] = useState("");
+
+  // Sync view when initialView changes
+  useEffect(() => {
+    if (isOpen) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setView(initialView);
+    }
+  }, [isOpen, initialView]); // Sync when modal opens or initialView changes
 
   // Persist form data across unexpected closes
   const [loginData, setLoginData] = useState({ email: "", password: "", rememberMe: false });
@@ -70,12 +79,7 @@ export default function AuthModal({
   });
   const [forgotData, setForgotData] = useState({ email: "" });
 
-  // Sync view if initialView changes (e.g. user clicks different Navbar button)
-  const [prevInitialView, setPrevInitialView] = useState(initialView);
-  if (initialView !== prevInitialView) {
-    setPrevInitialView(initialView);
-    setView(initialView);
-  }
+
 
   // Full reset only on intentional X-button close
   const handleClose = () => {
@@ -100,6 +104,7 @@ export default function AuthModal({
             onClose={handleClose}
             data={loginData}
             setData={setLoginData}
+            redirectTo={redirectTo}
           />
         );
       case "signup":
@@ -143,6 +148,7 @@ export default function AuthModal({
             onClose={handleClose}
             data={loginData}
             setData={setLoginData}
+            redirectTo={redirectTo}
           />
         );
     }
@@ -203,11 +209,13 @@ function LoginView({
   onClose,
   data,
   setData,
+  redirectTo,
 }: {
   setView: (v: AuthView) => void;
   onClose: () => void;
   data: z.infer<typeof signinValidationSchema>;
   setData: React.Dispatch<React.SetStateAction<z.infer<typeof signinValidationSchema>>>;
+  redirectTo?: string;
 }) {
   const [showPassword, setShowPassword] = useState(false);
   const {
@@ -257,6 +265,8 @@ function LoginView({
 
       if (result.role === "admin") {
         router.push("/admin/dashboard");
+      } else if (redirectTo) {
+        router.push(redirectTo);
       } else {
         router.push("/");
       }

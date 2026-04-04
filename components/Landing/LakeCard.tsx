@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { motion } from "framer-motion";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
@@ -13,12 +12,31 @@ import {
 } from "@hugeicons/core-free-icons";
 import { Fish } from "lucide-react";
 import { LakeCard as LakeCardType } from "@/types/landingData.types";
+import { useState } from "react";
+import AuthModal, { AuthView } from "@/components/Auth/AuthModal";
+import { useUser } from "@/hooks/useUser";
+import { useRouter } from "next/navigation";
 
 interface LakeCardProps {
   lake: LakeCardType;
 }
 
 export default function LakeCard({ lake }: LakeCardProps) {
+  const { isAuthenticated } = useUser();
+  const router = useRouter();
+  const [authModal, setAuthModal] = useState<{ isOpen: boolean; view: AuthView }>({
+    isOpen: false,
+    view: "login",
+  });
+
+  const handleCardClick = (e: React.MouseEvent) => {
+    if (!isAuthenticated) {
+      e.preventDefault();
+      setAuthModal({ isOpen: true, view: "login" });
+    } else {
+      router.push(`/lakes/${lake.id}`);
+    }
+  };
   const conditionColor = {
     Excellent: "bg-[#22C55E]",
     Good: "bg-[#3B82F6]",
@@ -35,9 +53,9 @@ export default function LakeCard({ lake }: LakeCardProps) {
       transition={{ duration: 0.3 }}
       className="group"
     >
-      <Link
-        href={`/lakes/${lake.id}`}
-        className="flex flex-col h-full overflow-hidden rounded-2xl bg-white border-x border-b border-t-0 border-solid border-[#F3F4F6] transition-all hover:shadow-xs hover:ring-1 hover:ring-primary/20 isolation-auto"
+      <div
+        onClick={handleCardClick}
+        className="flex flex-col h-full overflow-hidden rounded-2xl bg-white border-x border-b border-t-0 border-solid border-[#F3F4F6] transition-all hover:shadow-xs hover:ring-1 hover:ring-primary/20 isolation-auto cursor-pointer"
         style={{ isolation: "isolate" }}
       >
         <div className="relative aspect-[4/3] overflow-hidden rounded-t-2xl">
@@ -138,7 +156,12 @@ export default function LakeCard({ lake }: LakeCardProps) {
             )}
           </div>
         </div>
-      </Link>
+        </div>
+      <AuthModal
+        isOpen={authModal.isOpen}
+        initialView={authModal.view}
+        onClose={() => setAuthModal((prev) => ({ ...prev, isOpen: false }))}
+      />
     </motion.div>
   );
 }

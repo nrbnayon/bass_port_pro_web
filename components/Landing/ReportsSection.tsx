@@ -13,8 +13,23 @@ import { Fish } from "lucide-react";
 import { reports } from "@/data/landingData";
 import Link from "next/link";
 import Image from "next/image";
+import { useState } from "react";
+import AuthModal, { AuthView } from "@/components/Auth/AuthModal";
+import { useUser } from "@/hooks/useUser";
 
 export default function ReportsSection() {
+  const { isAuthenticated } = useUser();
+  const [authModal, setAuthModal] = useState<{ isOpen: boolean; view: AuthView }>({
+    isOpen: false,
+    view: "login",
+  });
+
+  const handleAllReportsClick = (e: React.MouseEvent) => {
+    if (!isAuthenticated) {
+      e.preventDefault();
+      setAuthModal({ isOpen: true, view: "login" });
+    }
+  };
   return (
     <section id="reports" className="bg-white pt-10 pb-20">
       <div className="container-1620">
@@ -34,6 +49,7 @@ export default function ReportsSection() {
           </div>
           <Link
             href="/reports"
+            onClick={handleAllReportsClick}
             className="group inline-flex items-center gap-2 text-sm font-bold text-[#FF6B35] transition-colors hover:opacity-80"
           >
             All Reports
@@ -128,6 +144,11 @@ export default function ReportsSection() {
           ))}
         </div>
       </div>
+      <AuthModal
+        isOpen={authModal.isOpen}
+        initialView={authModal.view}
+        onClose={() => setAuthModal((prev) => ({ ...prev, isOpen: false }))}
+      />
     </section>
   );
 }

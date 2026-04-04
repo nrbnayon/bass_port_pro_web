@@ -165,15 +165,21 @@ export default function Navbar() {
                   (pathname === "/" && item.id === activeSection);
 
                 return (
-                  <Link
+                  <button
                     key={item.label}
-                    href={item.href}
                     onClick={() => {
+                      const protectedRoutes = ["/lakes", "/catches", "/reports"];
+                      if (protectedRoutes.includes(item.href) && !isAuthenticated) {
+                        openAuth("login");
+                        return;
+                      }
+                      
                       if (item.href.startsWith("#")) {
                         setActiveSection(item.href.replace("#", ""));
                       }
+                      router.push(item.href);
                     }}
-                    className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-300 ${
+                    className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-300 cursor-pointer ${
                       isActive
                         ? "bg-primary text-white shadow-lg shadow-primary/20 scale-105"
                         : "text-white/80 hover:bg-white/10 hover:text-white"
@@ -181,7 +187,7 @@ export default function Navbar() {
                   >
                     <NavIcon icon={item.icon} className="h-4 w-4" />
                     {item.label}
-                  </Link>
+                  </button>
                 );
               })}
             </nav>
@@ -233,13 +239,13 @@ export default function Navbar() {
             ) : (
               <>
                 <button
-                  onClick={() => openAuth("login")}
+                  onClick={() => setAuthModal({ isOpen: true, view: "login" })}
                   className="text-sm font-semibold text-white/80 transition hover:text-white cursor-pointer"
                 >
                   Sign In
                 </button>
                 <button
-                  onClick={() => openAuth("signup")}
+                  onClick={() => setAuthModal({ isOpen: true, view: "signup" })}
                   className="rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90 shadow-lg shadow-primary/20 cursor-pointer"
                 >
                   Join Free
@@ -271,19 +277,27 @@ export default function Navbar() {
                   (pathname === "/" && item.id === activeSection);
 
                 return (
-                  <Link
+                  <button
                     key={item.label}
-                    href={item.href}
-                    className={`flex items-center gap-3 rounded-md px-3 py-3 text-sm font-medium transition ${
+                    onClick={() => {
+                      const protectedRoutes = ["/lakes", "/catches", "/reports"];
+                      if (protectedRoutes.includes(item.href) && !isAuthenticated) {
+                        setOpen(false);
+                        openAuth("login");
+                        return;
+                      }
+                      setOpen(false);
+                      router.push(item.href);
+                    }}
+                    className={`flex items-center gap-3 rounded-md px-3 py-3 text-sm font-medium transition text-left cursor-pointer ${
                       isActive
                         ? "bg-primary text-white"
                         : "text-white/90 hover:bg-white/10"
                     }`}
-                    onClick={() => setOpen(false)}
                   >
                     <NavIcon icon={item.icon} className="h-4 w-4" />
                     {item.label}
-                  </Link>
+                  </button>
                 );
               })}
 
@@ -356,6 +370,7 @@ export default function Navbar() {
       <AuthModal
         isOpen={authModal.isOpen}
         initialView={authModal.view}
+        redirectTo={pathname}
         onClose={() => setAuthModal((prev) => ({ ...prev, isOpen: false }))}
       />
 

@@ -15,6 +15,8 @@ import { FilterX } from "lucide-react";
 import LakeCard from "./LakeCard";
 import { TablePagination } from "@/components/Shared/TablePagination";
 import { LakeGridSkeleton } from "@/components/Skeleton/LakeGridSkeleton";
+import AuthModal, { AuthView } from "@/components/Auth/AuthModal";
+import { usePathname } from "next/navigation";
 
 const sortOptions = [
   { label: "Sort by Rating", value: "rating" },
@@ -27,8 +29,13 @@ const sortOptions = [
 export default function LakesSection() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   const search = searchParams.get("search") || "";
 
+  const [authModal, setAuthModal] = useState<{ isOpen: boolean; view: AuthView }>({
+    isOpen: false,
+    view: "login",
+  });
   const [sortBy, setSortBy] = useState("rating");
   const [showFilters, setShowFilters] = useState(false);
 
@@ -356,6 +363,12 @@ export default function LakesSection() {
           </motion.div>
         )}
       </div>
+      <AuthModal
+        isOpen={authModal.isOpen}
+        initialView={authModal.view}
+        redirectTo={pathname}
+        onClose={() => setAuthModal((prev) => ({ ...prev, isOpen: false }))}
+      />
     </section>
   );
 }
