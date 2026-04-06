@@ -18,6 +18,9 @@ export interface Lake {
   state: string;
   description: string;
   size: number;
+  elevation?: number;
+  maxDepth?: number;
+  avgDepth?: number;
   catchRate: number;
   recordBass: number;
   species: string[];
@@ -45,7 +48,7 @@ export interface Lake {
     depthRange: string;
     notes: string;
   }>;
-  status: "active" | "pending" | "rejected";
+  status: "active" | "pending" | "rejected" | "closed";
   featured: boolean;
   isFavourite?: boolean;
   submittedBy?: { _id: string; name: string; avatar?: string };
@@ -109,14 +112,18 @@ const lakesApi = apiSlice.injectEndpoints({
       query: (params = {}) => {
         const searchParams = new URLSearchParams();
         Object.entries(params).forEach(([key, val]) => {
-          if (val !== undefined && val !== "") searchParams.append(key, String(val));
+          if (val !== undefined && val !== "")
+            searchParams.append(key, String(val));
         });
         return `/lakes?${searchParams.toString()}`;
       },
       providesTags: (result) =>
         result
           ? [
-              ...result.lakes.map(({ _id }) => ({ type: "Lakes" as const, id: _id })),
+              ...result.lakes.map(({ _id }) => ({
+                type: "Lakes" as const,
+                id: _id,
+              })),
               { type: "Lakes", id: "LIST" },
             ]
           : [{ type: "Lakes", id: "LIST" }],
@@ -135,11 +142,17 @@ const lakesApi = apiSlice.injectEndpoints({
         method: "POST",
         body: formData,
       }),
-      invalidatesTags: [{ type: "Lakes", id: "LIST" }, { type: "Lakes", id: "FEATURED" }],
+      invalidatesTags: [
+        { type: "Lakes", id: "LIST" },
+        { type: "Lakes", id: "FEATURED" },
+      ],
     }),
 
     // ── Update lake (admin) ────────────────────────────────────────────────
-    updateLake: builder.mutation<{ lake: Lake }, { id: string; data: FormData | Partial<Lake> }>({
+    updateLake: builder.mutation<
+      { lake: Lake },
+      { id: string; data: FormData | Partial<Lake> }
+    >({
       query: ({ id, data }) => ({
         url: `/lakes/${id}`,
         method: "PUT",
@@ -153,7 +166,10 @@ const lakesApi = apiSlice.injectEndpoints({
     }),
 
     // ── Update lake status (approve/reject) ────────────────────────────────
-    updateLakeStatus: builder.mutation<{ lake: Lake }, { id: string; status: string }>({
+    updateLakeStatus: builder.mutation<
+      { lake: Lake },
+      { id: string; status: string }
+    >({
       query: ({ id, status }) => ({
         url: `/lakes/${id}/status`,
         method: "PATCH",
@@ -182,7 +198,10 @@ const lakesApi = apiSlice.injectEndpoints({
     }),
 
     // ── Lake reviews ───────────────────────────────────────────────────────
-    getLakeReviews: builder.query<ReviewsResponse, { id: string; page?: number; limit?: number }>({
+    getLakeReviews: builder.query<
+      ReviewsResponse,
+      { id: string; page?: number; limit?: number }
+    >({
       query: ({ id, page = 1, limit = 10 }) =>
         `/lakes/${id}/reviews?page=${page}&limit=${limit}`,
       providesTags: (_result, _err, { id }) => [{ type: "LakeReviews", id }],
@@ -203,7 +222,10 @@ const lakesApi = apiSlice.injectEndpoints({
       ],
     }),
 
-    deleteLakeReview: builder.mutation<{ message: string }, { lakeId: string; reviewId: string }>({
+    deleteLakeReview: builder.mutation<
+      { message: string },
+      { lakeId: string; reviewId: string }
+    >({
       query: ({ lakeId, reviewId }) => ({
         url: `/lakes/${lakeId}/reviews/${reviewId}`,
         method: "DELETE",

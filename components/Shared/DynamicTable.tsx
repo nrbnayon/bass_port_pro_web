@@ -31,6 +31,7 @@ export function DynamicTable<T extends Record<string, any>>({
   striped = false,
   hoverable = true,
   stickyHeader = false,
+  onPageChange,
 }: DynamicTableProps<T>) {
   // State management
   const [currentPage, setCurrentPage] = useState(1);
@@ -527,7 +528,10 @@ export function DynamicTable<T extends Record<string, any>>({
           totalPages={totalPages}
           totalItems={sortedData.length}
           itemsPerPage={pageSize}
-          onPageChange={setCurrentPage}
+          onPageChange={(page) => {
+            setCurrentPage(page);
+            onPageChange?.(page);
+          }}
           onPageSizeChange={
             pagination.pageSizeOptions ? setPageSize : undefined
           }

@@ -23,8 +23,9 @@ export function DeleteConfirmationModal({
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex items-center justify-center p-4 transition-opacity duration-300 ${isOpen ? "opacity-100" : "opacity-0"
-        }`}
+      className={`fixed inset-0 z-50 flex items-center justify-center p-4 transition-opacity duration-300 ${
+        isOpen ? "opacity-100" : "opacity-0"
+      }`}
     >
       {/* Backdrop */}
       <div
@@ -34,13 +35,14 @@ export function DeleteConfirmationModal({
 
       {/* Modal Container */}
       <div
-        className={`relative w-full max-w-md bg-white dark:bg-gray-800 rounded-xl shadow-2xl transform transition-all duration-300 ${isOpen ? "scale-100 translate-y-0" : "scale-95 translate-y-4"
-          }`}
+        className={`relative w-full max-w-md bg-white dark:bg-gray-800 rounded-xl shadow-2xl transform transition-all duration-300 ${
+          isOpen ? "scale-100 translate-y-0" : "scale-95 translate-y-4"
+        }`}
       >
         <button
           onClick={onClose}
           disabled={isLoading}
-          className="absolute right-4 top-4 p-2 text-gray-400 hover:text-secondary dark:hover:text-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="absolute right-4 top-4 p-2 text-gray-400 hover:text-secondary dark:hover:text-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
         >
           <X className="w-5 h-5" />
         </button>
@@ -57,9 +59,7 @@ export function DeleteConfirmationModal({
             </div>
 
             <h3 className="text-xl font-semibold text-primary ">{title}</h3>
-            <p className="mt-2 text-sm text-secondary  ">
-              {description}
-            </p>
+            <p className="mt-2 text-sm text-secondary  ">{description}</p>
           </div>
 
           <div className="flex gap-3">

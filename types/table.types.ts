@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // types/table.types.ts
 import { ReactNode } from "react";
 
@@ -91,6 +92,7 @@ export interface DynamicTableProps<T = any> {
   headerClassName?: string;
   rowClassName?: string | ((row: T, index: number) => string);
   onRowClick?: (row: T, index: number) => void;
+  onPageChange?: (page: number) => void;
   striped?: boolean;
   hoverable?: boolean;
   bordered?: boolean;
