@@ -3,17 +3,16 @@ import type { IconSvgElement } from "@hugeicons/react";
 import {
   Bell,
   FileText,
-  Flag,
   List,
-  ListChecks,
-  PieChart,
   ShieldCheck,
+  Fish,
 } from "lucide-react";
 import {
   DashboardSquare02Icon,
-  PackageAddIcon,
   Settings01Icon,
   UserMultiple03Icon,
+  Analytics01Icon,
+  Image03Icon,
 } from "@hugeicons/core-free-icons";
 
 export interface SidebarSubLink {
@@ -39,76 +38,41 @@ export const sidebarLinks: SidebarLink[] = [
   },
 
   {
-    label: "Job Management",
-    href: "/admin/jobs",
-    icon: PackageAddIcon,
-    permission: "manage_jobs",
+    label: "Lakes",
+    href: "/admin/lakes",
+    icon: Fish,
   },
   {
     label: "Users",
     href: "/admin/users",
     icon: UserMultiple03Icon,
-    permission: "manage_users",
   },
-  {
-    label: "Applications",
-    href: "/admin/applications",
-    icon: FileText,
-    permission: "view_applications",
-  },
-  {
-    label: "Leads",
-    href: "/admin/leads",
-    icon: Flag,
-    permission: "view_leads",
-  },
-  {
-    label: "Tasks",
-    href: "/admin/tasks",
-    icon: ListChecks,
-    permission: "view_tasks",
-  },
+
   {
     label: "Reports",
     href: "/admin/reports",
-    icon: PieChart,
-    permission: "view_reports",
+    icon: FileText,
+  },
+  {
+    label: "BassPorn Requests",
+    href: "/admin/bassporn-requests",
+    icon: Image03Icon,
+  },
+
+  {
+    label: "Analytics",
+    href: "/admin/analytics",
+    icon: Analytics01Icon,
   },
   {
     label: "Audit Logs",
     href: "/admin/audit-logs",
     icon: FileText,
-    permission: "view_audit_logs",
   },
-  {
-    label: "Categories",
-    href: "/admin/categories",
-    icon: List,
-    permission: "manage_categories",
-  },
-
   {
     label: "Privacy & policy",
     href: "/admin/privacy-policy",
     icon: ShieldCheck,
-    permission: "manage_settings",
-  },
-  {
-    label: "Notifications",
-    href: "/admin/notifications",
-    icon: Bell,
-    permission: "view_notifications",
-  },
-  // {
-  // 	label: "My Applications",
-  // 	href: "/admin/applications",
-  // 	icon: ListChecks,
-  // 	// No permission required, visible to all users
-  // },
-  {
-    label: "Support Center",
-    href: "/admin/support",
-    icon: Bell,
   },
   {
     label: "Settings",
