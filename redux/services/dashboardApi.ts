@@ -1,27 +1,59 @@
 import { apiSlice } from "./apiSlice";
 
-export interface DashboardStat {
-  title: string;
-  value: string;
-  subtitle: string;
-  iconName: string;
-  iconColor: string;
-  iconBgColor: string;
+export interface StatMetric {
+  value: number;
+  trend: number;
+}
+
+export interface DashboardStats {
+  totalUsers: StatMetric;
+  totalLakes: StatMetric;
+  totalReports: StatMetric;
+  lakeRequests: StatMetric;
+  totalCatches: StatMetric;
+  totalReviews: StatMetric;
+  totalComments?: StatMetric;
+  openContacts: StatMetric;
+}
+
+export interface UserActivityData {
+  day: string;
+  users: number;
+}
+
+export interface ReportsSubmittedData {
+  week: string;
+  reports: number;
+}
+
+export interface RecentActivity {
+  id: string;
+  user: { name: string; avatar: string };
+  action: string;
+  lake: string;
+  time: string;
 }
 
 export interface DashboardResponse {
-  success: boolean;
-  data: DashboardStat[];
+  stats: DashboardStats;
+  userActivity: UserActivityData[];
+  reportsSubmitted: ReportsSubmittedData[];
+  recentActivity: RecentActivity[];
 }
 
 export const dashboardApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getDashboardStats: builder.query<DashboardStat[], void>({
+    getDashboard: builder.query<DashboardResponse, void>({
+      query: () => "/dashboard",
+      transformResponse: (res: { data: DashboardResponse }) => res.data,
+      providesTags: ["Dashboard"],
+    }),
+    getDashboardStats: builder.query<{ success: boolean; data: { stats: DashboardStats } }, void>({
       query: () => "/dashboard/stats",
-      transformResponse: (response: DashboardResponse) => response.data,
       providesTags: ["Dashboard"],
     }),
   }),
 });
 
-export const { useGetDashboardStatsQuery } = dashboardApi;
+export const { useGetDashboardQuery, useGetDashboardStatsQuery } = dashboardApi;
+

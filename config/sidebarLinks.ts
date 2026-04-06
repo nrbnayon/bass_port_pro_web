@@ -12,6 +12,7 @@ import {
   UserMultiple03Icon,
   Analytics01Icon,
   Image03Icon,
+  Mail02Icon,
 } from "@hugeicons/core-free-icons";
 
 export interface SidebarSubLink {
@@ -62,6 +63,12 @@ export const sidebarLinks: SidebarLink[] = [
     label: "Analytics",
     href: "/admin/analytics",
     icon: Analytics01Icon,
+	},
+  
+  {
+    label: "Contact Us",
+    href: "/admin/contact-us",
+    icon: Mail02Icon,
   },
   {
     label: "Audit Logs",

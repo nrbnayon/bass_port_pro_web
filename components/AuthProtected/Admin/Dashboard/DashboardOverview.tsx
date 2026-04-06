@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { TableColumn } from "@/types/table.types";
+import { RecentActivity } from "@/redux/services/dashboardApi";
 import DashboardHeader from "@/components/Shared/DashboardHeader";
 import { Users, MapPin, FileText, Image as ImageIcon } from "lucide-react";
 import {
@@ -18,21 +19,37 @@ import { DynamicTable } from "@/components/Shared/DynamicTable";
 import { StatsCard } from "@/components/Shared/StatsCard";
 import { StatsSkeleton } from "@/components/Skeleton/StatsSkeleton";
 import { TableSkeleton } from "@/components/Skeleton/TableSkeleton";
-import { dummyDashboardData } from "@/data/dashboardData";
-import { TableColumn } from "@/types/table.types";
-import { RecentActivity } from "@/types/dashboard.types";
+import { useGetDashboardQuery } from "@/redux/services/dashboardApi";
+
 
 const DashboardOverview = () => {
-  const [loading, setLoading] = useState(true);
+  const { data: dashboardData, isLoading, isError } = useGetDashboardQuery();
 
-  useEffect(() => {
-    // Simulate loading for demonstrating skeletons
-    const timer = setTimeout(() => setLoading(false), 1000);
-    return () => clearTimeout(timer);
-  }, []);
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#FDFDFF] flex flex-col pb-10">
+        <DashboardHeader
+          title="Dashboard"
+          description="Welcome Back! Here's what's happening with your platform."
+        />
+        <div className="p-6 space-y-8 w-full mx-auto">
+          <StatsSkeleton />
+        </div>
+      </div>
+    );
+  }
 
-  const { stats, userActivity, reportsSubmitted, recentActivity } =
-    dummyDashboardData;
+  if (isError || !dashboardData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#FDFDFF]">
+        <div className="text-center space-y-4">
+          <p className="text-red-500 font-medium">Failed to load dashboard data</p>
+        </div>
+      </div>
+    );
+  }
+
+  const { stats, userActivity, reportsSubmitted, recentActivity } = dashboardData;
 
   const activityColumns: TableColumn<RecentActivity>[] = [
     {
@@ -79,7 +96,7 @@ const DashboardOverview = () => {
 
       <div className="p-6 space-y-8 w-full mx-auto">
         {/* Stats Grid */}
-        {loading ? (
+        {isLoading ? (
           <StatsSkeleton />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -246,7 +263,7 @@ const DashboardOverview = () => {
           </div>
 
           <div className="overflow-hidden bg-white rounded-2xl border border-primary/10 p-4 min-h-[300px]">
-            {loading ? (
+            {isLoading ? (
               <TableSkeleton rowCount={8} />
             ) : (
               <DynamicTable
