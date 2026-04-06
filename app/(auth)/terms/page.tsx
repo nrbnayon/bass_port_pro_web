@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import Link from "next/link";
@@ -16,7 +17,8 @@ import {
   LucideIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { termsOfService } from "@/data/legalData";
+import { termsOfService as defaultTerms } from "@/data/legalData";
+import { useGetLegalDocsQuery } from "@/redux/services/settingsApi";
 
 const iconMap: Record<string, LucideIcon> = {
   acceptance: Scale,
@@ -30,6 +32,26 @@ const iconMap: Record<string, LucideIcon> = {
 };
 
 export default function TermsOfServicePage() {
+  const { data, isLoading } = useGetLegalDocsQuery();
+
+  // Try parsing server content or fallback to static data
+  let terms = defaultTerms;
+  try {
+    if (data?.data?.termsOfService) {
+      terms = JSON.parse(data.data.termsOfService);
+    }
+  } catch (err) {
+    console.error("Failed to parse terms from server:", err);
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-8 gap-4 animate-pulse">
+        <RefreshCw className="w-10 h-10 text-primary animate-spin" />
+        <span className="text-secondary font-medium tracking-tight">Syncing Service Terms...</span>
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen bg-background py-6 px-6 sm:px-8 lg:px-12">
       <div className="max-w-7xl mx-auto space-y-12">
@@ -50,7 +72,7 @@ export default function TermsOfServicePage() {
             Terms of Service
           </h1>
           <p className="text-lg text-secondary">
-            Last updated: {new Date().toLocaleDateString()}
+            Last updated: {data?.data?.updatedAt ? new Date(data.data.updatedAt).toLocaleDateString() : new Date().toLocaleDateString()}
           </p>
         </div>
 
@@ -61,7 +83,7 @@ export default function TermsOfServicePage() {
             <h3 className="text-sm font-bold text-foreground/40 uppercase tracking-widest mb-4 px-4">
               Sections
             </h3>
-            {termsOfService.map((section, idx) => (
+            {terms.map((section: any, idx: number) => (
               <a
                 key={section.id}
                 href={`#${section.id}`}
@@ -79,7 +101,7 @@ export default function TermsOfServicePage() {
             className="lg:col-span-3 space-y-16"
           >
             <div className="bg-white border p-8 md:p-12 rounded-[2rem] shadow-sm space-y-12">
-              {termsOfService.map((section, idx) => {
+              {terms.map((section: any, idx: number) => {
                 const Icon = iconMap[section.id] || FileText;
                 return (
                   <section

@@ -1,22 +1,22 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import {
-  ArrowLeft,
-  Shield,
-  Fingerprint,
-  Activity,
-  Share2,
-  Lock,
-  ExternalLink,
-  Mail,
-  FileText,
-  LucideIcon,
+import { 
+  ArrowLeft, Shield, Fingerprint, Activity, Share2, 
+  Lock, ExternalLink, Mail, FileText, LucideIcon, RefreshCw 
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { privacyPolicy } from "@/data/legalData";
+import { privacyPolicy as defaultPrivacy } from "@/data/legalData";
+import { useGetLegalDocsQuery } from "@/redux/services/settingsApi";
+
+interface LegalSection {
+  id: string;
+  title: string;
+  content: string;
+}
 
 const iconMap: Record<string, LucideIcon> = {
   intro: Shield,
@@ -29,6 +29,26 @@ const iconMap: Record<string, LucideIcon> = {
 };
 
 export default function PrivacyPolicyPage() {
+  const { data, isLoading } = useGetLegalDocsQuery();
+
+  // Try parsing server content or fallback to static data
+  let policy: LegalSection[] = defaultPrivacy;
+  try {
+    if (data?.data?.privacyPolicy) {
+      policy = JSON.parse(data.data.privacyPolicy);
+    }
+  } catch (err) {
+    console.error("Failed to parse privacy policy from server:", err);
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-8 gap-4 animate-pulse">
+        <RefreshCw className="w-10 h-10 text-primary animate-spin" />
+        <span className="text-secondary font-medium tracking-tight">Syncing Legal Intelligence...</span>
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen bg-background py-16 px-6 sm:px-8 lg:px-12">
       <div className="max-w-7xl mx-auto space-y-12">
@@ -50,7 +70,7 @@ export default function PrivacyPolicyPage() {
             Privacy Policy
           </h1>
           <p className="text-lg text-secondary">
-            Last updated: {new Date().toLocaleDateString()}
+            Last updated: {data?.data?.updatedAt ? new Date(data.data.updatedAt).toLocaleDateString() : new Date().toLocaleDateString()}
           </p>
         </div>
 
@@ -61,7 +81,7 @@ export default function PrivacyPolicyPage() {
             <h3 className="text-sm font-bold text-foreground/40 uppercase tracking-widest mb-4 px-4">
               Sections
             </h3>
-            {privacyPolicy.map((section, idx) => (
+            {policy.map((section: any, idx: number) => (
               <a
                 key={section.id}
                 href={`#${section.id}`}
@@ -79,7 +99,7 @@ export default function PrivacyPolicyPage() {
             className="lg:col-span-3 space-y-16"
           >
             <div className="bg-white border p-8 md:p-12 rounded-[2rem] shadow-sm space-y-12">
-              {privacyPolicy.map((section, idx) => {
+              {policy.map((section: LegalSection, idx: number) => {
                 const Icon = iconMap[section.id] || FileText;
                 return (
                   <section

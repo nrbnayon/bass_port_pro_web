@@ -468,7 +468,7 @@ export default function DashboardWrapper({ children }: DashboardWrapperProps) {
               <div className="mt-4 pt-4 border-t border-gray-200">
                 <div className="flex items-center gap-3 px-3">
                   <Link
-                    href="/profile"
+                    href="/admin/settings"
                     onClick={() => {
                       if (window.innerWidth < 768) {
                         setOpen(false);
@@ -581,7 +581,7 @@ const Logo = ({ open }: { open: boolean }) => {
           src="/icons/logo1.png"
           width={open ? 120 : 40}
           height={40} // Default height placeholder
-          style={{ height: 'auto' }}
+          style={{ height: "auto" }}
           priority
         />
       </motion.div>

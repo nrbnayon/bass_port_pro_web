@@ -40,7 +40,7 @@ export default function DashboardHeader({
 
         {/* User Profile */}
         <Link
-          href="/profile"
+          href="/admin/settings"
           className="flex items-center gap-3 hover:opacity-80 transition-opacity"
         >
           <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden shrink-0 border border-border">
@@ -64,5 +64,5 @@ export default function DashboardHeader({
         </Link>
       </div>
     </div>
-  )
+  );
 }
