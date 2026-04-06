@@ -12,6 +12,7 @@ export interface AuditLog {
     name: string;
     email: string;
   };
+  targetType?: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   details?: any;
   createdAt: string;

@@ -65,10 +65,17 @@ export default function AuditLogsClient() {
     {
       key: "target",
       header: "Target",
-      render: (target: { name: string; email: string }) => (
-        <span className="text-secondary opacity-80 text-sm">
-          {target?.name || target?.email || "-"}
-        </span>
+      render: (target: { name: string; email?: string }, row: AuditLog) => (
+        <div className="flex flex-col">
+          <span className="text-foreground font-medium text-sm">
+            {target?.name || target?.email || "-"}
+          </span>
+          {row.targetType && (
+            <span className="text-[10px] text-orange-600 font-bold uppercase tracking-widest opacity-80 mt-0.5">
+              {row.targetType}
+            </span>
+          )}
+        </div>
       ),
     },
   ];

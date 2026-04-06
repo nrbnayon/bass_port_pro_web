@@ -1,6 +1,7 @@
 "use client";
 
 import { TableColumn } from "@/types/table.types";
+import Image from "next/image";
 import { RecentActivity, DashboardResponse } from "@/redux/services/dashboardApi";
 import DashboardHeader from "@/components/Shared/DashboardHeader";
 import { Users, MapPin, FileText, Image as ImageIcon } from "lucide-react";
@@ -49,14 +50,31 @@ const DashboardOverview = () => {
     {
       key: "user",
       header: "User",
-      render: (user: { name: string; avatar?: string }) => (
-        <div className="flex items-center gap-3 py-1">
-          <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-600 border border-gray-200">
-            {user.name.charAt(0)}
+      render: (user: { name: string; avatar?: string }) => {
+        const userName = user?.name || 'User';
+        const userAvatar = user?.avatar || '';
+
+        return (
+          <div className="flex items-center gap-3 py-1">
+            <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-600 border border-gray-200 overflow-hidden relative">
+              {userAvatar ? (
+                <Image
+                  src={userAvatar}
+                  alt={userName}
+                  fill
+                  className="object-cover"
+                  unoptimized
+                  onError={(e) => {
+                    const target = e.target as HTMLElement;
+                    target.style.display = 'none';
+                  }}
+                />
+              ) : null}
+            </div>
+            <span className="font-medium text-foreground">{userName}</span>
           </div>
-          <span className="font-medium text-foreground">{user.name}</span>
-        </div>
-      ),
+        );
+      },
     },
     {
       key: "action",

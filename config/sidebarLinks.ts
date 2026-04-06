@@ -1,11 +1,6 @@
 import type React from "react";
 import type { IconSvgElement } from "@hugeicons/react";
-import {
-  Bell,
-  FileText,
-  ShieldCheck,
-  Fish,
-} from "lucide-react";
+import { Bell, FileText, ShieldCheck, Fish } from "lucide-react";
 import {
   DashboardSquare02Icon,
   Settings01Icon,
@@ -36,18 +31,16 @@ export const sidebarLinks: SidebarLink[] = [
     icon: DashboardSquare02Icon,
     permission: "view_dashboard", // Anyone with view_dashboard atom
   },
-
-  {
-    label: "Lakes",
-    href: "/admin/lakes",
-    icon: Fish,
-  },
   {
     label: "Users",
     href: "/admin/users",
     icon: UserMultiple03Icon,
   },
-
+  {
+    label: "Lakes",
+    href: "/admin/lakes",
+    icon: Fish,
+  },
   {
     label: "Reports",
     href: "/admin/reports",
@@ -63,8 +56,8 @@ export const sidebarLinks: SidebarLink[] = [
     label: "Analytics",
     href: "/admin/analytics",
     icon: Analytics01Icon,
-	},
-  
+  },
+
   {
     label: "Contact Us",
     href: "/admin/contact-us",
