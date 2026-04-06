@@ -114,16 +114,23 @@ export const SignInForm = () => {
       } else {
         router.push("/admin/dashboard");
       }
-    } catch (error: unknown) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
       console.error("Signin error:", error);
-      const message =
-        typeof error === "object" &&
-        error !== null &&
-        "data" in error &&
-        typeof (error as { data?: { message?: string } }).data?.message ===
-          "string"
-          ? (error as { data?: { message?: string } }).data?.message
-          : "Signin failed. Please try again.";
+      let message = "Signin failed. Please try again.";
+
+      if (error?.data?.message) {
+        message = error.data.message;
+        // Clean up technical validation strings
+        if (message.includes("validation failed") || message.includes("enum value")) {
+          message = "There was a problem with your account information. Please contact support.";
+        }
+      } else if (error?.status === 500) {
+        message = "Server error. Please try again later.";
+      } else if (error?.status === "FETCH_ERROR") {
+        message = "Cannot connect to server. Please check your internet connection.";
+      }
+      
       toast.error(message);
     }
   };

@@ -479,7 +479,7 @@ export default function DashboardWrapper({ children }: DashboardWrapperProps) {
                     <div className="relative w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center shrink-0 overflow-hidden">
                       {avatar ? (
                         <Image
-                          src={avatar}
+                          src={avatar || "/images/avatar.png"}
                           alt={name || "User"}
                           fill
                           className="object-cover"
@@ -576,11 +576,12 @@ const Logo = ({ open }: { open: boolean }) => {
         className="flex items-center justify-center overflow-hidden"
       >
         <Image
-          className="w-full h-full object-contain"
+          className="w-full h-auto object-contain"
           alt="Logo"
-          src="/icons/logo.svg"
+          src="/icons/logo1.png"
           width={open ? 120 : 40}
-          height={open ? 120 : 40}
+          height={40} // Default height placeholder
+          style={{ height: 'auto' }}
           priority
         />
       </motion.div>
@@ -590,7 +591,7 @@ const Logo = ({ open }: { open: boolean }) => {
 
 const Dashboard = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="flex flex-1 bg-gray">
+    <div className="flex flex-1 bg-gray min-w-0">
       <div className="p-0 flex flex-col gap-2 flex-1 w-full md:h-screen md:overflow-y-auto overflow-x-hidden">
         {children}
       </div>

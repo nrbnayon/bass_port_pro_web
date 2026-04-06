@@ -98,7 +98,7 @@ export const DesktopSidebar = ({
 }: React.ComponentProps<typeof motion.div>) => {
   const { open, animate, width } = useSidebar();
   const currentWidth = width || 290;
-  const collapsedWidth = 74;
+  const collapsedWidth = 80;
 
   return (
     <motion.div

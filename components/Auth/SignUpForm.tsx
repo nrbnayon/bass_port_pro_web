@@ -44,25 +44,51 @@ export const SignUpForm = () => {
     },
   });
 
-  const handleTrimChange = (field: keyof FormValues) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    const trimmed = typeof value === "string" ? value.trim() : value;
-    setValue(field, trimmed as any, { shouldValidate: true });
-  };
+  const handleTrimChange =
+    (field: keyof FormValues) => (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      const trimmed = typeof value === "string" ? value.trim() : value;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      setValue(field, trimmed as any, { shouldValidate: true });
+    };
 
   const onSubmit = async (data: FormValues) => {
     try {
       await signup({
         name: data.full_name,
         email: data.email,
-        password: data.password
+        password: data.password,
       }).unwrap();
 
-      toast.success("Registration successful! Please verify your email with the OTP sent.");
-      router.push(`/verify-otp?email=${encodeURIComponent(data.email)}&flow=signup`);
+      toast.success(
+        "Registration successful! Please verify your email with the OTP sent.",
+      );
+      router.push(
+        `/verify-otp?email=${encodeURIComponent(data.email)}&flow=signup`,
+      );
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error("Signup error:", error);
-      toast.error(error?.data?.message || "Registration failed. Please try again.");
+      let message = "Registration failed. Please try again.";
+
+      if (error?.data?.message) {
+        message = error.data.message;
+        // Clean up technical validation strings
+        if (
+          message.includes("validation failed") ||
+          message.includes("enum value")
+        ) {
+          message =
+            "There was a problem with the registration data. Please check all fields.";
+        }
+      } else if (error?.status === 500) {
+        message = "Server error during registration. Please try again later.";
+      } else if (error?.status === "FETCH_ERROR") {
+        message =
+          "Cannot connect to server. Please check your internet connection.";
+      }
+
+      toast.error(message);
     }
   };
 
@@ -87,7 +113,10 @@ export const SignUpForm = () => {
         <div className="space-y-4">
           {/* Full Name */}
           <div className="space-y-2">
-            <Label htmlFor="full_name" className="text-base font-medium text-[#1F232A]">
+            <Label
+              htmlFor="full_name"
+              className="text-base font-medium text-[#1F232A]"
+            >
               Full Name
             </Label>
             <Input
@@ -96,7 +125,8 @@ export const SignUpForm = () => {
               type="text"
               className={cn(
                 "h-14 rounded-2xl border-gray-200 focus:border-primary px-5 text-base",
-                errors.full_name && "border-destructive focus:border-destructive"
+                errors.full_name &&
+                  "border-destructive focus:border-destructive",
               )}
               {...register("full_name")}
               onChange={handleTrimChange("full_name")}
@@ -110,7 +140,10 @@ export const SignUpForm = () => {
 
           {/* Email */}
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-base font-medium text-[#1F232A]">
+            <Label
+              htmlFor="email"
+              className="text-base font-medium text-[#1F232A]"
+            >
               Email
             </Label>
             <Input
@@ -120,7 +153,7 @@ export const SignUpForm = () => {
               autoComplete="email"
               className={cn(
                 "h-14 rounded-2xl border-gray-200 focus:border-primary px-5 text-base",
-                errors.email && "border-destructive focus:border-destructive"
+                errors.email && "border-destructive focus:border-destructive",
               )}
               {...register("email")}
               onChange={handleTrimChange("email")}
@@ -134,7 +167,10 @@ export const SignUpForm = () => {
 
           {/* Password */}
           <div className="space-y-2">
-            <Label htmlFor="password" className="text-base font-medium text-[#1F232A]">
+            <Label
+              htmlFor="password"
+              className="text-base font-medium text-[#1F232A]"
+            >
               Password
             </Label>
             <div className="relative">
@@ -144,7 +180,8 @@ export const SignUpForm = () => {
                 type={showPassword ? "text" : "password"}
                 className={cn(
                   "h-14 rounded-2xl border-gray-200 focus:border-primary px-5 pr-14 text-base",
-                  errors.password && "border-destructive focus:border-destructive"
+                  errors.password &&
+                    "border-destructive focus:border-destructive",
                 )}
                 {...register("password")}
                 onChange={handleTrimChange("password")}
@@ -154,7 +191,11 @@ export const SignUpForm = () => {
                 onClick={() => setShowPassword((prev) => !prev)}
                 className="absolute right-5 inset-y-0 text-gray-400 hover:text-primary transition-colors flex items-center justify-center"
               >
-                {showPassword ? <Eye className="h-5 w-5" /> : <EyeOff className="h-5 w-5" />}
+                {showPassword ? (
+                  <Eye className="h-5 w-5" />
+                ) : (
+                  <EyeOff className="h-5 w-5" />
+                )}
               </button>
             </div>
             {errors.password?.message && (
@@ -166,7 +207,10 @@ export const SignUpForm = () => {
 
           {/* Confirm Password */}
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword" className="text-base font-medium text-[#1F232A]">
+            <Label
+              htmlFor="confirmPassword"
+              className="text-base font-medium text-[#1F232A]"
+            >
               Confirm Password
             </Label>
             <div className="relative">
@@ -176,7 +220,8 @@ export const SignUpForm = () => {
                 type={showConfirmPassword ? "text" : "password"}
                 className={cn(
                   "h-14 rounded-2xl border-gray-200 focus:border-primary px-5 pr-14 text-base",
-                  errors.confirmPassword && "border-destructive focus:border-destructive"
+                  errors.confirmPassword &&
+                    "border-destructive focus:border-destructive",
                 )}
                 {...register("confirmPassword")}
                 onChange={handleTrimChange("confirmPassword")}
@@ -186,7 +231,11 @@ export const SignUpForm = () => {
                 onClick={() => setShowConfirmPassword((prev) => !prev)}
                 className="absolute right-5 inset-y-0 text-gray-400 hover:text-primary transition-colors flex items-center justify-center"
               >
-                {showConfirmPassword ? <Eye className="h-5 w-5" /> : <EyeOff className="h-5 w-5" />}
+                {showConfirmPassword ? (
+                  <Eye className="h-5 w-5" />
+                ) : (
+                  <EyeOff className="h-5 w-5" />
+                )}
               </button>
             </div>
             {errors.confirmPassword?.message && (
@@ -209,11 +258,28 @@ export const SignUpForm = () => {
                   onCheckedChange={field.onChange}
                   className="rounded-md border-gray-300 data-[state=checked]:bg-primary"
                 />
-                <Label htmlFor="agreeToTerms" className="text-base text-[#1F232A] cursor-pointer font-normal">
-                  I agree to the <Link href="/terms" className="text-primary hover:underline">Terms</Link> and <Link href="/privacy-policy" className="text-primary hover:underline">Privacy</Link>
+                <Label
+                  htmlFor="agreeToTerms"
+                  className="text-base text-[#1F232A] cursor-pointer font-normal"
+                >
+                  I agree to the{" "}
+                  <Link href="/terms" className="text-primary hover:underline">
+                    Terms
+                  </Link>{" "}
+                  and{" "}
+                  <Link
+                    href="/privacy-policy"
+                    className="text-primary hover:underline"
+                  >
+                    Privacy
+                  </Link>
                 </Label>
               </div>
-              {errors.agreeToTerms && <p className="text-destructive text-sm font-medium px-1">{errors.agreeToTerms.message}</p>}
+              {errors.agreeToTerms && (
+                <p className="text-destructive text-sm font-medium px-1">
+                  {errors.agreeToTerms.message}
+                </p>
+              )}
             </div>
           )}
         />
@@ -231,7 +297,9 @@ export const SignUpForm = () => {
         </Button>
 
         <div className="text-center pt-2">
-          <span className="text-secondary font-onest text-lg">Already have an account? </span>
+          <span className="text-secondary font-onest text-lg">
+            Already have an account?{" "}
+          </span>
           <Link
             href="/signin"
             className="text-primary font-bold font-onest text-lg hover:underline ml-1"

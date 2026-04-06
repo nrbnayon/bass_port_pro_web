@@ -24,27 +24,31 @@ function UserStatusDropdown({ user }: { user: User }) {
     try {
       await updateUser({ id: user._id, status: newStatus }).unwrap();
       setIsOpen(false);
-    } catch (err) {
-      console.error("Failed to update status", err);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      console.error(
+        "Failed to update status:",
+        err?.data?.message || err?.message || err,
+      );
     }
   };
 
   const statuses = [
     {
       label: "Suspended",
-      value: "Suspended",
+      value: "suspended",
       bg: "bg-[#FFE73580] cursor-pointer",
       text: "text-[#EAB308]",
     },
     {
       label: "Active",
-      value: "Active",
+      value: "active",
       bg: "bg-[#22C55E33] cursor-pointer",
       text: "text-[#22C55E]",
     },
     {
       label: "Banned",
-      value: "Banned",
+      value: "banned",
       bg: "bg-[#DF141426] cursor-pointer",
       text: "text-[#DF1414]",
     },
@@ -54,7 +58,7 @@ function UserStatusDropdown({ user }: { user: User }) {
     <div className="relative inline-block text-left">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="p-2 hover:bg-gray-100 rounded-full transition-colors flex items-center justify-center"
+        className="p-2 hover:bg-gray-100 rounded-full transition-colors flex items-center justify-center cursor-pointer"
         aria-label="More actions"
       >
         <MoreVertical className="w-5 h-5 text-gray-400" />
@@ -168,9 +172,9 @@ export default function UserManagementClient() {
       align: "center" as const,
       render: (status: string) => {
         const statusConfig: Record<string, { bg: string; text: string }> = {
-          Active: { bg: "bg-[#22C55E33]", text: "text-[#22C55E]" },
-          Suspended: { bg: "bg-[#FFE73580]", text: "text-[#EAB308]" },
-          Banned: { bg: "bg-[#DF141426]", text: "text-[#DF1414]" },
+          active: { bg: "bg-[#22C55E33]", text: "text-[#22C55E]" },
+          suspended: { bg: "bg-[#FFE73580]", text: "text-[#EAB308]" },
+          banned: { bg: "bg-[#DF141426]", text: "text-[#DF1414]" },
         };
         const config = statusConfig[status] || {
           bg: "bg-gray-100",
@@ -179,7 +183,7 @@ export default function UserManagementClient() {
         return (
           <span
             className={cn(
-              "px-4 py-1.5 rounded-full text-xs font-medium inline-block min-w-[90px] text-center",
+              "px-4 py-1.5 rounded-full text-xs font-medium inline-block min-w-[90px] text-center capitalize",
               config.bg,
               config.text,
             )}
@@ -206,12 +210,12 @@ export default function UserManagementClient() {
       />
 
       <div className="p-5 flex flex-col gap-6 w-full mx-auto">
-        <div className="bg-white p-6 rounded-xl border border-border shadow-sm">
+        <div className="bg-white p-6 rounded-xl border border-primary/10 shadow-none">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
             <SearchBar
               onSearch={setSearch}
               placeholder="Search users by name or email..."
-              className="max-w-full bg-white border border-[#E5E7EB] rounded-xl"
+              className="max-w-full bg-white border border-primary/10 rounded-xl"
             />
           </div>
 
@@ -241,7 +245,7 @@ export default function UserManagementClient() {
                 onPageSizeChange={setLimit}
                 showPageSize={true}
                 pageSizeOptions={[5, 10, 20, 50, 100]}
-                className="border-t-0 p-0"
+                className="border-t-0 p-0 "
               />
             </div>
           )}

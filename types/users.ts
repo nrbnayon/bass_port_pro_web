@@ -5,7 +5,7 @@ export interface User {
   email: string;
   role: string | "admin" | "user" | "guest" | "creator";
   avatar?: string;
-  status: "Active" | "Suspended" | "Banned" | "Pending" | "Inactive";
+  status: "active" | "suspended" | "banned" | "pending" | "inactive"; 
   location?: string;
   createdAt?: string;
   updatedAt?: string;
