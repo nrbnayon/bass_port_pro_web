@@ -1,13 +1,21 @@
 // redux/services/apiSlice.ts
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import type { RootState } from '../store';
-import { logout, updateTokens } from '../features/authSlice';
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import type { RootState } from "../store";
+import { logout, updateTokens } from "../features/authSlice";
 
 // Helper to clear cookies
 const clearAuthCookies = () => {
-  if (typeof document === 'undefined') return;
-  const cookiesToClear = ["refreshToken", "authSession", "userRole", "userEmail", "userName", "userPermissions", "reset_verified"];
-  cookiesToClear.forEach(name => {
+  if (typeof document === "undefined") return;
+  const cookiesToClear = [
+    "refreshToken",
+    "authSession",
+    "userRole",
+    "userEmail",
+    "userName",
+    "userPermissions",
+    "reset_verified",
+  ];
+  cookiesToClear.forEach((name) => {
     document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
   });
 };
@@ -46,7 +54,7 @@ const baseQuery = fetchBaseQuery({
 const baseQueryWithReauth: typeof baseQuery = async (
   args,
   api,
-  extraOptions
+  extraOptions,
 ) => {
   let result = await baseQuery(args, api, extraOptions);
 
@@ -57,7 +65,7 @@ const baseQueryWithReauth: typeof baseQuery = async (
         method: "POST",
       },
       api,
-      extraOptions
+      extraOptions,
     );
 
     if (refreshResult.data) {
@@ -65,8 +73,12 @@ const baseQueryWithReauth: typeof baseQuery = async (
       const newAccessToken = responseData.access_token;
 
       if (newAccessToken) {
-        api.dispatch(updateTokens({ accessToken: newAccessToken, tokenExpiresAt: responseData.expires_at }));
-
+        api.dispatch(
+          updateTokens({
+            accessToken: newAccessToken,
+            tokenExpiresAt: responseData.expires_at,
+          }),
+        );
 
         result = await baseQuery(args, api, extraOptions);
       } else {
@@ -82,13 +94,12 @@ const baseQueryWithReauth: typeof baseQuery = async (
   return result;
 };
 
-
 // Create the base API slice
 export const apiSlice = createApi({
-  reducerPath: 'api',
+  reducerPath: "api",
   baseQuery: baseQueryWithReauth,
   // Define tag types for cache invalidation
-  tagTypes: ['User', 'Auth', 'Dashboard', 'Job', 'Application', 'Profile', 'Settings'],
+  tagTypes: ["User", "Auth", "Dashboard", "Profile", "Settings", "AuditLogs"],
   // Define endpoints in separate files and inject them here
   endpoints: () => ({}),
 });
