@@ -32,7 +32,7 @@ export default function DashboardWrapper({ children }: DashboardWrapperProps) {
 
   // State management
   const [open, setOpen] = useState(true);
-  const [sidebarWidth, setSidebarWidth] = useState(290);
+  const [sidebarWidth, setSidebarWidth] = useState(250);
   const [isResizing, setIsResizing] = useState(false);
   const [startX, setStartX] = useState(0);
   const [startWidth, setStartWidth] = useState(0);

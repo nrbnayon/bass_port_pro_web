@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState } from "react";
@@ -8,9 +9,11 @@ import {
   Message01Icon,
 } from "@hugeicons/core-free-icons";
 import { toast } from "sonner";
-import { Send } from "lucide-react";
+import { Send, Loader2 } from "lucide-react";
+import { useSubmitContactMutation } from "@/redux/services/contactApi";
 
 export default function ContactUsClient() {
+  const [submitContact, { isLoading: isSubmitting }] = useSubmitContactMutation();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -27,14 +30,26 @@ export default function ContactUsClient() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.message) {
       toast.error("Please fill in all required fields.");
       return;
     }
-    toast.success("Message sent successfully!");
-    setFormData({ name: "", email: "", subject: "", message: "" });
+    
+    try {
+      const res = await submitContact({
+        ...formData,
+        category: "general",
+      }).unwrap();
+
+      toast.success(res.message || "Message sent successfully!");
+      setFormData({ name: "", email: "", subject: "", message: "" });
+    } catch (err: any) {
+      toast.error(
+        err?.data?.message || "Failed to send message. Please try again."
+      );
+    }
   };
 
   const handleNewsletterSubmit = (e: React.FormEvent) => {
@@ -217,10 +232,15 @@ export default function ContactUsClient() {
                 <div className="mt-2">
                   <button
                     type="submit"
-                    className="inline-flex items-center gap-2 rounded-xl bg-primary px-8 py-4 text-base font-bold text-white shadow-xl shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+                    disabled={isSubmitting}
+                    className="inline-flex items-center gap-2 rounded-xl bg-primary px-8 py-4 text-base font-bold text-white shadow-xl shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
                   >
-                    <Send className="h-5 w-5" />
-                    Send Message
+                    {isSubmitting ? (
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                    ) : (
+                      <Send className="h-5 w-5" />
+                    )}
+                    {isSubmitting ? "Sending..." : "Send Message"}
                   </button>
                 </div>
               </form>
