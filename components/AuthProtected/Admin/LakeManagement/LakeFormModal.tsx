@@ -183,6 +183,9 @@ export default function LakeFormModal({
             </p>
           </div>
           <button
+            type="button"
+            aria-label="Close lake form"
+            title="Close"
             onClick={onClose}
             className="p-3 rounded-2xl bg-gray-50 text-secondary hover:text-red-500 transition-all hover:rotate-90 active:scale-90 cursor-pointer"
           >
@@ -242,6 +245,8 @@ export default function LakeFormModal({
                 <input
                   ref={fileInputRef}
                   type="file"
+                  aria-label="Upload lake image"
+                  title="Upload lake image"
                   accept="image/*"
                   onChange={handleImageChange}
                   className="hidden"
@@ -256,6 +261,8 @@ export default function LakeFormModal({
                 </label>
                 <input
                   name="name"
+                  aria-label="Lake name"
+                  title="Lake name"
                   value={formData.name}
                   onChange={handleChange}
                   placeholder="e.g. Lake Guntersville"
@@ -270,6 +277,8 @@ export default function LakeFormModal({
                   <input
                     list="states-list"
                     name="state"
+                    aria-label="State or region"
+                    title="State or region"
                     value={formData.state}
                     onChange={handleChange}
                     placeholder="Enter or select state..."
@@ -318,6 +327,8 @@ export default function LakeFormModal({
                 <input
                   type="number"
                   name="size"
+                  aria-label="Lake size in acres"
+                  title="Lake size in acres"
                   value={formData.size}
                   onChange={handleChange}
                   className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-primary/20 font-bold"
@@ -330,6 +341,8 @@ export default function LakeFormModal({
                 <input
                   type="number"
                   name="maxDepth"
+                  aria-label="Maximum depth in feet"
+                  title="Maximum depth in feet"
                   value={formData.maxDepth}
                   onChange={handleChange}
                   className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-primary/20 font-bold"
@@ -342,6 +355,8 @@ export default function LakeFormModal({
                 <input
                   type="number"
                   name="elevation"
+                  aria-label="Elevation in feet"
+                  title="Elevation in feet"
                   value={formData.elevation}
                   onChange={handleChange}
                   className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-primary/20 font-bold"

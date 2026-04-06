@@ -196,12 +196,18 @@ export default function LakeManagementClient() {
             <div className="flex items-center gap-3 w-full sm:w-auto">
               <div className="flex items-center p-1 bg-gray-50 rounded-xl border border-border">
                 <button
+                  type="button"
+                  aria-label="Table view"
+                  title="Table view"
                   onClick={() => setViewMode("table")}
                   className={`p-2 rounded-lg transition-all ${viewMode === "table" ? "bg-white shadow-sm text-primary" : "text-secondary hover:text-foreground"}`}
                 >
                   <List className="w-4 h-4" />
                 </button>
                 <button
+                  type="button"
+                  aria-label="Grid view"
+                  title="Grid view"
                   onClick={() => setViewMode("card")}
                   className={`p-2 rounded-lg transition-all ${viewMode === "card" ? "bg-white shadow-sm text-primary" : "text-secondary hover:text-foreground"}`}
                 >
@@ -325,12 +331,18 @@ export default function LakeManagementClient() {
                         </div>
                         <div className="flex items-center gap-2">
                           <button
+                            type="button"
+                            aria-label={`Edit ${lake.name}`}
+                            title="Edit"
                             onClick={() => handleEdit(lake)}
                             className="p-2 bg-gray-50 text-blue-600 hover:bg-blue-50 rounded-xl transition-colors cursor-pointer"
                           >
                             <SquarePen className="w-4 h-4" />
                           </button>
                           <button
+                            type="button"
+                            aria-label={`Delete ${lake.name}`}
+                            title="Delete"
                             onClick={() => handleDeleteClick(lake)}
                             className="p-2 bg-gray-50 text-red-500 hover:bg-red-50 rounded-xl transition-colors cursor-pointer"
                           >
