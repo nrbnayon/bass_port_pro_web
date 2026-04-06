@@ -10,11 +10,11 @@ import {
   TableAction,
   SortConfig,
   ConfirmationConfig,
-  TableColumn,
 } from "@/types/table.types";
 import { ArrowUpDown, ArrowUp, ArrowDown, PackageOpen, Search } from "lucide-react";
 import { TableSkeleton } from "@/components/Skeleton/TableSkeleton";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function DynamicTable<T extends Record<string, any>>({
   data,
   config,
@@ -37,6 +37,7 @@ export function DynamicTable<T extends Record<string, any>>({
   const [pageSize, setPageSize] = useState(pagination.pageSize || 10);
   const [sortConfig, setSortConfig] = useState<SortConfig | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [selectedRows, setSelectedRows] = useState<T[]>(
     selection?.selectedRows || []
   );
@@ -84,7 +85,9 @@ export function DynamicTable<T extends Record<string, any>>({
       const column = config.columns.find((col) => col.key === sortConfig.key);
       if (!column) return 0;
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let aValue: any;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let bValue: any;
 
       if (typeof column.accessor === "function") {
@@ -141,55 +144,55 @@ export function DynamicTable<T extends Record<string, any>>({
   };
 
   // Handle selection
-  const handleSelectRow = (row: T, index: number) => {
-    if (!selection?.enabled) return;
+  // const handleSelectRow = (row: T, index: number) => {
+  //   if (!selection?.enabled) return;
 
-    const rowId = getRowId(row, index);
-    const isSelected = selectedRows.some(
-      (r, i) => getRowId(r, i) === rowId
-    );
+  //   const rowId = getRowId(row, index);
+  //   const isSelected = selectedRows.some(
+  //     (r, i) => getRowId(r, i) === rowId
+  //   );
 
-    let newSelection: T[];
+  //   let newSelection: T[];
 
-    if (selection.mode === "single") {
-      newSelection = isSelected ? [] : [row];
-    } else {
-      newSelection = isSelected
-        ? selectedRows.filter((r, i) => getRowId(r, i) !== rowId)
-        : [...selectedRows, row];
-    }
+  //   if (selection.mode === "single") {
+  //     newSelection = isSelected ? [] : [row];
+  //   } else {
+  //     newSelection = isSelected
+  //       ? selectedRows.filter((r, i) => getRowId(r, i) !== rowId)
+  //       : [...selectedRows, row];
+  //   }
 
-    setSelectedRows(newSelection);
-    selection.onSelectionChange?.(newSelection);
-  };
+  //   setSelectedRows(newSelection);
+  //   selection.onSelectionChange?.(newSelection);
+  // };
 
-  const handleSelectAll = () => {
-    if (!selection?.enabled || selection.mode === "single") return;
+  // const handleSelectAll = () => {
+  //   if (!selection?.enabled || selection.mode === "single") return;
 
-    const allSelected =
-      paginatedData.length > 0 &&
-      paginatedData.every((row, index) =>
-        selectedRows.some((r, i) => getRowId(r, i) === getRowId(row, index))
-      );
+  //   const allSelected =
+  //     paginatedData.length > 0 &&
+  //     paginatedData.every((row, index) =>
+  //       selectedRows.some((r, i) => getRowId(r, i) === getRowId(row, index))
+  //     );
 
-    const newSelection = allSelected
-      ? selectedRows.filter(
-          (r, i) =>
-            !paginatedData.some(
-              (row, index) => getRowId(row, index) === getRowId(r, i)
-            )
-        )
-      : [
-          ...selectedRows,
-          ...paginatedData.filter(
-            (row, index) =>
-              !selectedRows.some((r, i) => getRowId(r, i) === getRowId(row, index))
-          ),
-        ];
+  //   const newSelection = allSelected
+  //     ? selectedRows.filter(
+  //         (r, i) =>
+  //           !paginatedData.some(
+  //             (row, index) => getRowId(row, index) === getRowId(r, i)
+  //           )
+  //       )
+  //     : [
+  //         ...selectedRows,
+  //         ...paginatedData.filter(
+  //           (row, index) =>
+  //             !selectedRows.some((r, i) => getRowId(r, i) === getRowId(row, index))
+  //         ),
+  //       ];
 
-    setSelectedRows(newSelection);
-    selection.onSelectionChange?.(newSelection);
-  };
+  //   setSelectedRows(newSelection);
+  //   selection.onSelectionChange?.(newSelection);
+  // };
 
   // Handle actions
   const handleAction = async (
@@ -223,6 +226,7 @@ export function DynamicTable<T extends Record<string, any>>({
   };
 
   // Get cell value
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const getCellValue = (row: T, column: any, index: number) => {
     if (column.render) {
       return column.render(
@@ -337,7 +341,7 @@ export function DynamicTable<T extends Record<string, any>>({
                     >
                       {column.header}
                       {column.sortable && (
-                        <span className="text-white">
+                        <span className="text-current">
                           {sortConfig?.key === column.key ? (
                             sortConfig.direction === "asc" ? (
                               <ArrowUp className="w-4 h-4" />

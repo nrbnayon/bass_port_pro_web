@@ -1,15 +1,16 @@
 // types/user.ts
 export interface User {  
-id: string;
+  _id: string;
   name: string;
   email: string;
-  role: "admin" | "user" | "guest" | "creator";
+  role: string | "admin" | "user" | "guest" | "creator";
   avatar?: string;
-  status?: "Active" | "Inactive" | "Pending";
+  status: "Active" | "Suspended" | "Banned" | "Pending" | "Inactive";
   location?: string;
   createdAt?: string;
   updatedAt?: string;
   phone?: string;
   permissions?: string[];
   image?: string | null;
+  reports?: number;
 }

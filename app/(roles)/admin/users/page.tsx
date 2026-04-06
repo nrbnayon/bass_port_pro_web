@@ -1,39 +1,11 @@
-"use client";
+import UserManagementClient from "@/components/AuthProtected/Admin/UserManagement/UserManagementClient";
+import { Metadata } from "next";
 
-import { useUser } from "@/hooks/useUser";
-import { useGetAllUsersQuery } from "@/redux/services/userApi";
+export const metadata: Metadata = {
+  title: "User Management - Bass Insight Port Pro",
+  description: "User Management - Bass Insight Port Pro",
+};
 
 export default function UsersPage() {
-  const { hasPermission } = useUser();
-  const { isLoading, isError } = useGetAllUsersQuery({});
-
-  // Fallback check (proxy.ts should handle this, but client side check is extra safety)
-  if (!hasPermission("manage_users")) {
-    return (
-      <div className="p-10 text-xl font-bold text-red-500">
-        Access Denied: You do require manage_users permission
-      </div>
-    );
-  }
-
-  if (isLoading) return <div className="p-10">Loading users...</div>;
-  if (isError)
-    return (
-      <div className="p-10 text-red-500">Failed to load users from API</div>
-    );
-
-  return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-semibold">User Management</h1>
-        <button className="px-4 py-2 bg-primary text-white rounded-md text-sm font-medium hover:bg-primary/90 transition-colors">
-          Add New User
-        </button>
-      </div>
-
-      <div className="p-4 border border-dashed border-slate-700 rounded-lg text-center text-slate-500">
-        Users table is temporarily disabled.
-      </div>
-    </div>
-  );
+  return <UserManagementClient />;
 }
