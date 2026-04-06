@@ -90,7 +90,7 @@ export default function ReportFormModal({
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
+            className="p-2 text-gray-400 hover:text-gray-600 hover:text-red-400 rounded-full transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>

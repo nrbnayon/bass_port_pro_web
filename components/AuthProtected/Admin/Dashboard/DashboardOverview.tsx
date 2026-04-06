@@ -113,38 +113,38 @@ const DashboardOverview = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
             <StatsCard
               title="Total Users"
-              value={stats.totalUsers.value.toLocaleString()}
+              value={stats.totalUsers?.value.toLocaleString()}
               icon={Users}
               iconBgColor="#F3F4F6"
               iconColor="#6B7280"
-              subtitle={`${stats.totalUsers.trend >= 0 ? '+' : ''}${stats.totalUsers.trend}% From last month`}
-              isUp={stats.totalUsers.trend >= 0}
+              subtitle={`${stats.totalUsers?.trend >= 0 ? '+' : ''}${stats.totalUsers?.trend}% From last month`}
+              isUp={stats.totalUsers?.trend >= 0}
             />
             <StatsCard
               title="Total Lakes"
-              value={stats.totalLakes.value.toLocaleString()}
+              value={stats.totalLakes?.value.toLocaleString()}
               icon={MapPin}
               iconBgColor="#DCFCE7"
               iconColor="#22C55E"
-              subtitle={`${stats.totalLakes.trend >= 0 ? '+' : ''}${stats.totalLakes.trend}% Growth`}
-              isUp={stats.totalLakes.trend >= 0}
+              subtitle={`${stats.totalLakes?.trend >= 0 ? '+' : ''}${stats.totalLakes?.trend}% Growth`}
+              isUp={stats.totalLakes?.trend >= 0}
             />
             <StatsCard
               title="Reports"
-              value={stats.totalReports.value.toLocaleString()}
+              value={stats.totalReports?.value.toLocaleString()}
               icon={FileText}
               iconBgColor="#FFEDD5"
               iconColor="#F97316"
-              subtitle={`+${stats.totalReports.trend} New this month`}
+              subtitle={`+${stats.totalReports?.trend} New this month`}
               isUp={true}
             />
             <StatsCard
               title="Lake Request"
-              value={stats.lakeRequests.value.toLocaleString()}
+              value={stats.lakeRequests?.value.toLocaleString()}
               icon={ImageIcon}
               iconBgColor="#CFFAFE"
               iconColor="#06B6D4"
-              subtitle={`+${stats.lakeRequests.trend} Pending requests`}
+              subtitle={`+${stats.lakeRequests?.trend} Pending requests`}
               isUp={true}
             />
           </div>
