@@ -13,17 +13,23 @@ import {
   ShieldCheck,
   Save,
   RefreshCw,
-  Settings as SettingsIcon,
-  ChevronRight,
-  ClipboardList,
-  LucideIcon,
+  Plus,
+  Trash2,
+  GripVertical,
+  CheckCircle2,
 } from "lucide-react";
 import { toast } from "sonner";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   privacyPolicy as defaultPrivacy,
   termsOfService as defaultTerms,
 } from "@/data/legalData";
+
+interface LegalSection {
+  id: string;
+  title: string;
+  content: string;
+}
 
 export default function AdminPrivacyPolicyPage() {
   const { data, isLoading } = useGetSettingsQuery();
@@ -31,171 +37,215 @@ export default function AdminPrivacyPolicyPage() {
     useUpdateSettingsMutation();
 
   const [activeTab, setActiveTab] = useState<"privacy" | "terms">("privacy");
-  const [privacyPolicy, setPrivacyPolicy] = useState("");
-  const [termsOfService, setTermsOfService] = useState("");
+  const [sections, setSections] = useState<LegalSection[]>([]);
 
-  // Sync with server data or use defaults
+  // Initialize from server or defaults
   useEffect(() => {
     if (data?.data) {
-      const serverPrivacy = data.data.privacyPolicy || JSON.stringify(defaultPrivacy, null, 2);
-      const serverTerms = data.data.termsOfService || JSON.stringify(defaultTerms, null, 2);
-      
-      if (serverPrivacy !== privacyPolicy) setPrivacyPolicy(serverPrivacy);
-      if (serverTerms !== termsOfService) setTermsOfService(serverTerms);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
+      const rawContent =
+        activeTab === "privacy"
+          ? data.data.privacyPolicy
+          : data.data.termsOfService;
 
-  const handleSave = async () => {
-    try {
-      await updateSettings({
-        privacyPolicy,
-        termsOfService,
-      }).unwrap();
-      toast.success("Legal documents updated successfully!");
-    } catch (err: any) {
-      toast.error(err?.data?.message || "Failed to update legal documents.");
+      try {
+        if (rawContent) {
+          const parsed = JSON.parse(rawContent);
+          // eslint-disable-next-line react-hooks/set-state-in-effect
+          setSections(Array.isArray(parsed) ? parsed : []);
+        } else {
+          setSections(activeTab === "privacy" ? defaultPrivacy : defaultTerms);
+        }
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (e) {
+        setSections(activeTab === "privacy" ? defaultPrivacy : defaultTerms);
+      }
+    }
+  }, [data, activeTab]);
+
+  const handleUpdateSection = (
+    index: number,
+    field: keyof LegalSection,
+    value: string,
+  ) => {
+    const updated = [...sections];
+    updated[index] = { ...updated[index], [field]: value };
+    setSections(updated);
+  };
+
+  const handleAddSection = () => {
+    const newId = `section-${Date.now()}`;
+    setSections([
+      ...sections,
+      { id: newId, title: "New Section", content: "" },
+    ]);
+  };
+
+  const handleRemoveSection = (index: number) => {
+    if (confirm("Are you sure you want to remove this section?")) {
+      setSections(sections.filter((_, i) => i !== index));
     }
   };
 
-  const handleResetToDefault = () => {
-    if (
-      confirm(
-        "Are you sure you want to reset to the built-in defaults? This will overwrite your current changes.",
-      )
-    ) {
-      if (activeTab === "privacy") {
-        setPrivacyPolicy(JSON.stringify(defaultPrivacy, null, 2));
-      } else {
-        setTermsOfService(JSON.stringify(defaultTerms, null, 2));
-      }
-      toast.success("Reset to defaults (Click Save to apply)");
+  const handleSaveAll = async () => {
+    try {
+      const payload = {
+        [activeTab === "privacy" ? "privacyPolicy" : "termsOfService"]:
+          JSON.stringify(sections),
+      };
+      await updateSettings(payload).unwrap();
+      toast.success(
+        `${activeTab === "privacy" ? "Privacy" : "Terms"} published successfully!`,
+      );
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (err: any) {
+      toast.error("Failed to publish changes.");
     }
   };
 
   if (isLoading) {
     return (
-      <div className="flex flex-col h-screen animate-pulse bg-gray-50/50">
-        <div className="h-64 bg-gray-100" />
-        <div className="p-8 space-y-6">
-          <div className="h-10 bg-gray-200 w-1/4 rounded-lg" />
-          <div className="h-[500px] bg-gray-200 w-full rounded-2xl" />
-        </div>
+      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-8 animate-pulse">
+        <RefreshCw className="w-8 h-8 text-indigo-500 animate-spin mb-4" />
+        <p className="text-gray-400 text-sm font-medium uppercase tracking-widest">
+          Loading Intelligence...
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#F9FAFB] flex flex-col pb-20">
+    <div className="min-h-screen flex flex-col pb-12">
       <DashboardHeader
-        title="Legal & Policy Administration"
-        description="Manage the core legal documents for BassInsight. Updates are live across the platform."
+        title="Policy Manager"
+        description="Craft and refine platform rules with a compact, section-based editor."
       />
 
-      <div className="p-8 flex flex-col gap-8 w-full max-w-7xl mx-auto">
-        {/* Navigation Tabs */}
-        <div className="flex items-center gap-1 bg-white p-1 rounded-2xl border border-gray-200 shadow-sm w-fit self-center lg:self-start">
-          <TabButton
-            active={activeTab === "privacy"}
-            onClick={() => setActiveTab("privacy")}
-            icon={ShieldCheck}
-            label="Privacy Policy"
-          />
-          <TabButton
-            active={activeTab === "terms"}
-            onClick={() => setActiveTab("terms")}
-            icon={FileText}
-            label="Terms of Service"
-          />
-        </div>
-
-        {/* Editor Container */}
-        <motion.div
-          key={activeTab}
-          initial={{ opacity: 0, scale: 0.99, y: 10 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-          className="bg-white rounded-[2.5rem] p-8 lg:p-12 border border-gray-200 shadow-[0_20px_50px_rgba(0,0,0,0.02)] flex flex-col gap-6"
-        >
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div
-                className={`p-3 rounded-2xl ${activeTab === "privacy" ? "bg-indigo-50 text-indigo-600" : "bg-amber-50 text-amber-600"}`}
-              >
-                {activeTab === "privacy" ? (
-                  <ShieldCheck className="w-6 h-6" />
-                ) : (
-                  <ClipboardList className="w-6 h-6" />
-                )}
-              </div>
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900 leading-tight">
-                  {activeTab === "privacy"
-                    ? "Privacy & Data Protection"
-                    : "User Service Terms"}
-                </h2>
-                <p className="text-gray-500 text-sm mt-1">
-                  {activeTab === "privacy"
-                    ? "Last synchronized with public view."
-                    : "Governing rules for across all platform modules."}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <Button
-                variant="ghost"
-                onClick={handleResetToDefault}
-                className="text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all rounded-xl"
-              >
-                <RefreshCw className="w-4 h-4 mr-2" />
-                Reset to Defaults
-              </Button>
-              <Button
-                onClick={handleSave}
-                disabled={isUpdating}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl px-8 shadow-lg shadow-indigo-200 flex items-center h-12"
-              >
-                {isUpdating ? (
-                  <RefreshCw className="w-5 h-5 animate-spin mr-2" />
-                ) : (
-                  <Save className="w-5 h-5 mr-2" />
-                )}
-                Publish Changes
-              </Button>
-            </div>
-          </div>
-
-          <div className="relative group">
-            <div className="absolute top-4 right-4 text-[10px] uppercase font-bold text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity">
-              Rich Text / JSON Mode
-            </div>
-            <textarea
-              value={activeTab === "privacy" ? privacyPolicy : termsOfService}
-              onChange={(e) =>
-                activeTab === "privacy"
-                  ? setPrivacyPolicy(e.target.value)
-                  : setTermsOfService(e.target.value)
-              }
-              placeholder="Enter document content here..."
-              className="w-full h-[600px] bg-gray-50/50 border border-gray-200 rounded-[1.5rem] p-8 text-gray-800 font-mono text-sm leading-relaxed focus:bg-white focus:border-indigo-400 focus:ring-4 focus:ring-indigo-50 transition-all outline-none resize-none"
+      <div className="px-6 w-full mx-auto flex flex-col gap-6 mt-5">
+        {/* Compact Tabs & Save */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex bg-white p-1 rounded-xl border border-gray-200 shadow-sm w-fit">
+            <TabItem
+              active={activeTab === "privacy"}
+              onClick={() => setActiveTab("privacy")}
+              icon={ShieldCheck}
+              label="Privacy"
+            />
+            <TabItem
+              active={activeTab === "terms"}
+              onClick={() => setActiveTab("terms")}
+              icon={FileText}
+              label="Terms"
             />
           </div>
 
-          <div className="flex items-center gap-2 p-4 bg-indigo-50/50 rounded-2xl border border-indigo-100/50">
-            <SettingsIcon className="w-4 h-4 text-indigo-500" />
-            <span className="text-[11px] text-indigo-600/80 font-medium">
-              Note: Ensure the content is formatted as JSON if using sectioned
-              components, or plain text if using the direct rich view.
+          <Button
+            onClick={handleSaveAll}
+            disabled={isUpdating}
+            className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl h-10 px-6 shadow-md flex items-center gap-2 font-bold text-sm transition-all shadow-indigo-100 cursor-pointer"
+          >
+            {isUpdating ? (
+              <RefreshCw className="w-4 h-4 animate-spin" />
+            ) : (
+              <Save className="w-4 h-4" />
+            )}
+            Publish Changes
+          </Button>
+        </div>
+
+        {/* Compact Sections List */}
+        <div className="flex flex-col gap-4">
+          <AnimatePresence mode="popLayout">
+            {sections.map((section, idx) => (
+              <motion.div
+                key={section.id}
+                layout
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.98 }}
+                className="bg-white border border-gray-200 rounded-2xl p-5 shadow-xs hover:border-indigo-300 group transition-all"
+                transition={{ duration: 0.2 }}
+              >
+                <div className="flex flex-col gap-3">
+                  {/* Card Header (Compact) */}
+                  <div className="flex items-center justify-between border-b border-gray-100 pb-2">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 group-hover:text-indigo-500 transition-colors">
+                        <GripVertical className="w-4 h-4" />
+                      </div>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-indigo-500/60">
+                        Section {idx + 1}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        onClick={handleSaveAll}
+                        variant="ghost"
+                        className="h-8 px-3 rounded-lg text-xs font-bold text-emerald-600 gap-1.5"
+                      >
+                        <CheckCircle2 className="w-3.5 h-3.5" /> Save Section
+                      </Button>
+                      <button
+                        onClick={() => handleRemoveSection(idx)}
+                        className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all cursor-pointer"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Inputs (Compact) */}
+                  <div className="grid grid-cols-1 gap-2">
+                    <div className="space-y-1">
+                      <label className="text-[11px] font-bold text-gray-400 uppercase tracking-tight ml-1">
+                        Title
+                      </label>
+                      <input
+                        type="text"
+                        value={section.title}
+                        onChange={(e) =>
+                          handleUpdateSection(idx, "title", e.target.value)
+                        }
+                        className="w-full h-11 bg-gray-50/50 border border-gray-200 rounded-xl px-4 text-base font-bold text-gray-900 focus:bg-white focus:border-indigo-300 focus:ring-4 focus:ring-indigo-50/50 transition-all outline-none"
+                        placeholder="Section Title..."
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-[11px] font-bold text-gray-400 uppercase tracking-tight ml-1">
+                        Content
+                      </label>
+                      <textarea
+                        value={section.content}
+                        onChange={(e) =>
+                          handleUpdateSection(idx, "content", e.target.value)
+                        }
+                        className="w-full min-h-[80px] bg-gray-50/50 border border-gray-200 rounded-xl p-4 text-sm text-gray-600 leading-relaxed focus:bg-white focus:border-indigo-300 focus:ring-4 focus:ring-indigo-50/50 transition-all outline-none resize-none"
+                        placeholder="Legal content..."
+                      />
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+
+          {/* Compact Add Button */}
+          <button
+            onClick={handleAddSection}
+            className="w-full py-4 border-2 border-dashed border-gray-200 rounded-2xl flex items-center justify-center gap-2 text-gray-400 hover:border-indigo-200 hover:text-indigo-500 hover:bg-indigo-50/20 transition-all group cursor-pointer mb-5"
+          >
+            <Plus className="w-4 h-4" />
+            <span className="font-bold text-xs uppercase tracking-widest">
+              New Section
             </span>
-          </div>
-        </motion.div>
+          </button>
+        </div>
       </div>
     </div>
   );
 }
 
-function TabButton({
+function TabItem({
   active,
   onClick,
   icon: Icon,
@@ -203,24 +253,23 @@ function TabButton({
 }: {
   active: boolean;
   onClick: () => void;
-  icon: LucideIcon;
+  icon: any;
   label: string;
 }) {
   return (
     <button
       onClick={onClick}
       className={`
-        flex items-center gap-3 px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-200
+        flex items-center gap-2 px-6 py-2.5 rounded-lg text-xs font-bold transition-all duration-200 cursor-pointer
         ${
           active
-            ? "bg-gray-900 text-white shadow-md scale-[1.02]"
-            : "text-gray-500 hover:text-gray-900 hover:bg-gray-100"
+            ? "bg-gray-900 text-white shadow shadow-gray-200 scale-[1.02]"
+            : "text-gray-500 hover:text-gray-900"
         }
       `}
     >
-      <Icon className={`w-4 h-4 ${active ? "text-indigo-400" : ""}`} />
+      <Icon className={`w-3.5 h-3.5 ${active ? "text-indigo-400" : ""}`} />
       {label}
-      {active && <ChevronRight className="w-4 h-4 opacity-50 ml-1" />}
     </button>
   );
 }
