@@ -9,8 +9,9 @@ import {
   List,
   SquarePen,
   CalendarDays,
-  User,
+  User as UserIcon,
   Fish,
+  MoreVertical,
 } from "lucide-react";
 import { toast } from "sonner";
 import DashboardHeader from "@/components/Shared/DashboardHeader";
@@ -32,11 +33,15 @@ export default function ReportsManagementClient() {
 
   // Form Modal State
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [selectedReport, setSelectedReport] = useState<FishingReport | null>(null);
+  const [selectedReport, setSelectedReport] = useState<FishingReport | null>(
+    null,
+  );
 
   // Delete Modal State
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const [reportToDelete, setReportToDelete] = useState<FishingReport | null>(null);
+  const [reportToDelete, setReportToDelete] = useState<FishingReport | null>(
+    null,
+  );
 
   const { data, isLoading, isError } = useGetReportsQuery({
     page,
@@ -71,99 +76,83 @@ export default function ReportsManagementClient() {
   const tableConfig: TableConfig<FishingReport> = {
     columns: [
       {
-        key: "title",
-        header: "Report Info",
-        render: (title, report) => (
-          <div className="flex flex-col">
-            <span className="font-semibold text-foreground">
-              {title || "Untitled Report"}
-            </span>
-            <div className="flex items-center gap-2 text-xs text-secondary mt-1">
-              <span className="flex items-center gap-1">
-                <User className="w-3 h-3" />
-                {report.user?.name || "Unknown"}
-              </span>
-              <span className="flex items-center gap-1">
-                | {report.lakeName}
-              </span>
-            </div>
-          </div>
+        key: "user",
+        header: "User",
+        render: (_, report) => (
+          <span className="font-semibold text-[#4B5563]">
+            {report.user?.name || "Unknown"}
+          </span>
+        ),
+      },
+      {
+        key: "lakeName",
+        header: "Lake",
+        render: (lakeName) => (
+          <span className="font-semibold text-[#1F2937]">{lakeName}</span>
+        ),
+      },
+      {
+        key: "species",
+        header: "Species",
+        render: (species) => (
+          <span className="text-[#9CA3AF]">{species || "N/A"}</span>
         ),
       },
       {
         key: "fishedAt",
-        header: "Date Fished",
+        header: "Date",
         render: (date) => (
-          <div className="flex items-center gap-1.5 text-secondary">
-            <CalendarDays className="w-3.5 h-3.5" />
-            <span className="text-sm font-medium">
-              {new Date(date).toLocaleDateString()}
-            </span>
-          </div>
+          <span className="font-medium text-[#4B5563]">
+            {new Date(date).toISOString().split("T")[0]}
+          </span>
         ),
         sortable: true,
       },
       {
-        key: "catchCount",
-        header: "Catches",
-        render: (count, report) => (
-          <div className="flex items-center gap-1.5">
-            <Fish className="w-3.5 h-3.5 text-secondary" />
-            <span className="text-sm font-medium text-foreground">
-              {count || 0} catches
-              {report.biggestCatch ? ` (Max: ${report.biggestCatch}lbs)` : ""}
-            </span>
-          </div>
+        key: "score",
+        header: "Reports",
+        render: (score) => (
+          <span
+            className={`font-semibold ${Number(score) >= 80 ? "text-[#10B981]" : Number(score) >= 70 ? "text-[#F59E0B]" : "text-[#EF4444]"}`}
+          >
+            {score || 0}%
+          </span>
         ),
         sortable: true,
       },
       {
         key: "status",
         header: "Status",
-        render: (status, report) => (
-          <div className="flex flex-col gap-1">
-            <Badge
-              variant={
-                status === "active"
-                  ? "success"
-                  : status === "pending"
-                    ? "warning"
-                    : status === "rejected"
-                      ? "destructive"
-                      : "secondary"
-              }
-              className="w-fit"
-            >
-              {status}
-            </Badge>
-            {report.featured && (
-              <Badge variant="outline" className="w-fit border-amber-400 text-amber-500 bg-amber-50">
-                Featured
-              </Badge>
-            )}
-          </div>
+        render: (status) => (
+          <Badge
+            variant={
+              status === "active"
+                ? "success"
+                : status === "pending"
+                  ? "warning"
+                  : status === "rejected"
+                    ? "destructive"
+                    : "secondary"
+            }
+            className="capitalize px-3 py-1 text-xs font-medium rounded-full"
+          >
+            {status === "active" ? "Approved" : status}
+          </Badge>
         ),
       },
     ],
     showActions: true,
     actions: [
       {
-        icon: <SquarePen className="w-4 h-4 hover:text-blue cursor-pointer" />,
-        label: "Edit",
+        icon: (
+          <MoreVertical className="w-5 h-5 text-gray-400 hover:text-foreground cursor-pointer" />
+        ),
+        label: "Actions",
         onClick: (report) => handleEdit(report),
-        variant: "primary",
-        tooltip: "Edit Report Status",
-      },
-      {
-        icon: <Trash2 className="w-4 h-4 hover:text-red-500 cursor-pointer" />,
-        label: "Delete",
-        onClick: (report) => handleDeleteClick(report),
-        variant: "danger",
-        tooltip: "Delete Report",
       },
     ],
     actionsAlign: "center",
-    actionsWidth: "120px",
+    actionsWidth: "80px",
   };
 
   return (
@@ -262,7 +251,7 @@ export default function ReportsManagementClient() {
                           {report.title || "Untitled Report"}
                         </h3>
                         <div className="flex items-center gap-1.5 text-secondary mt-1">
-                          <User className="w-3.5 h-3.5" />
+                          <UserIcon className="w-3.5 h-3.5" />
                           <span className="text-sm font-medium">
                             {report.user?.name || "Unknown"}
                           </span>
@@ -284,7 +273,10 @@ export default function ReportsManagementClient() {
                           {report.status}
                         </Badge>
                         {report.featured && (
-                          <Badge variant="outline" className="w-fit border-amber-400 text-amber-500 bg-amber-50 shadow-sm text-[10px] px-1.5">
+                          <Badge
+                            variant="outline"
+                            className="w-fit border-amber-400 text-amber-500 bg-amber-50 shadow-sm text-[10px] px-1.5"
+                          >
                             Featured
                           </Badge>
                         )}
@@ -299,7 +291,9 @@ export default function ReportsManagementClient() {
                       <div className="flex flex-wrap gap-3 mb-2">
                         <div className="flex items-center gap-1.5 bg-gray-50 px-2 py-1 rounded-lg text-secondary">
                           <Fish className="w-3.5 h-3.5" />
-                          <span className="text-xs font-semibold">{report.catchCount || 0} catches</span>
+                          <span className="text-xs font-semibold">
+                            {report.catchCount || 0} catches
+                          </span>
                         </div>
                         <div className="flex items-center gap-1.5 bg-gray-50 px-2 py-1 rounded-lg text-secondary">
                           <CalendarDays className="w-3.5 h-3.5" />
@@ -312,9 +306,12 @@ export default function ReportsManagementClient() {
 
                     <div className="flex flex-col mt-auto pt-4 border-t border-gray-50">
                       <div className="text-xs text-gray-400 mb-2">
-                        Lake: <span className="font-semibold text-foreground">{report.lakeName}</span>
+                        Lake:{" "}
+                        <span className="font-semibold text-foreground">
+                          {report.lakeName}
+                        </span>
                       </div>
-                      
+
                       <div className="flex justify-end gap-2">
                         <button
                           onClick={() => handleEdit(report)}
@@ -358,7 +355,7 @@ export default function ReportsManagementClient() {
         onConfirm={handleConfirmDelete}
         isLoading={isDeleting}
         title="Delete Report"
-        description={`Warning: You are about to permanently delete the report "${reportToDelete?.title || 'Untitled'}". This action cannot be undone.`}
+        description={`Warning: You are about to permanently delete the report "${reportToDelete?.title || "Untitled"}". This action cannot be undone.`}
       />
     </div>
   );

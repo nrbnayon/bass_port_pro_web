@@ -8,6 +8,7 @@ export interface FishingReport {
   lakeName: string;
   title: string;
   text: string;
+  species: string;
   tags: string[];
   conditions: {
     temp?: string;
