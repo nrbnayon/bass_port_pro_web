@@ -48,7 +48,17 @@ export default function LakeFormModal({
   const [updateLake, { isLoading: isUpdating }] = useUpdateLakeMutation();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    name: string;
+    state: string;
+    description: string;
+    size: number;
+    elevation: number;
+    maxDepth: number;
+    avgDepth: number;
+    status: "pending" | "active" | "rejected" | "closed";
+    featured: boolean;
+  }>({
     name: "",
     state: "",
     description: "",
@@ -56,7 +66,7 @@ export default function LakeFormModal({
     elevation: 0,
     maxDepth: 0,
     avgDepth: 0,
-    status: "pending" as const,
+    status: "pending",
     featured: false,
   });
 
@@ -66,6 +76,7 @@ export default function LakeFormModal({
   useEffect(() => {
     if (isOpen) {
       if (lake) {
+        // eslint-disable-next-line
         setFormData({
           name: lake.name || "",
           state: lake.state || "",
@@ -74,7 +85,7 @@ export default function LakeFormModal({
           elevation: lake.elevation || 0,
           maxDepth: lake.maxDepth || 0,
           avgDepth: lake.avgDepth || 0,
-          status: lake.status || "pending",
+          status: lake.status || "active",
           featured: lake.featured || false,
         });
         setPreviewUrl(lake.image || null);
@@ -87,7 +98,7 @@ export default function LakeFormModal({
           elevation: 0,
           maxDepth: 0,
           avgDepth: 0,
-          status: "pending",
+          status: "active",
           featured: false,
         });
         setPreviewUrl(null);
@@ -160,7 +171,7 @@ export default function LakeFormModal({
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
-      <div className="bg-white rounded-[2rem] w-full max-w-2xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-4 duration-500 max-h-[90vh] flex flex-col">
+      <div className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-4 duration-500 max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="px-5 py-3 border-b border-gray-100 flex items-center justify-between bg-white sticky top-0 z-10">
           <div>
@@ -255,19 +266,22 @@ export default function LakeFormModal({
                 <label className="text-sm font-bold text-secondary ml-1">
                   State / Region <span className="text-red-500">*</span>
                 </label>
-                <select
-                  name="state"
-                  value={formData.state}
-                  onChange={handleChange}
-                  className="w-full px-5 py-3 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-primary/20 transition-all font-medium appearance-none"
-                >
-                  <option value="">Select State</option>
-                  {STATES.map((s) => (
-                    <option key={s} value={s}>
-                      {s}
-                    </option>
-                  ))}
-                </select>
+                <div className="relative">
+                  <input
+                    list="states-list"
+                    name="state"
+                    value={formData.state}
+                    onChange={handleChange}
+                    placeholder="Enter or select state..."
+                    className="w-full px-5 py-3 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+                    autoComplete="off"
+                  />
+                  <datalist id="states-list">
+                    {STATES.map((s) => (
+                      <option key={s} value={s} />
+                    ))}
+                  </datalist>
+                </div>
               </div>
             </div>
           </div>

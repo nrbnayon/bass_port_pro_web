@@ -221,26 +221,129 @@ export default function LakeManagementClient() {
             </div>
           </div>
 
-          <DynamicTable<Lake>
-            data={data?.lakes || []}
-            config={tableConfig}
-            loading={isLoading}
-            pagination={{
-              enabled: true,
-              pageSize: 10,
-            }}
-            onPageChange={setPage}
-            emptyMessage={
-              isError
-                ? "Error loading lakes data"
-                : "Start by adding your first fishing lake"
-            }
-            className="border-none shadow-none bg-white rounded-none p-0"
-            headerClassName="!bg-white !text-foreground font-semibold border-b border-gray-100"
-            rowClassName="hover:bg-gray-50/50 border-b border-gray-100 last:border-0 transition-colors"
-            striped={false}
-            hoverable={true}
-          />
+          {viewMode === "table" ? (
+            <DynamicTable<Lake>
+              data={data?.lakes || []}
+              config={tableConfig}
+              loading={isLoading}
+              pagination={{
+                enabled: true,
+                pageSize: 10,
+              }}
+              onPageChange={setPage}
+              emptyMessage={
+                isError
+                  ? "Error loading lakes data"
+                  : "Start by adding your first fishing lake"
+              }
+              className="border-none shadow-none bg-white rounded-none p-0 mt-4"
+              headerClassName="!bg-white !text-foreground font-semibold border-b border-gray-100"
+              rowClassName="hover:bg-gray-50/50 border-b border-gray-100 last:border-0 transition-colors"
+              striped={false}
+              hoverable={true}
+            />
+          ) : (
+            <div className="pt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {isLoading ? (
+                Array(6)
+                  .fill(0)
+                  .map((_, i) => (
+                    <div
+                      key={i}
+                      className="animate-pulse bg-gray-100 rounded-2xl h-[300px]"
+                    />
+                  ))
+              ) : isError || !data?.lakes?.length ? (
+                <div className="col-span-full py-12 text-center text-secondary">
+                  {isError
+                    ? "Error loading lakes data"
+                    : "Start by adding your first fishing lake"}
+                </div>
+              ) : (
+                data.lakes.map((lake) => (
+                  <div
+                    key={lake._id}
+                    className="bg-white border text-left border-gray-100 rounded-2xl overflow-hidden hover:shadow-xl hover:shadow-primary/5 transition-all group flex flex-col"
+                  >
+                    <div className="relative h-48 bg-gray-50 overflow-hidden">
+                      {lake.image ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={lake.image}
+                          alt={lake.name}
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex flex-col items-center justify-center text-gray-300">
+                          <Fish className="w-12 h-12 mb-2" />
+                          <span className="text-sm font-medium">No Image</span>
+                        </div>
+                      )}
+                      <div className="absolute top-3 right-3 flex items-center gap-2">
+                        <Badge
+                          variant={
+                            lake.status === "active"
+                              ? "success"
+                              : lake.status === "pending"
+                                ? "warning"
+                                : "destructive"
+                          }
+                          className="shadow-md"
+                        >
+                          {lake.status}
+                        </Badge>
+                      </div>
+                    </div>
+                    <div className="p-5 flex-1 flex flex-col">
+                      <div className="flex justify-between items-start mb-2">
+                        <div>
+                          <h3 className="font-bold text-lg text-foreground line-clamp-1">
+                            {lake.name}
+                          </h3>
+                          <div className="flex items-center gap-1.5 text-secondary mt-1">
+                            <MapPin className="w-3.5 h-3.5" />
+                            <span className="text-sm font-medium">
+                              {lake.state}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-50">
+                        <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-1.5">
+                            <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
+                            <span className="text-sm font-bold text-foreground">
+                              {(lake.rating || 0).toFixed(1)}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-sm font-medium text-secondary">
+                              {lake.reportCount || 0} Reports
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => handleEdit(lake)}
+                            className="p-2 bg-gray-50 text-blue-600 hover:bg-blue-50 rounded-xl transition-colors cursor-pointer"
+                          >
+                            <SquarePen className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteClick(lake)}
+                            className="p-2 bg-gray-50 text-red-500 hover:bg-red-50 rounded-xl transition-colors cursor-pointer"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
         </div>
       </div>
 
