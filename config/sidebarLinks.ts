@@ -3,7 +3,6 @@ import type { IconSvgElement } from "@hugeicons/react";
 import {
   Bell,
   FileText,
-  List,
   ShieldCheck,
   Fish,
 } from "lucide-react";
@@ -67,7 +66,7 @@ export const sidebarLinks: SidebarLink[] = [
   {
     label: "Audit Logs",
     href: "/admin/audit-logs",
-    icon: FileText,
+    icon: Bell,
   },
   {
     label: "Privacy & policy",
