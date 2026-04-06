@@ -98,15 +98,16 @@ export function useUser() {
           });
 
           if (meRes.ok) {
-            const me = await meRes.json();
+            const mePayload = await meRes.json();
+            const me = mePayload.data || {};
             dispatch(
               setCredentials({
                 user: {
-                  name: me?.name || (userName ? decodeURIComponent(userName) : "User"),
-                  email: me?.email || email,
-                  role: me?.role || role,
-                  avatar: me?.avatar || null,
-                  permissions: me?.permissions || p,
+                  name: me.name || (userName ? decodeURIComponent(userName) : "User"),
+                  email: me.email || email,
+                  role: me.role || role,
+                  avatar: me.avatar || null,
+                  permissions: me.permissions || p,
                 },
                 accessToken,
               }),

@@ -50,6 +50,7 @@ export default function DashboardHeader({
               width={40}
               height={40}
               className="object-cover w-full h-full"
+              unoptimized
             />
           </div>
           <div className="hidden md:flex flex-col">

@@ -45,7 +45,7 @@ export const dashboardApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getDashboard: builder.query<DashboardResponse, void>({
       query: () => "/dashboard",
-      transformResponse: (res: { data: DashboardResponse }) => res.data,
+      transformResponse: (res: DashboardResponse) => res,
       providesTags: ["Dashboard"],
     }),
     getDashboardStats: builder.query<{ success: boolean; data: { stats: DashboardStats } }, void>({
