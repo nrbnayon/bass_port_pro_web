@@ -16,7 +16,7 @@ import {
 import { toast } from "sonner";
 import DashboardHeader from "@/components/Shared/DashboardHeader";
 import {
-  useGetReportsQuery,
+  useGetAdminReportsQuery,
   useDeleteReportMutation,
   FishingReport,
 } from "@/redux/services/fishingReportApi";
@@ -43,7 +43,7 @@ export default function ReportsManagementClient() {
     null,
   );
 
-  const { data, isLoading, isError } = useGetReportsQuery({
+  const { data, isLoading, isError } = useGetAdminReportsQuery({
     page,
     limit: 10,
     search: searchTerm,
@@ -209,6 +209,10 @@ export default function ReportsManagementClient() {
               pagination={{
                 enabled: true,
                 pageSize: 10,
+                currentPage: page,
+                totalPages: data?.pagination?.pages,
+                totalItems: data?.pagination?.total,
+                serverSide: true,
               }}
               onPageChange={setPage}
               emptyMessage={
@@ -314,12 +318,18 @@ export default function ReportsManagementClient() {
 
                       <div className="flex justify-end gap-2">
                         <button
+                          type="button"
+                          aria-label={`Edit ${report.title || "report"}`}
+                          title="Edit"
                           onClick={() => handleEdit(report)}
                           className="p-2 bg-gray-50 text-blue-600 hover:bg-blue-50 rounded-xl transition-colors cursor-pointer"
                         >
                           <SquarePen className="w-4 h-4" />
                         </button>
                         <button
+                          type="button"
+                          aria-label={`Delete ${report.title || "report"}`}
+                          title="Delete"
                           onClick={() => handleDeleteClick(report)}
                           className="p-2 bg-gray-50 text-red-500 hover:bg-red-50 rounded-xl transition-colors cursor-pointer"
                         >

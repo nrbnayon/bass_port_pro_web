@@ -79,6 +79,24 @@ const fishingReportApi = apiSlice.injectEndpoints({
           : [{ type: "Reports", id: "LIST" }],
     }),
 
+    // ── Admin reports (permission-protected, all statuses) ─────────────────
+    getAdminReports: builder.query<PaginatedReports, ReportsQueryParams>({
+      query: (params = {}) => {
+        const sp = new URLSearchParams();
+        Object.entries(params).forEach(([k, v]) => {
+          if (v !== undefined && v !== "") sp.append(k, String(v));
+        });
+        return `/reports/admin?${sp.toString()}`;
+      },
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.reports.map(({ _id }) => ({ type: "Reports" as const, id: _id })),
+              { type: "Reports", id: "LIST" },
+            ]
+          : [{ type: "Reports", id: "LIST" }],
+    }),
+
     // ── My reports ──────────────────────────────────────────────────────────
     getMyReports: builder.query<PaginatedReports, { page?: number; limit?: number }>({
       query: ({ page = 1, limit = 6 } = {}) => `/reports/my?page=${page}&limit=${limit}`,
@@ -145,6 +163,7 @@ const fishingReportApi = apiSlice.injectEndpoints({
 
 export const {
   useGetReportsQuery,
+  useGetAdminReportsQuery,
   useGetMyReportsQuery,
   useGetReportByIdQuery,
   useGetReportLakeNamesQuery,

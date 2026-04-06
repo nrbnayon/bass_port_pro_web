@@ -34,7 +34,7 @@ export function DynamicTable<T extends Record<string, any>>({
   onPageChange,
 }: DynamicTableProps<T>) {
   // State management
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(pagination.currentPage || 1);
   const [pageSize, setPageSize] = useState(pagination.pageSize || 10);
   const [sortConfig, setSortConfig] = useState<SortConfig | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -117,16 +117,25 @@ export function DynamicTable<T extends Record<string, any>>({
   }, [filteredData, sortConfig, config.columns]);
 
   // Paginate data
+  const isServerPagination =
+    !!pagination.enabled &&
+    (pagination.serverSide || pagination.totalItems !== undefined);
+
   const paginatedData = useMemo(() => {
-    if (!pagination.enabled) return sortedData;
+    if (!pagination.enabled || isServerPagination) return sortedData;
 
     const startIndex = (currentPage - 1) * pageSize;
     const endIndex = startIndex + pageSize;
     return sortedData.slice(startIndex, endIndex);
-  }, [sortedData, currentPage, pageSize, pagination.enabled]);
+  }, [sortedData, currentPage, pageSize, pagination.enabled, isServerPagination]);
 
   // Pagination calculations
-  const totalPages = Math.ceil(sortedData.length / pageSize);
+  const totalItems = isServerPagination
+    ? pagination.totalItems ?? sortedData.length
+    : sortedData.length;
+  const totalPages = isServerPagination
+    ? pagination.totalPages ?? Math.ceil(totalItems / pageSize)
+    : Math.ceil(sortedData.length / pageSize);
 
   // Handle sorting
   const handleSort = (columnKey: string) => {
@@ -526,7 +535,7 @@ export function DynamicTable<T extends Record<string, any>>({
         <TablePagination
           currentPage={currentPage}
           totalPages={totalPages}
-          totalItems={sortedData.length}
+          totalItems={totalItems}
           itemsPerPage={pageSize}
           onPageChange={(page) => {
             setCurrentPage(page);

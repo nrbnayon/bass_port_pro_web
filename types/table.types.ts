@@ -54,6 +54,10 @@ export interface PaginationConfig {
   pageSizeOptions?: number[];
   showTotal?: boolean;
   position?: "top" | "bottom" | "both";
+  serverSide?: boolean;
+  currentPage?: number;
+  totalPages?: number;
+  totalItems?: number;
 }
 
 // Sorting configuration
