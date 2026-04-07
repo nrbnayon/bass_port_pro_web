@@ -142,21 +142,23 @@ export default function BassPornManagementClient() {
     showActions: true,
     actions: [
       {
-        icon: <CheckCircle2 className="w-5 h-5 text-emerald-500" />,
+        icon: <CheckCircle2 className="w-5 h-5 cursor-pointer" />,
         label: "Approve",
+        tooltip: "Approve Photo",
         onClick: (item) => handleApprove(item),
         show: (item) => item.status !== "active",
         variant: "success",
       },
       {
-        icon: <Trash2 className="w-5 h-5 text-red-500" />,
+        icon: <Trash2 className="w-5 h-5 cursor-pointer" />,
         label: "Delete",
+        tooltip: "Delete Catch",
         onClick: (item) => handleDeleteClick(item),
         variant: "danger",
       },
     ],
     actionsAlign: "center",
-    actionsWidth: "120px",
+    actionsWidth: "100px",
   };
 
   return (
@@ -174,20 +176,19 @@ export default function BassPornManagementClient() {
               Total Photos
             </p>
             <p className="text-2xl font-bold text-foreground">
-              {data?.pagination?.total || 0}
+              {data?.statusCounts?.total || 0}
             </p>
           </div>
           <div className="bg-white p-5 rounded-2xl border border-primary/10 shadow-sm border-l-4 border-l-emerald-500">
             <p className="text-secondary text-sm font-medium mb-1">Approved</p>
             <p className="text-2xl font-bold text-emerald-600">
-              {/* Note: This is an approximation based on the current search/filter or just the overall */}
-              {statusFilter === "active" ? data?.pagination?.total : "..."}
+              {data?.statusCounts?.active || 0}
             </p>
           </div>
           <div className="bg-white p-5 rounded-2xl border border-primary/10 shadow-sm border-l-4 border-l-amber-500">
             <p className="text-secondary text-sm font-medium mb-1">Pending</p>
             <p className="text-2xl font-bold text-amber-600">
-              {statusFilter === "pending" ? data?.pagination?.total : "..."}
+              {data?.statusCounts?.pending || 0}
             </p>
           </div>
         </div>
@@ -220,7 +221,6 @@ export default function BassPornManagementClient() {
                   <option value="all">All Status</option>
                   <option value="pending">Pending</option>
                   <option value="active">Approved</option>
-                  <option value="rejected">Rejected</option>
                 </select>
               </div>
 
@@ -228,14 +228,14 @@ export default function BassPornManagementClient() {
                 <button
                   type="button"
                   onClick={() => setViewMode("table")}
-                  className={`p-2 rounded-lg transition-all ${viewMode === "table" ? "bg-white shadow-sm text-primary" : "text-secondary hover:text-foreground"}`}
+                  className={`p-2 rounded-lg transition-all cursor-pointer ${viewMode === "table" ? "bg-white shadow-sm text-primary" : "text-secondary hover:text-foreground"}`}
                 >
                   <List className="w-4 h-4" />
                 </button>
                 <button
                   type="button"
                   onClick={() => setViewMode("card")}
-                  className={`p-2 rounded-lg transition-all ${viewMode === "card" ? "bg-white shadow-sm text-primary" : "text-secondary hover:text-foreground"}`}
+                  className={`p-2 rounded-lg transition-all cursor-pointer ${viewMode === "card" ? "bg-white shadow-sm text-primary" : "text-secondary hover:text-foreground"}`}
                 >
                   <LayoutGrid className="w-4 h-4" />
                 </button>
@@ -271,7 +271,7 @@ export default function BassPornManagementClient() {
               rowClassName="hover:bg-gray-50/50 border-b border-gray-100 last:border-0 transition-colors"
             />
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
               {!data?.catches?.length ? (
                 <div className="col-span-full py-20 text-center text-secondary">
                   No photos found matching your criteria.
@@ -343,6 +343,17 @@ export default function BassPornManagementClient() {
                           &quot;
                         </div>
                         <div className="flex gap-2">
+                          <button
+                            onClick={() => handleDeleteClick(item)}
+                            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
+                              item.status === "active"
+                                ? "bg-white border-red-200 text-red-500 hover:bg-red-50"
+                                : "bg-white border-primary/50 text-red-500 hover:bg-red-50"
+                            }`}
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                            Delete
+                          </button>
                           {item.status !== "active" && (
                             <button
                               onClick={() => handleApprove(item)}
@@ -352,17 +363,6 @@ export default function BassPornManagementClient() {
                               Approve
                             </button>
                           )}
-                          <button
-                            onClick={() => handleDeleteClick(item)}
-                            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
-                              item.status === "active"
-                                ? "bg-white border-red-200 text-red-500 hover:bg-red-50"
-                                : "bg-white border-gray-200 text-gray-500 hover:bg-gray-50"
-                            }`}
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                            Delete
-                          </button>
                         </div>
                       </div>
                     </div>

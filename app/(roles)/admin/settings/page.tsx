@@ -234,7 +234,7 @@ export default function SettingsPage() {
         </div>
 
         {/* ── Tab nav ──────────────────────────────────────────────────────── */}
-        <div className="flex gap-1 p-1.5 rounded-xl border border-gray-300 w-fit">
+        <div className="flex gap-1 p-1.5 rounded-xl border border-primary/20 w-fit">
           {tabs.map((tab) => (
             <button
               key={tab.id}
@@ -322,7 +322,7 @@ export default function SettingsPage() {
             {/* Profile form */}
             <form
               onSubmit={handleProfileSubmit}
-              className="lg:col-span-2 border border-gray-300 rounded-2xl p-8 space-y-6"
+              className="lg:col-span-2 border border-primary/20 rounded-2xl p-8 space-y-6"
             >
               <div className="flex items-center gap-3">
                 <div className="bg-primary/10 p-2 rounded-lg border border-primary/20">
@@ -422,7 +422,7 @@ export default function SettingsPage() {
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
               <form
                 onSubmit={handlePasswordSubmit}
-                className="lg:col-span-3 border border-gray-300 rounded-2xl p-8 space-y-6"
+                className="lg:col-span-3 border border-primary/20 rounded-2xl p-8 space-y-6"
               >
                 <div className="flex items-center gap-3">
                   <div className="bg-blue-500/10 p-2 rounded-lg border border-blue-500/20">
@@ -596,7 +596,7 @@ export default function SettingsPage() {
               </form>
 
               <div className="lg:col-span-2 space-y-4">
-                <div className="border border-gray-300 rounded-xl p-6">
+                <div className="border border-primary/20 rounded-xl p-6">
                   <h3 className="text-xs font-bold text-blue-400 uppercase tracking-widest mb-4">
                     Security Rules
                   </h3>

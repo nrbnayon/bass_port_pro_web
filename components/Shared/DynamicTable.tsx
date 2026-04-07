@@ -486,12 +486,12 @@ export function DynamicTable<T extends Record<string, any>>({
                           )}
                         >
                           <div className="flex items-center justify-center gap-2">
-                            {config.actions
-                              .filter(
-                                (action) =>
-                                  !action.show || action.show(row)
-                              )
-                              .map((action, actionIndex) => (
+                            {config.actions.map((action, actionIndex) => {
+                              const isVisible = !action.show || action.show(row);
+                              if (!isVisible) {
+                                return <div key={actionIndex} className="w-9 h-9" />;
+                              }
+                              return (
                                 <button
                                   key={actionIndex}
                                   onClick={(e) => {
@@ -500,24 +500,25 @@ export function DynamicTable<T extends Record<string, any>>({
                                   }}
                                   disabled={action.disabled?.(row)}
                                   className={cn(
-                                    "p-2 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed",
+                                    "inline-flex items-center justify-center w-9 h-9 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed border border-transparent",
                                     action.variant === "danger" &&
-                                      "hover:bg-red-50 text-red-600",
+                                      "hover:bg-red-50 text-red-500 hover:border-red-100",
                                     action.variant === "success" &&
-                                      "hover:bg-green-50 text-green-600",
+                                      "hover:bg-emerald-50 text-emerald-600 hover:border-emerald-100",
                                     action.variant === "warning" &&
-                                      "hover:bg-orange-50 text-orange-600",
+                                      "hover:bg-orange-50 text-orange-500 hover:border-orange-100",
                                     action.variant === "primary" &&
-                                      "hover:bg-blue-50 text-blue-600",
+                                      "hover:bg-blue-50 text-blue-600 hover:border-blue-100",
                                     !action.variant &&
-                                      "hover:bg-gray-100 text-secondary"
+                                      "hover:bg-gray-100 text-gray-400 hover:border-gray-200"
                                   )}
-                                  title={action.tooltip}
+                                  title={action.tooltip || action.label}
                                   aria-label={action.label}
                                 >
                                   {action.icon}
                                 </button>
-                              ))}
+                              );
+                            })}
                           </div>
                         </td>
                       )}

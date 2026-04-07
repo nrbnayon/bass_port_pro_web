@@ -42,6 +42,11 @@ export interface BassPornQueryParams {
 
 export interface PaginatedCatches {
   catches: CatchItem[];
+  statusCounts?: {
+    active: number;
+    pending: number;
+    total: number;
+  };
   pagination: {
     page: number;
     limit: number;
