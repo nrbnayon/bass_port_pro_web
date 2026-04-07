@@ -23,10 +23,18 @@ export default function LakeSidebar({ lake }: LakeSidebarProps) {
       value: `${lake.size.toLocaleString()} acres`,
       icon: DropletIcon,
     },
-    { label: "Max Depth", value: "80 ft", icon: ChartBarLineIcon },
-    { label: "Best Season", value: "Spring, Fall", icon: Calendar03Icon },
-    { label: "City", value: "Dhaka", icon: LocationIcon },
-    { label: "Reviews", value: "518", icon: Message01Icon },
+    {
+      label: "Max Depth",
+      value: `${lake.maxDepth || "N/A"} ft`,
+      icon: ChartBarLineIcon,
+    },
+    {
+      label: "Best Season",
+      value: lake.bestSeason || "Seasonal",
+      icon: Calendar03Icon,
+    },
+    { label: "City", value: lake.nearestCity || "Unknown", icon: LocationIcon },
+    { label: "Reviews", value: (lake.reviewCount || 0).toString(), icon: Message01Icon },
   ];
 
   return (

@@ -58,6 +58,11 @@ export default function LakeFormModal({
     avgDepth: number;
     status: "pending" | "active" | "rejected" | "closed";
     featured: boolean;
+    species: string[];
+    bestSeason: string;
+    nearestCity: string;
+    recordBass: number;
+    catchRate: number;
   }>({
     name: "",
     state: "",
@@ -68,6 +73,11 @@ export default function LakeFormModal({
     avgDepth: 0,
     status: "pending",
     featured: false,
+    species: [],
+    bestSeason: "",
+    nearestCity: "",
+    recordBass: 0,
+    catchRate: 0,
   });
 
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -87,6 +97,11 @@ export default function LakeFormModal({
           avgDepth: lake.avgDepth || 0,
           status: lake.status || "active",
           featured: lake.featured || false,
+          species: lake.species || [],
+          bestSeason: lake.bestSeason || "",
+          nearestCity: lake.nearestCity || "",
+          recordBass: lake.recordBass || 0,
+          catchRate: lake.catchRate || 0,
         });
         setPreviewUrl(lake.image || null);
       } else {
@@ -100,6 +115,11 @@ export default function LakeFormModal({
           avgDepth: 0,
           status: "active",
           featured: false,
+          species: [],
+          bestSeason: "",
+          nearestCity: "",
+          recordBass: 0,
+          catchRate: 0,
         });
         setPreviewUrl(null);
         setImageFile(null);
@@ -144,6 +164,14 @@ export default function LakeFormModal({
     data.append("elevation", formData.elevation.toString());
     data.append("status", formData.status);
     data.append("featured", formData.featured.toString());
+    data.append("maxDepth", formData.maxDepth.toString());
+    data.append("avgDepth", formData.avgDepth.toString());
+    data.append("bestSeason", formData.bestSeason);
+    data.append("nearestCity", formData.nearestCity);
+    data.append("recordBass", formData.recordBass.toString());
+    data.append("catchRate", formData.catchRate.toString());
+
+    formData.species.forEach((s) => data.append("species", s));
 
     if (imageFile) {
       data.append("image", imageFile);
@@ -310,6 +338,104 @@ export default function LakeFormModal({
             />
           </div>
 
+          {/* Species & Seasons */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 mb-1">
+              <div className="w-1 h-4 bg-primary rounded-full" />
+              <h3 className="text-sm font-black uppercase tracking-widest text-primary">
+                Target Species & Seasons
+              </h3>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-3">
+                <label className="text-sm font-bold text-secondary ml-1">
+                  Target Species
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    id="new-species"
+                    placeholder="Add species..."
+                    className="flex-1 px-4 py-2 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-primary/20 font-medium"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        const val = (e.target as HTMLInputElement).value.trim();
+                        if (val && !formData.species.includes(val)) {
+                          setFormData((p) => ({
+                            ...p,
+                            species: [...p.species, val],
+                          }));
+                          (e.target as HTMLInputElement).value = "";
+                        }
+                      }
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="rounded-xl h-[42px]"
+                    onClick={() => {
+                      const input = document.getElementById(
+                        "new-species",
+                      ) as HTMLInputElement;
+                      const val = input.value.trim();
+                      if (val && !formData.species.includes(val)) {
+                        setFormData((p) => ({
+                          ...p,
+                          species: [...p.species, val],
+                        }));
+                        input.value = "";
+                      }
+                    }}
+                  >
+                    <Plus className="w-4 h-4" />
+                  </Button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {formData.species.map((s) => (
+                    <span
+                      key={s}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary/10 text-primary text-xs font-bold"
+                    >
+                      {s}
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setFormData((p) => ({
+                            ...p,
+                            species: p.species.filter((sp) => sp !== s),
+                          }))
+                        }
+                        className="hover:text-red-500 transition-colors"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </span>
+                  ))}
+                  {formData.species.length === 0 && (
+                    <p className="text-xs text-secondary italic">
+                      No species added yet.
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-secondary ml-1">
+                  Best Fishing Season(s)
+                </label>
+                <input
+                  name="bestSeason"
+                  value={formData.bestSeason}
+                  onChange={handleChange}
+                  placeholder="e.g. Spring, Fall"
+                  className="w-full px-5 py-3 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+                />
+              </div>
+            </div>
+          </div>
+
           {/* Specs Group */}
           <div className="space-y-5">
             <div className="flex items-center gap-2 mb-2">
@@ -358,6 +484,94 @@ export default function LakeFormModal({
                   aria-label="Elevation in feet"
                   title="Elevation in feet"
                   value={formData.elevation}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-primary/20 font-bold"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-secondary uppercase tracking-wider ml-1">
+                  Avg Depth (ft)
+                </label>
+                <input
+                  type="number"
+                  name="avgDepth"
+                  aria-label="Average depth in feet"
+                  title="Average depth in feet"
+                  value={formData.avgDepth}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-primary/20 font-bold"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-secondary uppercase tracking-wider ml-1">
+                  Record Bass (lbs)
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  name="recordBass"
+                  aria-label="Record bass weight"
+                  title="Record bass weight"
+                  value={formData.recordBass}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-primary/20 font-bold"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-secondary uppercase tracking-wider ml-1">
+                  Catch Rate (fph)
+                </label>
+                <input
+                  type="number"
+                  step="0.1"
+                  name="catchRate"
+                  aria-label="Catch rate fish per hour"
+                  title="Catch rate fish per hour"
+                  value={formData.catchRate}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-primary/20 font-bold"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-secondary uppercase tracking-wider ml-1">
+                  Avg Depth (ft)
+                </label>
+                <input
+                  type="number"
+                  name="avgDepth"
+                  aria-label="Average depth in feet"
+                  title="Average depth in feet"
+                  value={formData.avgDepth}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-primary/20 font-bold"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-secondary uppercase tracking-wider ml-1">
+                  Record Bass (lbs)
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  name="recordBass"
+                  aria-label="Record bass weight"
+                  title="Record bass weight"
+                  value={formData.recordBass}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-primary/20 font-bold"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-secondary uppercase tracking-wider ml-1">
+                  Catch Rate (fph)
+                </label>
+                <input
+                  type="number"
+                  step="0.1"
+                  name="catchRate"
+                  aria-label="Catch rate fish per hour"
+                  title="Catch rate fish per hour"
+                  value={formData.catchRate}
                   onChange={handleChange}
                   className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-primary/20 font-bold"
                 />

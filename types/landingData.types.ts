@@ -18,6 +18,10 @@ export type LakeCard = {
   isFavourite?: boolean;
   reviewCount?: number;
   reportCount?: number;
+  nearestCity?: string;
+  bestSeason?: string;
+  maxDepth?: number;
+  avgDepth?: number;
 };
 
 export type CatchCard = {
