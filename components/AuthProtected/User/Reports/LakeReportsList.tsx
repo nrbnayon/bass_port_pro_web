@@ -24,6 +24,7 @@ import AuthModal, { AuthView } from "@/components/Auth/AuthModal";
 interface LakeReportsListProps {
   lake: LakeViewModel;
   lakeId: string;
+  onReportChanged?: () => void;
 }
 
 const parseNumberFromString = (value?: string) => {
@@ -34,7 +35,7 @@ const parseNumberFromString = (value?: string) => {
 const sanitizeConditionValue = (value: string | undefined, allowed: string[]) =>
   value && allowed.includes(value) ? value : "";
 
-export default function LakeReportsList({ lake, lakeId }: LakeReportsListProps) {
+export default function LakeReportsList({ lake, lakeId, onReportChanged }: LakeReportsListProps) {
   const { isAuthenticated } = useUser();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [localReports, setLocalReports] = useState<ReportCard[]>(fallbackReports);
@@ -107,6 +108,7 @@ export default function LakeReportsList({ lake, lakeId }: LakeReportsListProps) 
         lakeName: lake.name,
         title: `${lake.name} trip report`,
         text: newReport.text || "",
+        species: newReport.species || "",
         tags: newReport.tags || [],
         conditions: {
           temp: newReport.temp,
@@ -137,6 +139,7 @@ export default function LakeReportsList({ lake, lakeId }: LakeReportsListProps) 
       toast.success("Fishing report shared successfully!");
       setCurrentPage(1);
       refetch();
+      onReportChanged?.();
     } catch {
       setLocalReports((prev) => [newReport, ...prev]);
       toast.error("API failed. Saved to local fallback list.");

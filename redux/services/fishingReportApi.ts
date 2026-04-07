@@ -64,6 +64,7 @@ export interface SubmitReportPayload {
   lakeId?: string;
   title?: string;
   text: string;
+  species?: string;
   tags?: string[];
   conditions?: {
     temp?: string;
@@ -141,10 +142,18 @@ const fishingReportApi = apiSlice.injectEndpoints({
         method: "POST",
         body,
       }),
-      invalidatesTags: [
-        { type: "Reports", id: "LIST" },
-        { type: "MyReports", id: "LIST" },
-      ],
+      invalidatesTags: (_result, _error, body) => {
+        const tags: Array<{ type: "Reports" | "MyReports" | "Lakes"; id: string }> = [
+          { type: "Reports", id: "LIST" },
+          { type: "MyReports", id: "LIST" },
+        ];
+
+        if (body.lakeId) {
+          tags.push({ type: "Lakes", id: body.lakeId });
+        }
+
+        return tags;
+      },
     }),
 
     // ── Update report ───────────────────────────────────────────────────────

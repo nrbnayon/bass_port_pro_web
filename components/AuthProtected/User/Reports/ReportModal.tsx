@@ -42,6 +42,7 @@ export default function ReportModal({
   const [catches, setCatches] = useState("");
   const [biggestCatch, setBiggestCatch] = useState("");
   const [selectedLake, setSelectedLake] = useState(lake?.name || "");
+  const [selectedSpecies, setSelectedSpecies] = useState(lake?.species?.[0] || "");
   const [waterTemp, setWaterTemp] = useState(
     lake?.temp.replace("F", "") || "70",
   );
@@ -92,11 +93,17 @@ export default function ReportModal({
       return;
     }
 
+    if (!selectedSpecies.trim()) {
+      toast.error("Please provide target species.");
+      return;
+    }
+
     const newReport: ReportCard = {
       id: generateReportId(),
       angler: "You (Guest)",
       date: getCurrentDateString(),
       lake: selectedLake,
+      species: selectedSpecies,
       score: `${calculatedSuccessRate}%`,
       temp: `${waterTemp}°F`,
       catches: `${catches} catches`,
@@ -115,6 +122,7 @@ export default function ReportModal({
     setReportText("");
     setCatches("");
     setBiggestCatch("");
+    setSelectedSpecies(lake?.species?.[0] || "");
     setTechniques("");
     onClose();
   };
@@ -400,6 +408,25 @@ export default function ReportModal({
                   placeholder="e.g., Texas Rig, Crankbait, Topwater"
                   className="w-full rounded-2xl border border-gray-100 bg-white px-4 py-3 font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-solid placeholder:text-gray-300"
                 />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-semibold text-gray-500 ml-1">
+                  Target Species <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  list="report-species-options"
+                  value={selectedSpecies}
+                  onChange={(e) => setSelectedSpecies(e.target.value)}
+                  placeholder="e.g., Largemouth Bass"
+                  className="w-full rounded-2xl border border-gray-100 bg-white px-4 py-3 font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-solid placeholder:text-gray-300"
+                />
+                <datalist id="report-species-options">
+                  {(lake?.species || []).map((species) => (
+                    <option key={species} value={species} />
+                  ))}
+                </datalist>
               </div>
 
               <div className="rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3">

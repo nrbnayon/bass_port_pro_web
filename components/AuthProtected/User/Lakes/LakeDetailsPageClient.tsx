@@ -64,9 +64,13 @@ export default function LakeDetailsPageClient({
           API unavailable. Showing fallback lake data.
         </p>
       )}
-      <LakeDetailsHero lake={lake} />
+      <LakeDetailsHero lake={lake} onFavouriteChanged={refetch} />
       <div className="p-5">
-        <LakeDetailsWrapper lake={lake} lakeId={data?.lake?._id || ""} />
+        <LakeDetailsWrapper
+          lake={lake}
+          lakeId={data?.lake?._id || ""}
+          onDataChanged={refetch}
+        />
       </div>
       <CTASection />
     </div>

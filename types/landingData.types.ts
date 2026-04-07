@@ -52,6 +52,7 @@ export type ReportCard = {
   angler: string;
   date: string;
   lake: string;
+  species?: string;
   score: string;
   temp: string;
   catches?: string;

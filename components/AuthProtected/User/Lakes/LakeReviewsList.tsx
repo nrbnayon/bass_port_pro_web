@@ -4,6 +4,7 @@ import React, { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { StarIcon, Message01Icon } from "@hugeicons/core-free-icons";
+import Image from "next/image";
 import { TablePagination } from "@/components/Shared/TablePagination";
 import { toast } from "sonner";
 import {
@@ -15,6 +16,7 @@ import AuthModal, { AuthView } from "@/components/Auth/AuthModal";
 
 interface LakeReviewsListProps {
   lakeId: string;
+  onReviewChanged?: () => void;
 }
 
 interface FallbackReview {
@@ -57,7 +59,7 @@ const FALLBACK_REVIEWS: FallbackReview[] = [
   },
 ];
 
-export default function LakeReviewsList({ lakeId }: LakeReviewsListProps) {
+export default function LakeReviewsList({ lakeId, onReviewChanged }: LakeReviewsListProps) {
   const { isAuthenticated } = useUser();
   const [authModal, setAuthModal] = useState<{ isOpen: boolean; view: AuthView }>({
     isOpen: false,
@@ -110,6 +112,7 @@ export default function LakeReviewsList({ lakeId }: LakeReviewsListProps) {
       setRating(0);
       setReviewText("");
       setCurrentPage(1);
+      onReviewChanged?.();
     } catch (error) {
       const message =
         (error as { data?: { message?: string } })?.data?.message ||
@@ -186,9 +189,10 @@ export default function LakeReviewsList({ lakeId }: LakeReviewsListProps) {
             {(isError ? fallbackReviews : data?.reviews || []).map((review, index) => {
               const isFallback = "author" in review;
               const author = isFallback ? review.author : review.user?.name || "Unknown";
-              const avatar = isFallback
+              const avatarText = isFallback
                 ? review.avatar
                 : (review.user?.name?.charAt(0) || "U").toUpperCase();
+              const avatarImage = !isFallback ? review.user?.avatar : undefined;
               const ratingValue = isFallback ? review.rating : review.rating;
               const text = review.text;
               const date = isFallback ? review.date : new Date(review.createdAt).toISOString().split("T")[0];
@@ -207,7 +211,17 @@ export default function LakeReviewsList({ lakeId }: LakeReviewsListProps) {
                   <div className="flex items-center justify-between gap-6">
                     <div className="flex items-center gap-3">
                       <div className={`flex h-12 w-12 items-center justify-center rounded-full ${color} text-white`}>
-                        <span className="text-lg font-bold">{avatar}</span>
+                        {avatarImage ? (
+                          <Image
+                            src={avatarImage}
+                            alt={author}
+                            width={48}
+                            height={48}
+                            className="h-full w-full rounded-full object-cover"
+                          />
+                        ) : (
+                          <span className="text-lg font-bold">{avatarText}</span>
+                        )}
                       </div>
                       <div>
                         <h3 className="text-lg font-bold text-foreground leading-none mb-0.5">{author}</h3>

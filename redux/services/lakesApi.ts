@@ -158,7 +158,13 @@ const lakesApi = apiSlice.injectEndpoints({
     // ── Single lake by ID or slug ──────────────────────────────────────────
     getLakeById: builder.query<{ lake: Lake }, string>({
       query: (id) => `/lakes/${id}`,
-      providesTags: (_result, _err, id) => [{ type: "Lakes", id }],
+      providesTags: (result, _err, id) => {
+        const tags: Array<{ type: "Lakes"; id: string }> = [{ type: "Lakes", id }];
+        if (result?.lake?._id && result.lake._id !== id) {
+          tags.push({ type: "Lakes", id: result.lake._id });
+        }
+        return tags;
+      },
     }),
 
     // ── Create lake ────────────────────────────────────────────────────────
