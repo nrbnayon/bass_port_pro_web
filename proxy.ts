@@ -140,7 +140,7 @@ const AUTH_ROUTES: string[] = [
  * PUBLIC-ONLY ROUTES
  * Accessible to everyone; authenticated users are NOT bounced away.
  */
-const PUBLIC_ONLY_ROUTES: string[] = ["/success", "/jobs"];
+const PUBLIC_ONLY_ROUTES: string[] = ["/success", "/jobs", "/lakes", "/catches", "/reports"];
 
 /**
  * INFO / LEGAL ROUTES
@@ -159,9 +159,6 @@ const INFO_ROUTES: string[] = [
  */
 const UNIVERSAL_PROTECTED_ROUTES: string[] = [
   "/profile",
-  "/lakes",
-  "/catches",
-  "/reports",
 ];
 
 /**

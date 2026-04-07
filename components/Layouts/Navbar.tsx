@@ -168,23 +168,6 @@ export default function Navbar() {
                   <button
                     key={item.label}
                     onClick={() => {
-                      const protectedRoutes = ["/lakes", "/catches", "/reports"];
-                      
-                      if (protectedRoutes.includes(item.href) && !isAuthenticated) {
-                        if (pathname !== "/") {
-                          router.push(`/#${item.id}`);
-                        } else {
-                          setActiveSection(item.id as string);
-                          const element = document.getElementById(item.id as string);
-                          if (element) {
-                            element.scrollIntoView({ behavior: "smooth", block: "start" });
-                          } else {
-                            router.push(`/#${item.id}`);
-                          }
-                        }
-                        return;
-                      }
-                      
                       if (item.href.startsWith("#")) {
                         setActiveSection(item.href.replace("#", ""));
                       }
@@ -294,23 +277,6 @@ export default function Navbar() {
                     key={item.label}
                     onClick={() => {
                       setOpen(false);
-                      const protectedRoutes = ["/lakes", "/catches", "/reports"];
-                      
-                      if (protectedRoutes.includes(item.href) && !isAuthenticated) {
-                        if (pathname !== "/") {
-                          router.push(`/#${item.id}`);
-                        } else {
-                          setActiveSection(item.id as string);
-                          const element = document.getElementById(item.id as string);
-                          if (element) {
-                            element.scrollIntoView({ behavior: "smooth", block: "start" });
-                          } else {
-                            router.push(`/#${item.id}`);
-                          }
-                        }
-                        return;
-                      }
-                      
                       router.push(item.href);
                     }}
                     className={`flex items-center gap-3 rounded-md px-3 py-3 text-sm font-medium transition text-left cursor-pointer ${

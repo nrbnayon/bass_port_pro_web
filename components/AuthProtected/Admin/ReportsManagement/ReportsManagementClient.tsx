@@ -110,7 +110,7 @@ export default function ReportsManagementClient() {
       },
       {
         key: "score",
-        header: "Reports",
+        header: "Success Rate",
         render: (score) => (
           <span
             className={`font-semibold ${Number(score) >= 80 ? "text-[#10B981]" : Number(score) >= 70 ? "text-[#F59E0B]" : "text-[#EF4444]"}`}

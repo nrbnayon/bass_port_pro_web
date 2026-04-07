@@ -76,14 +76,14 @@ export default function ReportFormModal({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="px-10 pt-10 pb-3">
+        <div className="p-5">
           <h2 className="text-2xl md:text-3xl font-bold text-foreground">
             Reports Details
           </h2>
         </div>
 
         {/* Body */}
-        <div className="flex-1 overflow-y-auto px-10 pb-5 space-y-5">
+        <div className="flex-1 overflow-y-auto px-6 pb-5 space-y-5">
           {/* Grid Info */}
           <div className="grid grid-cols-2 gap-y-5">
             <div>
@@ -166,8 +166,8 @@ export default function ReportFormModal({
               </div>
             </div>
 
-            <div className="text-right">
-              <label className="text-secondary text-sm mb-2 block">
+            <div className="text-right flex items-center gap-2 justify-center">
+              <label className="text-secondary text-sm block">
                 Featured
               </label>
               <input

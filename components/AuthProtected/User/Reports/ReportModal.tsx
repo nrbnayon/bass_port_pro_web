@@ -7,6 +7,7 @@ import { Cancel01Icon, Message01Icon, Camera01Icon, CloudUploadIcon } from "@hug
 import { LakeCard, ReportCard } from "@/types/landingData.types";
 import { toast } from "sonner";
 import Image from "next/image";
+import { calculateReportSuccessRate } from "@/lib/reportScore";
 
 interface ReportModalProps {
   isOpen: boolean;
@@ -40,6 +41,28 @@ export default function ReportModal({
   const [techniques, setTechniques] = useState("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
+  const parsedTags = Array.from(
+    new Set(
+      techniques
+        .split(",")
+        .map((t) => t.trim())
+        .filter((t) => t !== ""),
+    ),
+  );
+
+  const calculatedSuccessRate = calculateReportSuccessRate({
+    text: reportText,
+    tags: parsedTags,
+    catchCount: Number(catches) || 0,
+    biggestCatch: Number(biggestCatch) || 0,
+    conditions: {
+      weather: weatherStatus,
+      clarity: waterClarity,
+      waterLevel: "Normal",
+      pressure,
+    },
+  });
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -62,18 +85,11 @@ export default function ReportModal({
       angler: "You (Guest)",
       date: getCurrentDateString(),
       lake: selectedLake,
-      score: "80%",
+      score: `${calculatedSuccessRate}%`,
       temp: `${waterTemp}°F`,
       catches: `${catches} catches`,
       text: reportText,
-      tags: Array.from(
-        new Set(
-          techniques
-            .split(",")
-            .map((t) => t.trim())
-            .filter((t) => t !== ""),
-        ),
-      ),
+      tags: parsedTags,
       avatarImage: "/images/avatar.png",
       biggestCatch: `${biggestCatch} lbs`,
       weather: weatherStatus,
@@ -116,6 +132,8 @@ export default function ReportModal({
             </h2>
             <button
               onClick={onClose}
+              aria-label="Close report modal"
+              title="Close"
               className="rounded-full p-2 text-gray-400 bg-gray-50 transition-colors hover:bg-red-50 hover:text-red-500 cursor-pointer"
             >
               <HugeiconsIcon icon={Cancel01Icon} className="h-6 w-6" />
@@ -219,6 +237,8 @@ export default function ReportModal({
                     type="number"
                     value={waterTemp}
                     onChange={(e) => setWaterTemp(e.target.value)}
+                    title="Water temperature"
+                    aria-label="Water temperature"
                     className="w-full rounded-2xl border border-gray-100 bg-white px-4 py-3 font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-solid"
                   />
                 </div>
@@ -230,6 +250,8 @@ export default function ReportModal({
                     <select
                       value={waterClarity}
                       onChange={(e) => setWaterClarity(e.target.value)}
+                      title="Water clarity"
+                      aria-label="Water clarity"
                       className="w-full rounded-2xl border border-gray-100 bg-white px-4 py-3 font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-solid appearance-none"
                     >
                       <option value="Clear">Clear</option>
@@ -264,6 +286,8 @@ export default function ReportModal({
                     <select
                       value={weatherStatus}
                       onChange={(e) => setWeatherStatus(e.target.value)}
+                      title="Weather"
+                      aria-label="Weather"
                       className="w-full rounded-2xl border border-gray-100 bg-white px-4 py-3 font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-solid appearance-none"
                     >
                       <option value="Sunny">Sunny</option>
@@ -297,6 +321,8 @@ export default function ReportModal({
                     <select
                       value={pressure}
                       onChange={(e) => setPressure(e.target.value)}
+                      title="Pressure"
+                      aria-label="Pressure"
                       className="w-full rounded-2xl border border-gray-100 bg-white px-4 py-3 font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-solid appearance-none"
                     >
                       <option value="Stable">Stable</option>
@@ -362,6 +388,15 @@ export default function ReportModal({
                   placeholder="e.g., Texas Rig, Crankbait, Topwater"
                   className="w-full rounded-2xl border border-gray-100 bg-white px-4 py-3 font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-solid placeholder:text-gray-300"
                 />
+              </div>
+
+              <div className="rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3">
+                <p className="text-xs font-semibold uppercase tracking-wider text-emerald-700">
+                  Success Rate (Auto Calculated)
+                </p>
+                <p className="mt-1 text-2xl font-bold text-emerald-600">
+                  {calculatedSuccessRate}%
+                </p>
               </div>
 
               <div className="flex flex-col gap-2">
