@@ -14,6 +14,17 @@ import {
 import { useUser } from "@/hooks/useUser";
 import AuthModal, { AuthView } from "@/components/Auth/AuthModal";
 
+const resolveMediaUrl = (url?: string) => {
+  if (!url) return "";
+  if (url.startsWith("data:") || url.startsWith("http://") || url.startsWith("https://")) {
+    return url;
+  }
+
+  const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+  const origin = apiBase.replace(/\/api\/?$/, "");
+  return `${origin}${url.startsWith("/") ? "" : "/"}${url}`;
+};
+
 interface LakeReviewsListProps {
   lakeId: string;
   onReviewChanged?: () => void;
@@ -192,7 +203,7 @@ export default function LakeReviewsList({ lakeId, onReviewChanged }: LakeReviews
               const avatarText = isFallback
                 ? review.avatar
                 : (review.user?.name?.charAt(0) || "U").toUpperCase();
-              const avatarImage = !isFallback ? review.user?.avatar : undefined;
+              const avatarImage = !isFallback ? resolveMediaUrl(review.user?.avatar) : undefined;
               const ratingValue = isFallback ? review.rating : review.rating;
               const text = review.text;
               const date = isFallback ? review.date : new Date(review.createdAt).toISOString().split("T")[0];

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Cancel01Icon, Message01Icon, Camera01Icon, CloudUploadIcon } from "@hugeicons/core-free-icons";
@@ -53,6 +53,17 @@ export default function ReportModal({
   const [pressure, setPressure] = useState("Stable");
   const [techniques, setTechniques] = useState("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSelectedLake(lake?.name || "");
+    setSelectedSpecies(lake?.species?.[0] || "");
+    setWaterTemp(lake?.temp.replace("F", "") || "70");
+    setWeatherStatus(lake && validWeatherOptions.has(lake.weather) ? lake.weather : "Sunny");
+    setImagePreview(null);
+  }, [isOpen, lake]);
 
   const parsedTags = Array.from(
     new Set(

@@ -25,6 +25,18 @@ import { TableConfig } from "@/types/table.types";
 import { DeleteConfirmationModal } from "@/components/Shared/DeleteConfirmationModal";
 import { Badge } from "@/components/ui/badge";
 import ReportFormModal from "./ReportFormModal";
+import Image from "next/image";
+
+const resolveMediaUrl = (url?: string) => {
+  if (!url) return "";
+  if (url.startsWith("data:") || url.startsWith("http://") || url.startsWith("https://")) {
+    return url;
+  }
+
+  const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+  const origin = apiBase.replace(/\/api\/?$/, "");
+  return `${origin}${url.startsWith("/") ? "" : "/"}${url}`;
+};
 
 export default function ReportsManagementClient() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -94,8 +106,10 @@ export default function ReportsManagementClient() {
       {
         key: "species",
         header: "Species",
-        render: (species) => (
-          <span className="text-[#9CA3AF]">{species || "N/A"}</span>
+        render: (species, report) => (
+          <span className="text-[#9CA3AF]">
+            {species || report.lake?.species?.[0] || "N/A"}
+          </span>
         ),
       },
       {
@@ -291,6 +305,23 @@ export default function ReportsManagementClient() {
                       <div className="text-sm text-secondary line-clamp-2 mb-2">
                         {report.text || "No description provided."}
                       </div>
+
+                      <div className="text-xs text-gray-400 mb-2">
+                        Species: <span className="font-semibold text-foreground">{report.species || report.lake?.species?.[0] || "N/A"}</span>
+                      </div>
+
+                      {report.image && (
+                        <div className="mb-3 overflow-hidden rounded-xl border border-gray-100">
+                          <Image
+                            src={resolveMediaUrl(report.image)}
+                            alt={report.title || "Submitted report image"}
+                            width={600}
+                            height={320}
+                            className="h-40 w-full object-cover"
+                            unoptimized
+                          />
+                        </div>
+                      )}
 
                       <div className="flex flex-wrap gap-3 mb-2">
                         <div className="flex items-center gap-1.5 bg-gray-50 px-2 py-1 rounded-lg text-secondary">

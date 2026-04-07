@@ -105,12 +105,20 @@ export interface LakeReportItem {
   _id: string;
   title?: string;
   text: string;
+  species?: string;
+  image?: string;
   tags?: string[];
   score?: number;
   catchCount?: number;
   biggestCatch?: number;
   fishedAt: string;
   lakeName?: string;
+  lake?: {
+    _id: string;
+    name?: string;
+    slug?: string;
+    species?: string[];
+  };
   conditions?: {
     temp?: string;
     weather?: string;

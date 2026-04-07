@@ -13,6 +13,17 @@ import {
 import { Trophy, Fish, Gauge } from "lucide-react";
 import { ReportCard as ReportCardType } from "@/types/landingData.types";
 
+const resolveMediaUrl = (url?: string) => {
+  if (!url) return "";
+  if (url.startsWith("data:") || url.startsWith("http://") || url.startsWith("https://")) {
+    return url;
+  }
+
+  const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+  const origin = apiBase.replace(/\/api\/?$/, "");
+  return `${origin}${url.startsWith("/") ? "" : "/"}${url}`;
+};
+
 interface ReportCardProps {
   report: ReportCardType;
   index: number;
@@ -33,7 +44,7 @@ export default function ReportCard({ report, index }: ReportCardProps) {
             {report.avatarImage &&
             !report.avatarImage.includes("avatar.png") ? (
               <Image
-                src={report.avatarImage}
+                src={resolveMediaUrl(report.avatarImage)}
                 alt={report.angler}
                 width={40}
                 height={40}

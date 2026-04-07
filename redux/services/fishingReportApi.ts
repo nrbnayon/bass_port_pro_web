@@ -4,11 +4,12 @@ import { apiSlice } from "./apiSlice";
 export interface FishingReport {
   _id: string;
   user: { _id: string; name: string; avatar?: string; location?: string };
-  lake?: { _id: string; name: string; slug: string; state?: string } | null;
+  lake?: { _id: string; name: string; slug: string; state?: string; species?: string[] } | null;
   lakeName: string;
   title: string;
   text: string;
   species: string;
+  image?: string;
   tags: string[];
   conditions: {
     temp?: string;
@@ -65,6 +66,7 @@ export interface SubmitReportPayload {
   title?: string;
   text: string;
   species?: string;
+  image?: string;
   tags?: string[];
   conditions?: {
     temp?: string;

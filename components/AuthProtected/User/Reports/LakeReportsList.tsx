@@ -35,6 +35,17 @@ const parseNumberFromString = (value?: string) => {
 const sanitizeConditionValue = (value: string | undefined, allowed: string[]) =>
   value && allowed.includes(value) ? value : "";
 
+const resolveMediaUrl = (url?: string) => {
+  if (!url) return "";
+  if (url.startsWith("data:") || url.startsWith("http://") || url.startsWith("https://")) {
+    return url;
+  }
+
+  const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+  const origin = apiBase.replace(/\/api\/?$/, "");
+  return `${origin}${url.startsWith("/") ? "" : "/"}${url}`;
+};
+
 export default function LakeReportsList({ lake, lakeId, onReportChanged }: LakeReportsListProps) {
   const { isAuthenticated } = useUser();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -72,12 +83,14 @@ export default function LakeReportsList({ lake, lakeId, onReportChanged }: LakeR
     angler: report.user?.name || "Unknown",
     date: new Date(report.fishedAt).toISOString().split("T")[0],
     lake: report.lakeName || lake.name,
+    species: report.species || report.lake?.species?.[0] || lake.species?.[0] || "N/A",
     score: `${report.score || 0}%`,
     temp: report.conditions?.temp || "N/A",
     catches: `${report.catchCount || 0} catches`,
     text: report.text,
     tags: report.tags || [],
-    avatarImage: report.user?.avatar || "/images/avatar.png",
+    avatarImage: resolveMediaUrl(report.user?.avatar) || "/images/avatar.png",
+    image: report.image || undefined,
     biggestCatch: `${report.biggestCatch || 0} lbs`,
     weather: report.conditions?.weather || "N/A",
     waterLevel: report.conditions?.waterLevel || "Normal",
@@ -109,6 +122,7 @@ export default function LakeReportsList({ lake, lakeId, onReportChanged }: LakeR
         title: `${lake.name} trip report`,
         text: newReport.text || "",
         species: newReport.species || "",
+        image: newReport.image || "",
         tags: newReport.tags || [],
         conditions: {
           temp: newReport.temp,

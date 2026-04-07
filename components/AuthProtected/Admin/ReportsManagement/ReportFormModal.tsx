@@ -11,6 +11,18 @@ import {
   useUpdateReportMutation,
 } from "@/redux/services/fishingReportApi";
 import { Badge } from "@/components/ui/badge";
+import Image from "next/image";
+
+const resolveMediaUrl = (url?: string) => {
+  if (!url) return "";
+  if (url.startsWith("data:") || url.startsWith("http://") || url.startsWith("https://")) {
+    return url;
+  }
+
+  const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+  const origin = apiBase.replace(/\/api\/?$/, "");
+  return `${origin}${url.startsWith("/") ? "" : "/"}${url}`;
+};
 
 const reportSchema = z.object({
   status: z.enum(["active", "pending", "rejected", "flagged"]),
@@ -70,9 +82,9 @@ export default function ReportFormModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm transition-all p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm transition-all p-4 h-screen ">
       <div
-        className="w-full max-w-3xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in duration-300"
+        className="w-full max-w-3xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in duration-300 max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -83,9 +95,9 @@ export default function ReportFormModal({
         </div>
 
         {/* Body */}
-        <div className="flex-1 overflow-y-auto px-6 pb-5 space-y-5">
+        <div className="flex-1 overflow-y-auto px-5 pb-5 space-y-2">
           {/* Grid Info */}
-          <div className="grid grid-cols-2 gap-y-5">
+          <div className="grid grid-cols-2 gap-y-2">
             <div>
               <label className="text-secondary text-sm mb-1 block">User</label>
               <p className="text-foreground font-bold text-lg">
@@ -103,7 +115,7 @@ export default function ReportFormModal({
                 Species
               </label>
               <p className="text-foreground font-bold text-lg">
-                {report?.species || "N/A"}
+                {report?.species || report?.lake?.species?.[0] || "N/A"}
               </p>
             </div>
             <div>
@@ -118,13 +130,32 @@ export default function ReportFormModal({
 
           <div className="h-px bg-gray-100" />
 
+          {report?.image && (
+            <div>
+              <label className="text-secondary text-sm mb-2 block">
+                Submitted Image
+              </label>
+              <div className="relative aspect-[16/8] overflow-hidden rounded-2xl border border-gray-100 bg-gray-50">
+                <Image
+                  src={resolveMediaUrl(report.image)}
+                  alt={report.title || "Submitted report image"}
+                  fill
+                  className="object-cover"
+                  unoptimized
+                />
+              </div>
+            </div>
+          )}
+
+          {report?.image && <div className="h-px bg-gray-100" />}
+
           {/* Overview */}
           <div>
-            <label className="text-secondary text-sm mb-2 block">
+            <label className="text-foreground font-bold text-sm mb-2 block">
               Reports Overview
             </label>
-            <p className="text-[#4B5563] text-sm leading-relaxed">
-              {report?.text}
+            <p className="text-secondary text-sm leading-relaxed italic">
+              &quot;{report?.text}&quot;
             </p>
           </div>
 
@@ -167,9 +198,7 @@ export default function ReportFormModal({
             </div>
 
             <div className="text-right flex items-center gap-2 justify-center">
-              <label className="text-secondary text-sm block">
-                Featured
-              </label>
+              <label className="text-secondary text-sm block">Featured</label>
               <input
                 type="checkbox"
                 {...register("featured")}
