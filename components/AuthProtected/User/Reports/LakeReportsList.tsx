@@ -15,6 +15,9 @@ import { LakeCard, ReportCard } from "@/types/landingData.types";
 import { TablePagination } from "@/components/Shared/TablePagination";
 import { toast } from "sonner";
 import ReportModal from "./ReportModal";
+import { useUser } from "@/hooks/useUser";
+import AuthModal, { AuthView } from "@/components/Auth/AuthModal";
+import { usePathname } from "next/navigation";
 
 interface LakeReportsListProps {
   lake: LakeCard;
@@ -24,6 +27,12 @@ export default function LakeReportsList({ lake }: LakeReportsListProps) {
   const [reports, setReports] = useState<ReportCard[]>(allReports);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const { isAuthenticated } = useUser();
+  const pathname = usePathname();
+  const [authModal, setAuthModal] = useState<{ isOpen: boolean; view: AuthView }>({
+    isOpen: false,
+    view: "login",
+  });
   const itemsPerPage = 3;
 
   // Filter reports for this lake
@@ -53,7 +62,13 @@ export default function LakeReportsList({ lake }: LakeReportsListProps) {
            Angler Activity ({filteredReports.length})
         </h2>
         <button
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => {
+            if (!isAuthenticated) {
+              setAuthModal({ isOpen: true, view: "login" });
+            } else {
+              setIsModalOpen(true);
+            }
+          }}
           className="rounded-xl bg-primary px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95 cursor-pointer flex items-center gap-2"
         >
           <HugeiconsIcon icon={Message01Icon} className="h-4 w-4" />
@@ -183,6 +198,12 @@ export default function LakeReportsList({ lake }: LakeReportsListProps) {
           </div>
         )}
       </section>
+      <AuthModal
+        isOpen={authModal.isOpen}
+        initialView={authModal.view}
+        redirectTo={pathname}
+        onClose={() => setAuthModal((prev) => ({ ...prev, isOpen: false }))}
+      />
     </div>
   );
 }

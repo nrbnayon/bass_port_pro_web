@@ -21,7 +21,9 @@ import { toast } from "sonner";
 import { Fish } from "lucide-react";
 import { CatchGridSkeleton } from "@/components/Skeleton/CatchGridSkeleton";
 import { TablePagination } from "@/components/Shared/TablePagination";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, usePathname } from "next/navigation";
+import { useUser } from "@/hooks/useUser";
+import AuthModal, { AuthView } from "@/components/Auth/AuthModal";
 
 
 const SORT_OPTIONS = [
@@ -39,6 +41,12 @@ export default function CatchesFishClient() {
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const { isAuthenticated } = useUser();
+  const [authModal, setAuthModal] = useState<{ isOpen: boolean; view: AuthView }>({
+    isOpen: false,
+    view: "login",
+  });
   const searchQuery = searchParams.get("search")?.toLowerCase() || "";
 
   // Pagination State
@@ -62,6 +70,11 @@ export default function CatchesFishClient() {
 
   const handleToggleFavourite = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
+
+    if (!isAuthenticated) {
+      setAuthModal({ isOpen: true, view: "login" });
+      return;
+    }
 
     setCatches((prev) => {
       const updated = prev.map((c) =>
@@ -133,6 +146,10 @@ export default function CatchesFishClient() {
   };
 
   const openDetails = (item: CatchCard) => {
+    if (!isAuthenticated) {
+      setAuthModal({ isOpen: true, view: "login" });
+      return;
+    }
     setSelectedCatch(item);
     setIsDetailsModalOpen(true);
   };
@@ -191,7 +208,13 @@ export default function CatchesFishClient() {
               </div>
 
               <button
-                onClick={() => setIsUploadModalOpen(true)}
+                onClick={() => {
+                  if (!isAuthenticated) {
+                    setAuthModal({ isOpen: true, view: "login" });
+                  } else {
+                    setIsUploadModalOpen(true);
+                  }
+                }}
                 className="flex items-center gap-2 rounded-lg bg-primary px-8 py-3 text-sm font-semibold text-white transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
               >
                 <HugeiconsIcon icon={CloudUploadIcon} className="h-5 w-5" />
@@ -362,6 +385,12 @@ export default function CatchesFishClient() {
         isOpen={isDetailsModalOpen}
         onClose={() => setIsDetailsModalOpen(false)}
         catchItem={selectedCatch}
+      />
+      <AuthModal
+        isOpen={authModal.isOpen}
+        initialView={authModal.view}
+        redirectTo={pathname}
+        onClose={() => setAuthModal((prev) => ({ ...prev, isOpen: false }))}
       />
     </div>
   );
