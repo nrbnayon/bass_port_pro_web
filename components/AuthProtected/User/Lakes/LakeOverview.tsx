@@ -9,10 +9,10 @@ import {
   Note03Icon,
 } from "@hugeicons/core-free-icons";
 import { Fish } from "lucide-react";
-import { LakeCard } from "@/types/landingData.types";
+import { LakeViewModel } from "@/lib/lakeMappers";
 
 interface LakeOverviewProps {
-  lake: LakeCard;
+  lake: LakeViewModel;
 }
 
 export default function LakeOverview({ lake }: LakeOverviewProps) {
@@ -47,13 +47,10 @@ export default function LakeOverview({ lake }: LakeOverviewProps) {
     },
   ];
 
-  const techniques = [
-    "Flipping",
-    "Swim Jigs",
-    "Topwater",
-    "Crankbaits",
-    "Spinnerbaits",
-  ];
+  const techniques =
+    lake.topTechniques.length > 0
+      ? lake.topTechniques
+      : ["Flipping", "Swim Jigs", "Topwater", "Crankbaits", "Spinnerbaits"];
 
   return (
     <div className="flex flex-col gap-6">

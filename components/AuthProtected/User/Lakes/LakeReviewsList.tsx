@@ -1,13 +1,23 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { StarIcon, Message01Icon } from "@hugeicons/core-free-icons";
 import { TablePagination } from "@/components/Shared/TablePagination";
 import { toast } from "sonner";
+import {
+  useGetLakeReviewsQuery,
+  useSubmitLakeReviewMutation,
+} from "@/redux/services/lakesApi";
+import { useUser } from "@/hooks/useUser";
+import AuthModal, { AuthView } from "@/components/Auth/AuthModal";
 
-interface Review {
+interface LakeReviewsListProps {
+  lakeId: string;
+}
+
+interface FallbackReview {
   id: string;
   author: string;
   date: string;
@@ -17,13 +27,7 @@ interface Review {
   color: string;
 }
 
-// Generate a unique ID for a new review record
-const generateReviewId = () => `r${Date.now()}`;
-
-// Get current date string in YYYY-MM-DD format
-const getCurrentDateString = () => new Date().toISOString().split("T")[0];
-
-const INITIAL_REVIEWS: Review[] = [
+const FALLBACK_REVIEWS: FallbackReview[] = [
   {
     id: "r1",
     author: "Bass Hunter 42",
@@ -38,7 +42,7 @@ const INITIAL_REVIEWS: Review[] = [
     author: "Texas Angler",
     date: "2026-02-15",
     rating: 4,
-    text: "Great fishing but can get crowded on weekends. Go during the week for the best experience. The water quality is top-notch.",
+    text: "Great fishing but can get crowded on weekends. Go during the week for the best experience.",
     avatar: "T",
     color: "bg-[#4CAF50]",
   },
@@ -47,45 +51,50 @@ const INITIAL_REVIEWS: Review[] = [
     author: "Pro Fisher",
     date: "2026-02-13",
     rating: 5,
-    text: "Consistently produces quality fish. My go-to lake for tournaments. Always look for the deep ledges in the summer months.",
+    text: "Consistently produces quality fish. My go-to lake for tournaments.",
     avatar: "P",
     color: "bg-[#2196F3]",
   },
-  {
-    id: "r4",
-    author: "Lake Lover",
-    date: "2026-02-10",
-    rating: 3,
-    text: "Decent spot, but the boat ramp needs maintenance. Caught a few small ones near the dam.",
-    avatar: "L",
-    color: "bg-[#9C27B0]",
-  },
-  {
-    id: "r5",
-    author: "Night Caster",
-    date: "2026-02-05",
-    rating: 4,
-    text: "Night fishing here is outstanding. The topwater action just before dawn is something every angler should experience.",
-    avatar: "N",
-    color: "bg-[#3F51B5]",
-  },
 ];
 
-export default function LakeReviewsList() {
-  const [reviews, setReviews] = useState<Review[]>(INITIAL_REVIEWS);
+export default function LakeReviewsList({ lakeId }: LakeReviewsListProps) {
+  const { isAuthenticated } = useUser();
+  const [authModal, setAuthModal] = useState<{ isOpen: boolean; view: AuthView }>({
+    isOpen: false,
+    view: "login",
+  });
   const [rating, setRating] = useState(0);
   const [hoveredRating, setHoveredRating] = useState(0);
   const [reviewText, setReviewText] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 3;
+  const [submitLakeReview, { isLoading: isSubmitting }] = useSubmitLakeReviewMutation();
 
-  const totalPages = Math.ceil(reviews.length / itemsPerPage);
-  const currentReviews = reviews.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
+  const { data, isError, isLoading } = useGetLakeReviewsQuery(
+    { id: lakeId, page: currentPage, limit: 3 },
+    { skip: !lakeId },
   );
 
-  const handleSubmit = () => {
+  const fallbackReviews = useMemo(() => {
+    const start = (currentPage - 1) * 3;
+    return FALLBACK_REVIEWS.slice(start, start + 3);
+  }, [currentPage]);
+
+  const totalItems = isError ? FALLBACK_REVIEWS.length : data?.pagination?.total || 0;
+  const totalPages = isError
+    ? Math.ceil(FALLBACK_REVIEWS.length / 3)
+    : data?.pagination?.pages || 1;
+
+  const handleSubmit = async () => {
+    if (!isAuthenticated) {
+      setAuthModal({ isOpen: true, view: "login" });
+      return;
+    }
+
+    if (!lakeId) {
+      toast.error("Lake id missing");
+      return;
+    }
+
     if (rating === 0) {
       toast.error("Please select a rating");
       return;
@@ -95,21 +104,18 @@ export default function LakeReviewsList() {
       return;
     }
 
-    const newReview: Review = {
-      id: generateReviewId(),
-      author: "You (Guest)",
-      date: getCurrentDateString(),
-      rating,
-      text: reviewText,
-      avatar: "Y",
-      color: "bg-primary",
-    };
-
-    setReviews([newReview, ...reviews]);
-    setRating(0);
-    setReviewText("");
-    toast.success("Review submitted successfully!");
-    setCurrentPage(1);
+    try {
+      await submitLakeReview({ id: lakeId, rating, text: reviewText }).unwrap();
+      toast.success("Review submitted successfully!");
+      setRating(0);
+      setReviewText("");
+      setCurrentPage(1);
+    } catch (error) {
+      const message =
+        (error as { data?: { message?: string } })?.data?.message ||
+        "Failed to submit review";
+      toast.error(message);
+    }
   };
 
   return (
@@ -128,6 +134,8 @@ export default function LakeReviewsList() {
                 onMouseLeave={() => setHoveredRating(0)}
                 onClick={() => setRating(star)}
                 className="transition-transform hover:scale-110 active:scale-95 cursor-pointer"
+                aria-label={`Rate ${star}`}
+                title={`Rate ${star}`}
               >
                 <HugeiconsIcon
                   icon={StarIcon}
@@ -151,14 +159,11 @@ export default function LakeReviewsList() {
             <div className="absolute right-6 bottom-6">
               <button
                 onClick={handleSubmit}
-                className="rounded-xl bg-primary px-8 py-3 text-sm font-bold text-white shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95 cursor-pointer flex items-center gap-1"
+                disabled={isSubmitting}
+                className="rounded-xl bg-primary px-8 py-3 text-sm font-bold text-white shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95 cursor-pointer flex items-center gap-1 disabled:opacity-60"
               >
-                Submit Review{" "}
-                <HugeiconsIcon
-                  icon={Message01Icon}
-                  className="h-4 w-4"
-                  strokeWidth={2}
-                />
+                {isSubmitting ? "Submitting..." : "Submit Review"}
+                <HugeiconsIcon icon={Message01Icon} className="h-4 w-4" strokeWidth={2} />
               </button>
             </div>
           </div>
@@ -167,60 +172,72 @@ export default function LakeReviewsList() {
 
       <section>
         <h2 className="text-xl font-bold tracking-tight text-foreground md:text-2xl mb-5">
-          Community Reviews ({reviews.length})
+          Community Reviews ({totalItems})
         </h2>
+
+        {isError && (
+          <p className="mb-3 text-xs font-semibold text-amber-600">
+            API unavailable. Showing fallback reviews.
+          </p>
+        )}
 
         <div className="space-y-6">
           <AnimatePresence mode="popLayout">
-            {currentReviews.map((review, index) => (
-              <motion.div
-                key={review.id}
-                layout
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.4, delay: index * 0.05 }}
-                className="group relative flex flex-col gap-6 rounded-2xl border border-[#F3F4F6] bg-white p-6 transition-all hover:shadow-sm"
-              >
-                <div className="flex items-center justify-between gap-6">
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`flex h-12 w-12 items-center justify-center rounded-full ${review.color} text-white`}
-                    >
-                      <span className="text-lg font-bold">{review.avatar}</span>
+            {(isError ? fallbackReviews : data?.reviews || []).map((review, index) => {
+              const isFallback = "author" in review;
+              const author = isFallback ? review.author : review.user?.name || "Unknown";
+              const avatar = isFallback
+                ? review.avatar
+                : (review.user?.name?.charAt(0) || "U").toUpperCase();
+              const ratingValue = isFallback ? review.rating : review.rating;
+              const text = review.text;
+              const date = isFallback ? review.date : new Date(review.createdAt).toISOString().split("T")[0];
+              const color = isFallback ? review.color : "bg-primary";
+
+              return (
+                <motion.div
+                  key={isFallback ? review.id : review._id}
+                  layout
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.4, delay: index * 0.05 }}
+                  className="group relative flex flex-col gap-6 rounded-2xl border border-[#F3F4F6] bg-white p-6 transition-all hover:shadow-sm"
+                >
+                  <div className="flex items-center justify-between gap-6">
+                    <div className="flex items-center gap-3">
+                      <div className={`flex h-12 w-12 items-center justify-center rounded-full ${color} text-white`}>
+                        <span className="text-lg font-bold">{avatar}</span>
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-bold text-foreground leading-none mb-0.5">{author}</h3>
+                        <span className="text-xs font-semibold text-gray-400 uppercase tracking-widest">{date}</span>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="text-lg font-bold text-foreground leading-none mb-0.5">
-                        {review.author}
-                      </h3>
-                      <span className="text-xs font-semibold text-gray-400 uppercase tracking-widest">
-                        {review.date}
-                      </span>
+
+                    <div className="flex items-center gap-1">
+                      {[...Array(5)].map((_, i) => (
+                        <HugeiconsIcon
+                          key={i}
+                          icon={StarIcon}
+                          className={`h-4 w-4 ${
+                            i < ratingValue
+                              ? "text-[#FACC15] fill-[#FACC15]"
+                              : "text-gray-200"
+                          }`}
+                        />
+                      ))}
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-1">
-                    {[...Array(5)].map((_, i) => (
-                      <HugeiconsIcon
-                        key={i}
-                        icon={StarIcon}
-                        className={`h-4 w-4 ${
-                          i < review.rating
-                            ? "text-[#FACC15] fill-[#FACC15]"
-                            : "text-gray-200"
-                        }`}
-                      />
-                    ))}
+                  <div className="border-t border-gray-50 pt-3">
+                    <p className="text-[15px] font-medium leading-relaxed text-secondary italic">
+                      &quot;{text}&quot;
+                    </p>
                   </div>
-                </div>
-
-                <div className="border-t border-gray-50 pt-3">
-                  <p className="text-[15px] font-medium leading-relaxed text-secondary italic">
-                    &quot;{review.text}&quot;
-                  </p>
-                </div>
-              </motion.div>
-            ))}
+                </motion.div>
+              );
+            })}
           </AnimatePresence>
         </div>
 
@@ -229,14 +246,20 @@ export default function LakeReviewsList() {
             <TablePagination
               currentPage={currentPage}
               totalPages={totalPages}
-              totalItems={reviews.length}
-              itemsPerPage={itemsPerPage}
+              totalItems={totalItems}
+              itemsPerPage={3}
               onPageChange={(page) => setCurrentPage(page)}
               className="border-none bg-transparent px-0"
             />
           </div>
         )}
       </section>
+
+      <AuthModal
+        isOpen={authModal.isOpen}
+        initialView={authModal.view}
+        onClose={() => setAuthModal((prev) => ({ ...prev, isOpen: false }))}
+      />
     </div>
   );
 }

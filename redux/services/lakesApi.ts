@@ -101,6 +101,30 @@ export interface ReviewsResponse {
   stats: { avgRating: number; totalReviews: number };
 }
 
+export interface LakeReportItem {
+  _id: string;
+  title?: string;
+  text: string;
+  tags?: string[];
+  score?: number;
+  catchCount?: number;
+  biggestCatch?: number;
+  fishedAt: string;
+  lakeName?: string;
+  conditions?: {
+    temp?: string;
+    weather?: string;
+    waterLevel?: string;
+    clarity?: string;
+    pressure?: string;
+  };
+  user?: {
+    _id: string;
+    name?: string;
+    avatar?: string;
+  };
+}
+
 const lakesApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     // ── Featured / landing page lakes ─────────────────────────────────────
@@ -240,7 +264,10 @@ const lakesApi = apiSlice.injectEndpoints({
 
     // ── Lake reports ───────────────────────────────────────────────────────
     getLakeReports: builder.query<
-      { reports: unknown[]; pagination: unknown },
+      {
+        reports: LakeReportItem[];
+        pagination: { page: number; limit: number; total: number; pages: number };
+      },
       { id: string; page?: number; limit?: number }
     >({
       query: ({ id, page = 1, limit = 6 }) =>

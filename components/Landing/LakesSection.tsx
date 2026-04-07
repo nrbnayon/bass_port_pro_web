@@ -10,13 +10,15 @@ import {
   ArrowDown01Icon,
   Location01Icon,
 } from "@hugeicons/core-free-icons";
-import { lakes } from "@/data/landingData";
 import { FilterX } from "lucide-react";
 import LakeCard from "../AuthProtected/User/Lakes/LakeCard";
 import { TablePagination } from "@/components/Shared/TablePagination";
 import { LakeGridSkeleton } from "@/components/Skeleton/LakeGridSkeleton";
 import AuthModal, { AuthView } from "@/components/Auth/AuthModal";
 import { usePathname } from "next/navigation";
+import { useGetLakesQuery } from "@/redux/services/lakesApi";
+import { getFallbackLakes, mapApiLakeToView } from "@/lib/lakeMappers";
+import { useUser } from "@/hooks/useUser";
 
 const sortOptions = [
   { label: "Sort by Rating", value: "rating" },
@@ -31,6 +33,7 @@ export default function LakesSection() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const search = searchParams.get("search") || "";
+  const { isLoading: isAuthLoading, isAuthenticated } = useUser();
 
   const [authModal, setAuthModal] = useState<{ isOpen: boolean; view: AuthView }>({
     isOpen: false,
@@ -38,6 +41,19 @@ export default function LakesSection() {
   });
   const [sortBy, setSortBy] = useState("rating");
   const [showFilters, setShowFilters] = useState(false);
+
+  const {
+    data: apiLakesData,
+    isLoading: isLakesLoading,
+    isError: isLakesError,
+    refetch: refetchLakes,
+  } = useGetLakesQuery({ page: 1, limit: 200, status: "active" });
+
+  useEffect(() => {
+    if (!isAuthLoading) {
+      refetchLakes();
+    }
+  }, [isAuthLoading, isAuthenticated, refetchLakes]);
 
   const handleSearchChange = (value: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -54,19 +70,19 @@ export default function LakesSection() {
   const itemsPerPage = 12;
 
   // Filter states
-  const [isLoading, setIsLoading] = useState(true);
   const [selectedRegion, setSelectedRegion] = useState("All");
   const [selectedState, setSelectedState] = useState("All");
   const [selectedCondition, setSelectedCondition] = useState("All");
 
-  // Simulate loading on mount
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 800);
-    return () => clearTimeout(timer);
-  }, []);
+  const allLakes = useMemo(() => {
+    if (apiLakesData?.lakes?.length) {
+      return apiLakesData.lakes.map(mapApiLakeToView);
+    }
+    return getFallbackLakes();
+  }, [apiLakesData]);
 
   const filteredLakes = useMemo(() => {
-    const result = lakes.filter((lake) => {
+    const result = allLakes.filter((lake) => {
       const matchesSearch =
         lake.name.toLowerCase().includes(search.toLowerCase()) ||
         lake.state.toLowerCase().includes(search.toLowerCase()) ||
@@ -103,7 +119,7 @@ export default function LakesSection() {
     });
 
     return result;
-  }, [search, sortBy, selectedRegion, selectedState, selectedCondition]);
+  }, [allLakes, search, sortBy, selectedRegion, selectedState, selectedCondition]);
 
   const totalPages = Math.ceil(filteredLakes.length / itemsPerPage);
   const paginatedLakes = useMemo(() => {
@@ -304,9 +320,14 @@ export default function LakesSection() {
             Showing{" "}
             <span className="font-semibold">{filteredLakes.length}</span> lakes
           </p>
+          {isLakesError && (
+            <p className="text-xs font-semibold text-amber-600">
+              API unavailable. Showing fallback lake data.
+            </p>
+          )}
         </div>
 
-        {isLoading ? (
+        {isLakesLoading && !apiLakesData ? (
           <LakeGridSkeleton count={8} />
         ) : paginatedLakes.length > 0 ? (
           <>

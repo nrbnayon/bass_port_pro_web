@@ -11,19 +11,29 @@ import {
   ViewIcon,
 } from "@hugeicons/core-free-icons";
 import { Fish } from "lucide-react";
-import { LakeCard as LakeCardType } from "@/types/landingData.types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AuthModal, { AuthView } from "@/components/Auth/AuthModal";
 import { useUser } from "@/hooks/useUser";
 import { useRouter } from "next/navigation";
+import { useToggleFavouriteLakeMutation } from "@/redux/services/lakesApi";
+import { LakeViewModel } from "@/lib/lakeMappers";
+import { toast } from "sonner";
 
 interface LakeCardProps {
-  lake: LakeCardType;
+  lake: LakeViewModel;
 }
 
 export default function LakeCard({ lake }: LakeCardProps) {
   const { isAuthenticated } = useUser();
   const router = useRouter();
+  const [toggleFavouriteLake, { isLoading: isTogglingFavourite }] =
+    useToggleFavouriteLakeMutation();
+  const [isFavourite, setIsFavourite] = useState(Boolean(lake.isFavourite));
+
+  useEffect(() => {
+    setIsFavourite(Boolean(lake.isFavourite));
+  }, [lake.isFavourite]);
+
   const [authModal, setAuthModal] = useState<{ isOpen: boolean; view: AuthView }>({
     isOpen: false,
     view: "login",
@@ -34,11 +44,11 @@ export default function LakeCard({ lake }: LakeCardProps) {
       e.preventDefault();
       setAuthModal({ isOpen: true, view: "login" });
     } else {
-      router.push(`/lakes/${lake.id}`);
+      router.push(`/lakes/${lake.slug || lake.id}`);
     }
   };
 
-  const handleFavouriteClick = (e: React.MouseEvent) => {
+  const handleFavouriteClick = async (e: React.MouseEvent) => {
     if (!isAuthenticated) {
       e.preventDefault();
       e.stopPropagation();
@@ -46,7 +56,23 @@ export default function LakeCard({ lake }: LakeCardProps) {
     } else {
       e.preventDefault();
       e.stopPropagation();
-      // Handle favourite logic here
+
+      if (!lake._id) {
+        setIsFavourite((prev) => !prev);
+        return;
+      }
+
+      try {
+        const response = await toggleFavouriteLake(lake._id).unwrap();
+        setIsFavourite(response.isFavourite);
+        toast.success(
+          response.isFavourite
+            ? "Added to favourites"
+            : "Removed from favourites",
+        );
+      } catch {
+        toast.error("Failed to update favourite");
+      }
     }
   };
 
@@ -95,7 +121,7 @@ export default function LakeCard({ lake }: LakeCardProps) {
           >
             <HugeiconsIcon
               icon={FavouriteIcon}
-              className="h-5 w-5"
+              className={`h-5 w-5 ${isFavourite ? "text-primary fill-primary" : ""}`}
               strokeWidth={2}
             />
           </div>
@@ -150,6 +176,11 @@ export default function LakeCard({ lake }: LakeCardProps) {
             </div>
           </div>
 
+          <div className="mt-3 flex items-center justify-between text-xs font-semibold text-secondary">
+            <span>{lake.reviewCount || 0} reviews</span>
+            <span>{lake.reportCount || 0} reports</span>
+          </div>
+
           <div className="mt-3 flex flex-wrap gap-1.5">
             {lake.species.slice(0, 2).map((s) => (
               <span
@@ -166,7 +197,7 @@ export default function LakeCard({ lake }: LakeCardProps) {
             )}
           </div>
         </div>
-        </div>
+      </div>
       <AuthModal
         isOpen={authModal.isOpen}
         initialView={authModal.view}

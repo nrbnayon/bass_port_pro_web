@@ -82,6 +82,7 @@ export default function LakeFormModal({
 
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [speciesInput, setSpeciesInput] = useState("");
 
   useEffect(() => {
     if (isOpen) {
@@ -146,6 +147,17 @@ export default function LakeFormModal({
       setImageFile(file);
       setPreviewUrl(URL.createObjectURL(file));
     }
+  };
+
+  const addSpecies = () => {
+    const value = speciesInput.trim();
+    if (!value || formData.species.includes(value)) return;
+
+    setFormData((prev) => ({
+      ...prev,
+      species: [...prev.species, value],
+    }));
+    setSpeciesInput("");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -355,19 +367,14 @@ export default function LakeFormModal({
                 <div className="flex gap-2">
                   <input
                     id="new-species"
+                    value={speciesInput}
+                    onChange={(e) => setSpeciesInput(e.target.value)}
                     placeholder="Add species..."
                     className="flex-1 px-4 py-2 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-primary/20 font-medium"
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
                         e.preventDefault();
-                        const val = (e.target as HTMLInputElement).value.trim();
-                        if (val && !formData.species.includes(val)) {
-                          setFormData((p) => ({
-                            ...p,
-                            species: [...p.species, val],
-                          }));
-                          (e.target as HTMLInputElement).value = "";
-                        }
+                        addSpecies();
                       }
                     }}
                   />
@@ -375,19 +382,7 @@ export default function LakeFormModal({
                     type="button"
                     variant="outline"
                     className="rounded-xl h-[42px]"
-                    onClick={() => {
-                      const input = document.getElementById(
-                        "new-species",
-                      ) as HTMLInputElement;
-                      const val = input.value.trim();
-                      if (val && !formData.species.includes(val)) {
-                        setFormData((p) => ({
-                          ...p,
-                          species: [...p.species, val],
-                        }));
-                        input.value = "";
-                      }
-                    }}
+                    onClick={addSpecies}
                   >
                     <Plus className="w-4 h-4" />
                   </Button>
@@ -401,6 +396,8 @@ export default function LakeFormModal({
                       {s}
                       <button
                         type="button"
+                        aria-label={`Remove ${s}`}
+                        title={`Remove ${s}`}
                         onClick={() =>
                           setFormData((p) => ({
                             ...p,
@@ -445,7 +442,7 @@ export default function LakeFormModal({
               </h3>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               <div className="space-y-2">
                 <label className="text-xs font-bold text-secondary uppercase tracking-wider ml-1">
                   Size (Acres)
@@ -484,50 +481,6 @@ export default function LakeFormModal({
                   aria-label="Elevation in feet"
                   title="Elevation in feet"
                   value={formData.elevation}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-primary/20 font-bold"
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-secondary uppercase tracking-wider ml-1">
-                  Avg Depth (ft)
-                </label>
-                <input
-                  type="number"
-                  name="avgDepth"
-                  aria-label="Average depth in feet"
-                  title="Average depth in feet"
-                  value={formData.avgDepth}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-primary/20 font-bold"
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-secondary uppercase tracking-wider ml-1">
-                  Record Bass (lbs)
-                </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  name="recordBass"
-                  aria-label="Record bass weight"
-                  title="Record bass weight"
-                  value={formData.recordBass}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-primary/20 font-bold"
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-secondary uppercase tracking-wider ml-1">
-                  Catch Rate (fph)
-                </label>
-                <input
-                  type="number"
-                  step="0.1"
-                  name="catchRate"
-                  aria-label="Catch rate fish per hour"
-                  title="Catch rate fish per hour"
-                  value={formData.catchRate}
                   onChange={handleChange}
                   className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-primary/20 font-bold"
                 />

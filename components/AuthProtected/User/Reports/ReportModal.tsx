@@ -22,6 +22,16 @@ const generateReportId = () => `r${Date.now()}`;
 // Get current date string in YYYY-MM-DD format
 const getCurrentDateString = () => new Date().toISOString().split("T")[0];
 
+const validWeatherOptions = new Set([
+  "Sunny",
+  "Clear",
+  "Partly Cloudy",
+  "Overcast",
+  "Rainy",
+  "Windy",
+  "Stormy",
+]);
+
 export default function ReportModal({
   isOpen,
   onClose,
@@ -36,7 +46,9 @@ export default function ReportModal({
     lake?.temp.replace("F", "") || "70",
   );
   const [waterClarity, setWaterClarity] = useState("Clear");
-  const [weatherStatus, setWeatherStatus] = useState(lake?.weather || "Sunny");
+  const [weatherStatus, setWeatherStatus] = useState(
+    lake && validWeatherOptions.has(lake.weather) ? lake.weather : "Sunny",
+  );
   const [pressure, setPressure] = useState("Stable");
   const [techniques, setTechniques] = useState("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);

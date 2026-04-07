@@ -59,6 +59,25 @@ export interface PaginatedReports {
   };
 }
 
+export interface SubmitReportPayload {
+  lakeName: string;
+  lakeId?: string;
+  title?: string;
+  text: string;
+  tags?: string[];
+  conditions?: {
+    temp?: string;
+    weather?: string;
+    wind?: string;
+    waterLevel?: string;
+    clarity?: string;
+    pressure?: string;
+  };
+  catchCount?: number;
+  biggestCatch?: number;
+  fishedAt?: string;
+}
+
 const fishingReportApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     // ── All reports ─────────────────────────────────────────────────────────
@@ -116,7 +135,7 @@ const fishingReportApi = apiSlice.injectEndpoints({
     }),
 
     // ── Submit report ───────────────────────────────────────────────────────
-    submitReport: builder.mutation<{ report: FishingReport; message: string }, Partial<FishingReport>>({
+    submitReport: builder.mutation<{ report: FishingReport; message: string }, SubmitReportPayload>({
       query: (body) => ({
         url: "/reports",
         method: "POST",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -10,22 +10,39 @@ import {
   FavouriteIcon,
 } from "@hugeicons/core-free-icons";
 import Link from "next/link";
-import { LakeCard } from "@/types/landingData.types";
 import { Star } from "lucide-react";
 import { toast } from "sonner";
+import { useToggleFavouriteLakeMutation } from "@/redux/services/lakesApi";
+import { LakeViewModel } from "@/lib/lakeMappers";
 
 interface LakeDetailsHeroProps {
-  lake: LakeCard;
+  lake: LakeViewModel;
 }
 
 export default function LakeDetailsHero({ lake }: LakeDetailsHeroProps) {
+  const [toggleFavouriteLake] = useToggleFavouriteLakeMutation();
+  const [isFavourite, setIsFavourite] = useState(Boolean(lake.isFavourite));
 
-  const reviewCount = useMemo(() => (lake.id.length * 15 + 412), [lake.id]);
+  useEffect(() => {
+    setIsFavourite(Boolean(lake.isFavourite));
+  }, [lake.isFavourite]);
 
-  const handleToggleFavourite = () => {
-    // Future: Add backend API call here
-    // const response = await toggleFavouriteApi({ id: lake.id, type: 'lake' });
-    toast.success(`${lake.name} added to favourites!`);
+  const reviewCount = useMemo(() => lake.reviewCount || 0, [lake.reviewCount]);
+
+  const handleToggleFavourite = async () => {
+    if (!lake._id) {
+      setIsFavourite((prev) => !prev);
+      toast.success(`${lake.name} favourite updated`);
+      return;
+    }
+
+    try {
+      const result = await toggleFavouriteLake(lake._id).unwrap();
+      setIsFavourite(result.isFavourite);
+      toast.success(result.isFavourite ? "Added to favourites" : "Removed from favourites");
+    } catch {
+      toast.error("Failed to update favourite");
+    }
   };
 
   return (
@@ -108,11 +125,13 @@ export default function LakeDetailsHero({ lake }: LakeDetailsHeroProps) {
           >
             <button
               onClick={handleToggleFavourite}
+                aria-label="Toggle favourite lake"
+                title="Toggle favourite"
               className="flex h-12 w-12 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-md transition-all hover:bg-white hover:text-primary shadow-lg group cursor-pointer"
             >
               <HugeiconsIcon
                 icon={FavouriteIcon}
-                className="h-6 w-6 transition-transform group-active:scale-90"
+                  className={`h-6 w-6 transition-transform group-active:scale-90 ${isFavourite ? "fill-primary text-primary" : ""}`}
               />
             </button>
           </motion.div>

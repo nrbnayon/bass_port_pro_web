@@ -69,7 +69,7 @@ export function useUser() {
         } catch {}
 
         try {
-          const refreshRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1"}/auth/refresh`, {
+          const refreshRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/auth/refresh`, {
             method: 'POST',
             credentials: 'include',
             headers: { 'Content-Type': 'application/json' }
@@ -91,7 +91,7 @@ export function useUser() {
           dispatch(updateTokens({ accessToken }));
 
 
-          const meRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1"}/auth/me`, {
+          const meRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/auth/me`, {
             method: 'GET',
             credentials: 'include',
             headers: { Authorization: `Bearer ${accessToken}` }
