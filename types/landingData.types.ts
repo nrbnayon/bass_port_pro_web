@@ -16,6 +16,8 @@ export type LakeCard = {
   condition: "Excellent" | "Good" | "Fair" | "Poor";
   clarity: "Clear" | "Stained" | "Muddy";
   isFavourite?: boolean;
+  reviewCount?: number;
+  reportCount?: number;
 };
 
 export type CatchCard = {
