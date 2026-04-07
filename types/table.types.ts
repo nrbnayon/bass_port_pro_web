@@ -58,6 +58,7 @@ export interface PaginationConfig {
   currentPage?: number;
   totalPages?: number;
   totalItems?: number;
+  total?: number; // Alias for totalItems
 }
 
 // Sorting configuration
@@ -97,6 +98,7 @@ export interface DynamicTableProps<T = any> {
   rowClassName?: string | ((row: T, index: number) => string);
   onRowClick?: (row: T, index: number) => void;
   onPageChange?: (page: number) => void;
+  currentPage?: number;
   striped?: boolean;
   hoverable?: boolean;
   bordered?: boolean;

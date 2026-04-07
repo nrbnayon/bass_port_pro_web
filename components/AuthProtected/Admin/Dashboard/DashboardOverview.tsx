@@ -117,7 +117,7 @@ const DashboardOverview = () => {
               icon={Users}
               iconBgColor="#F3F4F6"
               iconColor="#6B7280"
-              subtitle={`${stats.totalUsers?.trend >= 0 ? '+' : ''}${stats.totalUsers?.trend}% From last month`}
+              subtitle={`${stats.totalUsers?.trend >= 0 ? '+' : ''}${stats.totalUsers?.trend} vs last month`}
               isUp={stats.totalUsers?.trend >= 0}
             />
             <StatsCard
@@ -126,7 +126,7 @@ const DashboardOverview = () => {
               icon={MapPin}
               iconBgColor="#DCFCE7"
               iconColor="#22C55E"
-              subtitle={`${stats.totalLakes?.trend >= 0 ? '+' : ''}${stats.totalLakes?.trend}% Growth`}
+              subtitle={`${stats.totalLakes?.trend >= 0 ? '+' : ''}${stats.totalLakes?.trend} vs last month`}
               isUp={stats.totalLakes?.trend >= 0}
             />
             <StatsCard
