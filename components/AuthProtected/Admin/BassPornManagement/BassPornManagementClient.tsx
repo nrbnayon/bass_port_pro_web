@@ -16,7 +16,7 @@ import {
 import { toast } from "sonner";
 import DashboardHeader from "@/components/Shared/DashboardHeader";
 import {
-  useGetCatchesQuery,
+  useGetAdminCatchesQuery,
   useUpdateCatchMutation,
   useDeleteCatchMutation,
   CatchItem,
@@ -37,7 +37,7 @@ export default function BassPornManagementClient() {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<CatchItem | null>(null);
 
-  const { data, isLoading } = useGetCatchesQuery({
+  const { data, isLoading } = useGetAdminCatchesQuery({
     page,
     limit: 12,
     search: searchTerm,

@@ -75,6 +75,24 @@ const bassPornApi = apiSlice.injectEndpoints({
           : [{ type: "BassPorn", id: "LIST" }],
     }),
 
+    // ── Admin management (Guaranteed full data) ──────────────────────────
+    getAdminCatches: builder.query<PaginatedCatches, BassPornQueryParams>({
+      query: (params = {}) => {
+        const sp = new URLSearchParams();
+        Object.entries(params).forEach(([k, v]) => {
+          if (v !== undefined && v !== "") sp.append(k, String(v));
+        });
+        return `/bassporn/admin?${sp.toString()}`;
+      },
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.catches.map(({ _id }) => ({ type: "BassPorn" as const, id: _id })),
+              { type: "BassPorn", id: "LIST" },
+            ]
+          : [{ type: "BassPorn", id: "LIST" }],
+    }),
+
     // ── My catches ─────────────────────────────────────────────────────────
     getMyCatches: builder.query<PaginatedCatches, { page?: number; limit?: number }>({
       query: ({ page = 1, limit = 12 } = {}) =>
@@ -153,6 +171,7 @@ const bassPornApi = apiSlice.injectEndpoints({
 
 export const {
   useGetCatchesQuery,
+  useGetAdminCatchesQuery,
   useGetMyCatchesQuery,
   useGetMyFavouriteCatchesQuery,
   useGetCatchByIdQuery,
