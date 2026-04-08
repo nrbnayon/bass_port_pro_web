@@ -95,7 +95,7 @@ export default function ProfileClient() {
               <div className="relative flex h-24 w-24 items-center justify-center rounded-full bg-orange-500 text-4xl font-bold text-white shadow-xl border-4 border-white/20 overflow-hidden">
                 {userData?.avatar ? (
                   <NextImage
-                    src={userData.avatar}
+                    src={resolveMediaUrl(userData.avatar) || "/images/avatar.png"}
                     alt={userData.name || "User"}
                     fill
                     className="object-cover"
@@ -202,7 +202,7 @@ export default function ProfileClient() {
                   >
                     <div className="relative h-36">
                       <NextImage
-                        src={resolveMediaUrl(lake.image)}
+                        src={resolveMediaUrl(lake.image) || "/images/lake-placeholder.png"}
                         alt={lake.name}
                         fill
                         className="object-cover"
@@ -293,7 +293,7 @@ export default function ProfileClient() {
                   >
                     <div className="relative h-40">
                       <NextImage
-                        src={resolveMediaUrl(item.image)}
+                        src={resolveMediaUrl(item.image) || "/images/catch-placeholder.png"}
                         alt={item.species}
                         fill
                         className="object-cover"

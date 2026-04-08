@@ -26,6 +26,7 @@ import { TableConfig } from "@/types/table.types";
 import { DeleteConfirmationModal } from "@/components/Shared/DeleteConfirmationModal";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
+import { resolveMediaUrl } from "@/lib/utils";
 
 export default function BassPornManagementClient() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -83,7 +84,12 @@ export default function BassPornManagementClient() {
         header: "Photo",
         render: (image) => (
           <div className="relative w-12 h-12 rounded-lg overflow-hidden border border-gray-100">
-            <Image src={image} alt="Catch" fill className="object-cover" />
+            <Image
+              src={resolveMediaUrl(image) || "/images/catch-placeholder.png"}
+              alt="Catch"
+              fill
+              className="object-cover"
+            />
           </div>
         ),
       },
@@ -286,7 +292,7 @@ export default function BassPornManagementClient() {
                   >
                     <div className="relative aspect-[4/3] overflow-hidden">
                       <Image
-                        src={item.image}
+                        src={resolveMediaUrl(item.image) || "/images/catch-placeholder.png"}
                         alt={item.lakeName}
                         fill
                         className="object-cover group-hover:scale-105 transition-transform duration-500"
@@ -320,7 +326,7 @@ export default function BassPornManagementClient() {
                           <div className="relative w-7 h-7 rounded-full overflow-hidden bg-gray-100">
                             {item.user?.avatar ? (
                               <Image
-                                src={item.user.avatar}
+                                src={resolveMediaUrl(item.user.avatar) || "/images/avatar.png"}
                                 alt="User"
                                 fill
                                 className="object-cover"
