@@ -13,6 +13,7 @@ import Image from "next/image";
 import { resolveMediaUrl } from "@/lib/utils";
 import { toast } from "sonner";
 import { CatchItem, useToggleLikeCatchMutation } from "@/redux/services/bassPornApi";
+import { Badge } from "@/components/ui/badge";
 
 
 
@@ -98,13 +99,37 @@ export default function CatchDetailsModal({
                   </p>
                 </div>
               </div>
-              <button
-                onClick={onClose}
-                className="h-10 w-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-red-50 hover:text-red-500 transition-colors cursor-pointer"
-              >
-                <HugeiconsIcon icon={Cancel01Icon} className="h-6 w-6" />
-              </button>
+              <div className="flex items-center gap-3">
+                <Badge
+                  variant={
+                    catchItem.status === "active"
+                      ? "success"
+                      : catchItem.status === "pending"
+                        ? "warning"
+                        : catchItem.status === "rejected"
+                          ? "destructive"
+                          : "secondary"
+                  }
+                  className="capitalize px-3 py-1 text-xs font-semibold rounded-full"
+                >
+                  {catchItem.status === "active" ? "Approved" : catchItem.status}
+                </Badge>
+                <button
+                  onClick={onClose}
+                  aria-label="Close catch details"
+                  title="Close"
+                  className="h-10 w-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-red-50 hover:text-red-500 transition-colors cursor-pointer"
+                >
+                  <HugeiconsIcon icon={Cancel01Icon} className="h-6 w-6" />
+                </button>
+              </div>
             </div>
+
+            {catchItem.status === "pending" && (
+              <div className="mb-5 rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-700">
+                This catch is pending admin review. It will appear publicly after approval.
+              </div>
+            )}
 
             {/* Stats Boxes */}
             <div className="grid grid-cols-2 gap-4 mb-5">

@@ -77,7 +77,7 @@ export default function UploadCatchModal({
       formData.append("image", selectedFile);
 
       await uploadCatch(formData).unwrap();
-      toast.success("Catch uploaded successfully!");
+      toast.success("Catch uploaded successfully. It is now pending admin review.");
       onSubmit();
       resetForm();
       onClose();
@@ -111,6 +111,8 @@ export default function UploadCatchModal({
             </h2>
             <button
               onClick={onClose}
+              aria-label="Close upload form"
+              title="Close"
               className="rounded-full p-2 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500 cursor-pointer"
             >
               <HugeiconsIcon icon={Cancel01Icon} className="h-6 w-6" />

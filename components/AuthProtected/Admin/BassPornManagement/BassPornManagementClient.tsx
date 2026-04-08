@@ -227,6 +227,7 @@ export default function BassPornManagementClient() {
               <div className="flex items-center p-1 bg-gray-50 rounded-xl border border-border">
                 <button
                   type="button"
+                  aria-label="Table view"
                   onClick={() => setViewMode("table")}
                   className={`p-2 rounded-lg transition-all cursor-pointer ${viewMode === "table" ? "bg-white shadow-sm text-primary" : "text-secondary hover:text-foreground"}`}
                 >
@@ -234,6 +235,7 @@ export default function BassPornManagementClient() {
                 </button>
                 <button
                   type="button"
+                  aria-label="Card view"
                   onClick={() => setViewMode("card")}
                   className={`p-2 rounded-lg transition-all cursor-pointer ${viewMode === "card" ? "bg-white shadow-sm text-primary" : "text-secondary hover:text-foreground"}`}
                 >

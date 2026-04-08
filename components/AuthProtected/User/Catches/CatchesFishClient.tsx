@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useState, useEffect } from "react";
@@ -25,12 +26,12 @@ import AuthModal, { AuthView } from "@/components/Auth/AuthModal";
 import { resolveMediaUrl } from "@/lib/utils";
 import {
   useGetCatchesQuery,
+  useGetMyCatchesQuery,
   useGetMyFavouriteCatchesQuery,
   useToggleFavouriteCatchMutation,
   CatchItem,
 } from "@/redux/services/bassPornApi";
-
-
+import { Badge } from "@/components/ui/badge";
 
 const SORT_OPTIONS = [
   { label: "Most Recent", value: "createdAt" },
@@ -39,7 +40,9 @@ const SORT_OPTIONS = [
 ];
 
 export default function CatchesFishClient() {
-  const [sortBy, setSortBy] = useState<"createdAt" | "weight" | "likes">("createdAt");
+  const [sortBy, setSortBy] = useState<"createdAt" | "weight" | "likes">(
+    "createdAt",
+  );
   const [showFavouriteOnly, setShowFavouriteOnly] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [selectedCatch, setSelectedCatch] = useState<CatchItem | null>(null);
@@ -47,7 +50,10 @@ export default function CatchesFishClient() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { isAuthenticated } = useUser();
-  const [authModal, setAuthModal] = useState<{ isOpen: boolean; view: AuthView }>({
+  const [authModal, setAuthModal] = useState<{
+    isOpen: boolean;
+    view: AuthView;
+  }>({
     isOpen: false,
     view: "login",
   });
@@ -58,7 +64,11 @@ export default function CatchesFishClient() {
   const [itemsPerPage, setItemsPerPage] = useState(12);
 
   // APIs
-  const { data: allCatchesData, isLoading: isLoadingAll, isFetching: isFetchingAll } = useGetCatchesQuery(
+  const {
+    data: allCatchesData,
+    isLoading: isLoadingAll,
+    isFetching: isFetchingAll,
+  } = useGetCatchesQuery(
     {
       page: currentPage,
       limit: itemsPerPage,
@@ -66,17 +76,29 @@ export default function CatchesFishClient() {
       sortBy: sortBy,
       order: "desc",
     },
-    { skip: showFavouriteOnly }
+    { skip: showFavouriteOnly },
   );
 
-  const { data: favCatchesData, isLoading: isLoadingFav, isFetching: isFetchingFav } = useGetMyFavouriteCatchesQuery(
+  const {
+    data: favCatchesData,
+    isLoading: isLoadingFav,
+    isFetching: isFetchingFav,
+  } = useGetMyFavouriteCatchesQuery(
     { page: currentPage, limit: itemsPerPage },
-    { skip: !showFavouriteOnly || !isAuthenticated }
+    { skip: !showFavouriteOnly || !isAuthenticated },
   );
+
+  const {
+    data: myCatchesData,
+    isLoading: isLoadingMine,
+    isFetching: isFetchingMine,
+  } = useGetMyCatchesQuery({ page: 1, limit: 6 }, { skip: !isAuthenticated });
 
   const [toggleFavourite] = useToggleFavouriteCatchMutation();
 
-  const isLoading = showFavouriteOnly ? isLoadingFav || isFetchingFav : isLoadingAll || isFetchingAll;
+  const isLoading = showFavouriteOnly
+    ? isLoadingFav || isFetchingFav
+    : isLoadingAll || isFetchingAll;
   const catchesData = showFavouriteOnly ? favCatchesData : allCatchesData;
   const paginatedCatches = catchesData?.catches || [];
   const totalItems = catchesData?.pagination.total || 0;
@@ -107,6 +129,7 @@ export default function CatchesFishClient() {
 
   const handleUploadSubmit = () => {
     // API invalidates 'BassPorn LIST' via mutation, so it auto-refetches
+    toast.success("Submitted for review. You can track it in My Uploads.");
   };
 
   const openDetails = (item: CatchItem) => {
@@ -162,7 +185,11 @@ export default function CatchesFishClient() {
               <div className="relative group">
                 <select
                   value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value as "createdAt" | "weight" | "likes")}
+                  onChange={(e) =>
+                    setSortBy(
+                      e.target.value as "createdAt" | "weight" | "likes",
+                    )
+                  }
                   disabled={showFavouriteOnly}
                   className="appearance-none bg-gray-100 text-foreground rounded-lg px-8 py-3 text-sm font-semibold pr-12 focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all border-none cursor-pointer hover:bg-gray-200 disabled:opacity-50"
                 >
@@ -200,6 +227,89 @@ export default function CatchesFishClient() {
 
       {/* Grid Content */}
       <main className="w-full px-4 md:max-w-[1320px] mx-auto min-h-[600px]">
+        {isAuthenticated && !showFavouriteOnly && (
+          <section className="mb-10 rounded-2xl border border-primary/10 bg-white p-4 ">
+            <div className="flex items-center justify-between gap-4 mb-3">
+              <div>
+                <h2 className="text-2xl font-bold tracking-tight text-foreground">
+                  My Uploads
+                </h2>
+                <p className="text-sm font-medium text-gray-400">
+                  Keep track of your submitted catches while they wait for
+                  approval.
+                </p>
+              </div>
+            </div>
+
+            {isLoadingMine || isFetchingMine ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {[...Array(3)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="animate-pulse bg-gray-50 rounded-2xl aspect-[4/3]"
+                  />
+                ))}
+              </div>
+            ) : (myCatchesData?.catches || []).length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-6 py-10 text-center text-gray-500 font-medium">
+                No uploads yet. Your next catch will appear here.
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {(myCatchesData?.catches || []).map((item) => (
+                  <button
+                    key={item._id}
+                    type="button"
+                    onClick={() => openDetails(item)}
+                    aria-label={`Open catch details for ${item.species} from ${item.lake?.name || item.lakeName}`}
+                    title={`Open details for ${item.species}`}
+                    className="group text-left overflow-hidden rounded-2xl border border-gray-100 hover:border-primary/10 bg-white hover:shadow-sm transition-all cursor-pointer"
+                  >
+                    <div className="relative aspect-[4/3] overflow-hidden">
+                      <Image
+                        src={resolveMediaUrl(item.image)}
+                        alt={item.species}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                      <div className="absolute left-3 top-3">
+                        <Badge
+                          variant={
+                            item.status === "active"
+                              ? "success"
+                              : item.status === "pending"
+                                ? "warning"
+                                : item.status === "rejected"
+                                  ? "destructive"
+                                  : "secondary"
+                          }
+                          className="capitalize px-2.5 py-1 text-[10px] font-semibold rounded-full shadow-sm"
+                        >
+                          {item.status === "active" ? "Approved" : item.status}
+                        </Badge>
+                      </div>
+                      <div className="absolute bottom-3 left-3 right-3 text-white">
+                        <p className="text-sm font-bold line-clamp-1">
+                          {item.species}
+                        </p>
+                        <p className="text-xs font-medium text-white/80 line-clamp-1">
+                          {item.lakeName}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="p-4">
+                      <p className="text-sm font-medium text-gray-500 line-clamp-2">
+                        {item.description || "No description provided."}
+                      </p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </section>
+        )}
+
         {isLoading ? (
           <CatchGridSkeleton count={8} />
         ) : paginatedCatches.length === 0 ? (
@@ -253,6 +363,11 @@ export default function CatchesFishClient() {
 
                       <button
                         onClick={(e) => handleToggleFavourite(item._id, e)}
+                        aria-label={
+                          item.isFavourite
+                            ? "Remove from favourites"
+                            : "Add to favourites"
+                        }
                         className={`absolute right-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full backdrop-blur-md transition-all cursor-pointer ${
                           item.isFavourite
                             ? "bg-primary text-white"
@@ -274,7 +389,9 @@ export default function CatchesFishClient() {
                             icon={Location01Icon}
                             className="h-3.5 w-3.5"
                           />
-                          <p className="text-xs font-bold line-clamp-1">{item.lake?.name || item.lakeName}</p>
+                          <p className="text-xs font-bold line-clamp-1">
+                            {item.lake?.name || item.lakeName}
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -291,12 +408,16 @@ export default function CatchesFishClient() {
                               <HugeiconsIcon
                                 icon={FavouriteIcon}
                                 className={`h-3.5 w-3.5 transition-colors ${
-                                  item.isFavourite ? "text-red-500 fill-red-500" : "text-gray-300"
+                                  item.isFavourite
+                                    ? "text-red-500 fill-red-500"
+                                    : "text-gray-300"
                                 }`}
                               />
                               <span
                                 className={`text-xs font-black transition-colors ${
-                                  item.isFavourite ? "text-red-500" : "text-foreground"
+                                  item.isFavourite
+                                    ? "text-red-500"
+                                    : "text-foreground"
                                 }`}
                               >
                                 {item.likes || 0}
@@ -316,7 +437,9 @@ export default function CatchesFishClient() {
                             {item.technique ? (
                               <div className="flex items-center gap-1.5 text-[11px] font-bold text-gray-400 uppercase tracking-wider line-clamp-1 max-w-[120px]">
                                 <Fish className="h-4 w-4 shrink-0" />
-                                <span className="truncate">{item.technique}</span>
+                                <span className="truncate">
+                                  {item.technique}
+                                </span>
                               </div>
                             ) : null}
                           </div>
