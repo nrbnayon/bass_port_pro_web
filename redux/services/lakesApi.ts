@@ -290,8 +290,13 @@ const lakesApi = apiSlice.injectEndpoints({
         `/lakes/${id}/reports?page=${page}&limit=${limit}`,
       providesTags: (_result, _err, { id }) => [{ type: "LakeReports", id }],
     }),
+    // ── Unique lake names ───────────────────────────────────────────────────
+    getLakeNames: builder.query<{ lakes: string[] }, void>({
+      query: () => "/lakes/names",
+      providesTags: [{ type: "Lakes", id: "NAMES" }],
+    }),
   }),
-  overrideExisting: false,
+  overrideExisting: true,
 });
 
 export const {
@@ -307,6 +312,7 @@ export const {
   useSubmitLakeReviewMutation,
   useDeleteLakeReviewMutation,
   useGetLakeReportsQuery,
+  useGetLakeNamesQuery,
 } = lakesApi;
 
 export default lakesApi;

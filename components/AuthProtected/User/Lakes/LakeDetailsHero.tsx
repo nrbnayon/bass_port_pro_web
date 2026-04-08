@@ -25,6 +25,7 @@ export default function LakeDetailsHero({ lake, onFavouriteChanged }: LakeDetail
   const [isFavourite, setIsFavourite] = useState(Boolean(lake.isFavourite));
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsFavourite(Boolean(lake.isFavourite));
   }, [lake.isFavourite]);
 

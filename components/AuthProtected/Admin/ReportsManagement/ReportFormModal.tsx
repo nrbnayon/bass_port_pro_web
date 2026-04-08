@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Cancel01Icon } from "@hugeicons/core-free-icons";
@@ -48,21 +48,31 @@ export default function ReportFormModal({
   const [deleteReport, { isLoading: isDeleting }] = useDeleteReportMutation();
   const [isRejectOpen, setIsRejectOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [featuredLocal, setFeaturedLocal] = useState(false);
+
+  useEffect(() => {
+    if (report) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setFeaturedLocal(Boolean(report.featured));
+    }
+  }, [report]);
 
   const handleToggleFeatured = async () => {
     if (!report) return;
+    const newFeatured = !featuredLocal;
+    setFeaturedLocal(newFeatured);
+
     try {
       await updateReport({
         id: report._id,
-        data: { featured: !report.featured },
+        data: { featured: newFeatured },
       }).unwrap();
       toast.success(
-        report.featured
-          ? "Report removed from featured."
-          : "Report is now featured!",
+        newFeatured ? "Report is now featured!" : "Report removed from featured."
       );
       onSuccess?.();
     } catch (error: any) {
+      setFeaturedLocal(!newFeatured);
       toast.error(error?.data?.message || "Failed to update featured status");
     }
   };
@@ -129,8 +139,10 @@ export default function ReportFormModal({
               Reports Details
             </h2>
             <button
+              aria-label="Close report details"
+              title="Close"
               onClick={onClose}
-              className="p-2 rounded-full hover:bg-gray-100 text-gray-500 transition-colors"
+              className="p-2 rounded-full hover:bg-red-50 text-red-400 hover:text-red-500 transition-colors cursor-pointer"
             >
               <HugeiconsIcon icon={Cancel01Icon} className="w-6 h-6" />
             </button>
@@ -213,10 +225,11 @@ export default function ReportFormModal({
                 <input
                   id="featuredToggle"
                   type="checkbox"
-                  checked={Boolean(report?.featured)}
+                  checked={featuredLocal}
                   onChange={handleToggleFeatured}
                   disabled={isUpdating}
-                  className="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer disabled:opacity-50"
+                  className="w-5 h-5 rounded-md border-2 border-gray-300 transition-all checked:bg-primary checked:border-primary focus:ring-primary cursor-pointer disabled:opacity-50 accent-primary"
+                  style={{ accentColor: "hsl(var(--primary))" }}
                 />
               </div>
             </div>
