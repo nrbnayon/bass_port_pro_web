@@ -601,9 +601,9 @@ export default function LakeFormModal({
                 Processing...
               </div>
             ) : lake ? (
-              "Update Location Data"
+              "Update Lake Data"
             ) : (
-              "Initialize Lake Location"
+              "Create Lake"
             )}
           </Button>
         </div>

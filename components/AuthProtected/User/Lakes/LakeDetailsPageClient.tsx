@@ -20,11 +20,14 @@ export default function LakeDetailsPageClient({
   const { isLoading: isAuthLoading } = useUser();
   const { data, isLoading, isError, refetch } = useGetLakeByIdQuery(id);
 
-  const apiLake = data?.lake ? mapApiLakeToView(data.lake) : null;
+  const apiLake = useMemo(() => {
+    return data?.lake ? mapApiLakeToView(data.lake) : null;
+  }, [data]);
   const fallbackLake = useMemo(() => getFallbackLakeByIdOrSlug(id), [id]);
   const [lakeState, setLakeState] = useState<LakeViewModel | null>(apiLake || fallbackLake);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLakeState(apiLake || fallbackLake);
   }, [apiLake, fallbackLake]);
 
@@ -89,7 +92,7 @@ export default function LakeDetailsPageClient({
       <div className="min-h-screen bg-white pt-40 px-4 text-center">
         <h1 className="text-2xl font-bold text-foreground">Lake not found</h1>
         <p className="mt-2 text-secondary">
-          This lake could not be loaded from API or fallback data.
+          This lake could not be loaded from our lake data.
         </p>
         <Link
           href="/lakes"
