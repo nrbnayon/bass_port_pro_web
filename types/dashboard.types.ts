@@ -12,7 +12,7 @@ export interface DashboardStats {
     value: number;
     trend: number;
   };
-  lakeRequests: {
+  bassPornRequests: {
     value: number;
     trend: number;
   };

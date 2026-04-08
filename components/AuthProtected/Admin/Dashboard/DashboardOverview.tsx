@@ -135,17 +135,17 @@ const DashboardOverview = () => {
               icon={FileText}
               iconBgColor="#FFEDD5"
               iconColor="#F97316"
-              subtitle={`+${stats.totalReports?.trend} New this month`}
-              isUp={true}
+              subtitle={`${stats.totalReports?.trend >= 0 ? "+" : ""}${stats.totalReports?.trend} New this month`}
+              isUp={stats.totalReports?.trend >= 0}
             />
             <StatsCard
               title="BassPorn Request"
-              value={stats.lakeRequests?.value.toLocaleString()}
+              value={stats.bassPornRequests?.value.toLocaleString()}
               icon={ImageIcon}
               iconBgColor="#CFFAFE"
               iconColor="#06B6D4"
-              subtitle={`+${stats.lakeRequests?.trend} Pending requests`}
-              isUp={true}
+              subtitle={`${stats.bassPornRequests?.trend >= 0 ? "+" : ""}${stats.bassPornRequests?.trend} Pending requests`}
+              isUp={stats.bassPornRequests?.trend >= 0}
             />
           </div>
         )}
