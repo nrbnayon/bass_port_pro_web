@@ -16,6 +16,44 @@ export interface User {
   updatedAt?: string;
 }
 
+export interface ProfileStats {
+  catches: number;
+  biggestCatch: number;
+  totalWeight: number;
+  favorites: number;
+  reports: number;
+}
+
+export interface ProfileLake {
+  _id: string;
+  name: string;
+  slug?: string;
+  state: string;
+  image: string;
+  rating?: number;
+  reviewCount?: number;
+  description?: string;
+  species?: string[];
+  isFavourite?: boolean;
+}
+
+export interface ProfileCatch {
+  _id: string;
+  species: string;
+  image: string;
+  weight: number;
+  weightUnit: "lbs" | "kg";
+  length?: number | null;
+  technique?: string;
+  status: "active" | "pending" | "rejected" | "flagged";
+}
+
+export interface ProfileData extends User {
+  stats?: ProfileStats;
+  favouriteLakes?: ProfileLake[];
+  myCatches?: ProfileCatch[];
+}
+
 export interface ApiResponse<T> {
   success: boolean;
   message: string;
@@ -87,7 +125,7 @@ export const userApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     // ── Own profile ──────────────────────────────────────────────────────────
 
-    getMyProfile: builder.query<ApiResponse<User>, void>({
+    getMyProfile: builder.query<ApiResponse<ProfileData>, void>({
       query: () => "/auth/me",
       providesTags: [{ type: "User", id: "ME" }],
     }),

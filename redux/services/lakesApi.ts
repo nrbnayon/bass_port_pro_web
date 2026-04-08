@@ -244,7 +244,17 @@ const lakesApi = apiSlice.injectEndpoints({
     // ── Toggle favourite ───────────────────────────────────────────────────
     toggleFavouriteLake: builder.mutation<{ isFavourite: boolean }, string>({
       query: (id) => ({ url: `/lakes/${id}/favourite`, method: "POST" }),
-      invalidatesTags: (_result, _err, id) => [{ type: "Lakes", id }],
+      invalidatesTags: (_result, _err, id) => [
+        { type: "Lakes", id },
+        { type: "Lakes", id: "FAVOURITES" },
+      ],
+    }),
+
+    // ── My favourite lakes ────────────────────────────────────────────────
+    getMyFavouriteLakes: builder.query<PaginatedLakes, { page?: number; limit?: number }>({
+      query: ({ page = 1, limit = 12 } = {}) =>
+        `/lakes/favourites?page=${page}&limit=${limit}`,
+      providesTags: [{ type: "Lakes", id: "FAVOURITES" }],
     }),
 
     // ── Lake reviews ───────────────────────────────────────────────────────
@@ -321,6 +331,7 @@ export const {
   useDeleteLakeReviewMutation,
   useGetLakeReportsQuery,
   useGetLakeNamesQuery,
+  useGetMyFavouriteLakesQuery,
 } = lakesApi;
 
 export default lakesApi;
