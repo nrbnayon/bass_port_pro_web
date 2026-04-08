@@ -48,6 +48,7 @@ export interface ReportsQueryParams {
   user?: string;
   featured?: boolean;
   status?: string;
+  _auth?: string;
 }
 
 export interface PaginatedReports {
@@ -131,9 +132,12 @@ const fishingReportApi = apiSlice.injectEndpoints({
     }),
 
     // ── Single report ───────────────────────────────────────────────────────
-    getReportById: builder.query<{ report: FishingReport }, string>({
-      query: (id) => `/reports/${id}`,
-      providesTags: (_r, _e, id) => [{ type: "Reports", id }],
+    getReportById: builder.query<{ report: FishingReport }, { id: string; _auth?: string }>({
+      query: ({ id, _auth }) => {
+        const q = _auth ? `?_auth=${_auth}` : "";
+        return `/reports/${id}${q}`;
+      },
+      providesTags: (_r, _e, { id }) => [{ type: "Reports", id }],
     }),
 
     // ── Lake names for filter ───────────────────────────────────────────────

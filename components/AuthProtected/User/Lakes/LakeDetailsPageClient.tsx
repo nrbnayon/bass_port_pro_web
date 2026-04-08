@@ -18,7 +18,7 @@ export default function LakeDetailsPageClient({
   id,
 }: LakeDetailsPageClientProps) {
   const { isLoading: isAuthLoading } = useUser();
-  const { data, isLoading, isError, refetch } = useGetLakeByIdQuery(id);
+  const { data, isLoading, isError, refetch } = useGetLakeByIdQuery({ id });
 
   const apiLake = useMemo(() => {
     return data?.lake ? mapApiLakeToView(data.lake) : null;

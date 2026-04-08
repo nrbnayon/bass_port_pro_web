@@ -20,7 +20,7 @@ import { useGetReportsQuery } from "@/redux/services/fishingReportApi";
 import { resolveMediaUrl } from "@/lib/utils";
 
 export default function ReportsSection() {
-  const { isAuthenticated } = useUser();
+  const { isAuthenticated, isLoading: isUserLoading } = useUser();
   const [authModal, setAuthModal] = useState<{
     isOpen: boolean;
     view: AuthView;
@@ -33,6 +33,11 @@ export default function ReportsSection() {
     limit: 3,
     sortBy: "createdAt",
     order: "desc",
+    _auth: isUserLoading
+      ? "checking"
+      : isAuthenticated
+        ? "authenticated"
+        : "guest",
   });
 
   const apiReportsRaw = data?.reports || [];
@@ -54,12 +59,12 @@ export default function ReportsSection() {
       ? reports.slice(0, 10)
       : apiReports;
 
-  const handleAllReportsClick = (e: React.MouseEvent) => {
-    if (!isAuthenticated) {
-      e.preventDefault();
-      setAuthModal({ isOpen: true, view: "login" });
-    }
-  };
+  // const handleAllReportsClick = (e: React.MouseEvent) => {
+  //   if (!isAuthenticated) {
+  //     e.preventDefault();
+  //     setAuthModal({ isOpen: true, view: "login" });
+  //   }
+  // };
   return (
     <section id="reports" className="bg-white pt-10 pb-20">
       <div className="container-1620">
@@ -79,7 +84,7 @@ export default function ReportsSection() {
           </div>
           <Link
             href="/reports"
-            onClick={handleAllReportsClick}
+            // onClick={handleAllReportsClick}
             className="group inline-flex items-center gap-2 text-sm font-bold text-[#FF6B35] transition-colors hover:opacity-80"
           >
             All Reports

@@ -281,6 +281,7 @@ export default function ReportModal({
                   {lake ? (
                     <input
                       type="text"
+                      aria-label="select"
                       value={selectedLake}
                       readOnly
                       disabled
