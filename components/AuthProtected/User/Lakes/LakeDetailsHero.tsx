@@ -60,8 +60,10 @@ export default function LakeDetailsHero({ lake, onFavouriteChanged }: LakeDetail
         className="object-cover"
       />
 
-      {/* Overlay */}
-      {/* <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" /> */}
+      {/* Overlay Layers for Readability */}
+      <div className="absolute inset-0 bg-black/10" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-transparent opacity-60" />
 
       {/* Content */}
       <div className="relative h-full flex flex-col justify-between py-8 md:py-12 px-4 lg:px-24">

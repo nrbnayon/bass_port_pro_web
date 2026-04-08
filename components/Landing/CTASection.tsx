@@ -9,7 +9,7 @@ export default function CTASection() {
           <p className="mt-1 text-sm text-white/90">Join thousands of anglers using BASSPORT intelligence every week.</p>
         </div>
         <Link
-          href="#lakes"
+          href="/lakes"
           className="rounded-full bg-white px-6 py-3 text-sm font-semibold text-primary transition hover:bg-[#FFF1EB]"
         >
           Explore Lakes Now
