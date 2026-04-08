@@ -17,21 +17,7 @@ import { useState } from "react";
 import AuthModal, { AuthView } from "@/components/Auth/AuthModal";
 import { useUser } from "@/hooks/useUser";
 import { useGetReportsQuery } from "@/redux/services/fishingReportApi";
-
-const resolveMediaUrl = (url?: string) => {
-  if (!url) return "";
-  if (
-    url.startsWith("data:") ||
-    url.startsWith("http://") ||
-    url.startsWith("https://")
-  ) {
-    return url;
-  }
-  const apiBase =
-    process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
-  const origin = apiBase.replace(/\/api\/?$/, "");
-  return `${origin}${url.startsWith("/") ? "" : "/"}${url}`;
-};
+import { resolveMediaUrl } from "@/lib/utils";
 
 export default function ReportsSection() {
   const { isAuthenticated } = useUser();

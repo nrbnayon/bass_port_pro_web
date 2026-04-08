@@ -9,20 +9,17 @@ import {
   CloudUploadIcon,
 } from "@hugeicons/core-free-icons";
 import { toast } from "sonner";
-import { CatchCard } from "@/types/landingData.types";
 import Image from "next/image";
+
+import { useUploadCatchMutation } from "@/redux/services/bassPornApi";
 
 interface UploadCatchModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (newCatch: CatchCard) => void;
+  onSubmit: () => void;
 }
 
-// Generate a unique ID for a new catch record
-const generateCatchId = () => `c-${Date.now()}`;
 
-// Get current date string in YYYY-MM-DD format
-const getCurrentDateString = () => new Date().toISOString().split("T")[0];
 
 export default function UploadCatchModal({
   isOpen,
@@ -37,9 +34,13 @@ export default function UploadCatchModal({
   const [description, setDescription] = useState("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
+  const [uploadCatch, { isLoading }] = useUploadCatchMutation();
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setSelectedFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
@@ -56,44 +57,35 @@ export default function UploadCatchModal({
     setTechnique("");
     setDescription("");
     setImagePreview(null);
+    setSelectedFile(null);
   }, []);
 
-  const handleSubmit = React.useCallback(() => {
-    if (!lakeName || !weight || !length || !imagePreview) {
+  const handleSubmit = async () => {
+    if (!lakeName || !weight || !length || !selectedFile || !technique) {
       toast.error("Please fill in all required fields and upload a photo.");
       return;
     }
 
-    const newCatch: CatchCard = {
-      id: generateCatchId(),
-      angler: "You (Guest)",
-      lake: lakeName,
-      weight: `${weight} lbs`,
-      image: imagePreview,
-      species,
-      length: `${length}"`,
-      technique,
-      date: getCurrentDateString(),
-      likes: 0,
-      avatarImage: "/images/avatar.png",
-      description: description || "Fresh catch shared from the community!",
-    };
+    try {
+      const formData = new FormData();
+      formData.append("lakeName", lakeName);
+      formData.append("weight", weight);
+      formData.append("length", length);
+      formData.append("species", species);
+      formData.append("technique", technique);
+      formData.append("description", description);
+      formData.append("image", selectedFile);
 
-    onSubmit(newCatch);
-    resetForm();
-    onClose();
-  }, [
-    lakeName,
-    weight,
-    length,
-    imagePreview,
-    species,
-    technique,
-    description,
-    onSubmit,
-    resetForm,
-    onClose,
-  ]);
+      await uploadCatch(formData).unwrap();
+      toast.success("Catch uploaded successfully!");
+      onSubmit();
+      resetForm();
+      onClose();
+    } catch (err: unknown) {
+      const e = err as { data?: { message?: string } };
+      toast.error(e.data?.message || "Failed to upload catch.");
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -281,10 +273,11 @@ export default function UploadCatchModal({
 
             <button
               onClick={handleSubmit}
-              className="mt-4 flex w-full items-center justify-center gap-1 rounded-2xl bg-primary py-4 text-base font-semibold text-white shadow-xl shadow-primary/20 transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+              disabled={isLoading}
+              className="mt-4 flex w-full items-center justify-center gap-1 rounded-2xl bg-primary py-4 text-base font-semibold text-white shadow-xl shadow-primary/20 transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer disabled:opacity-50"
             >
               <HugeiconsIcon icon={CloudUploadIcon} className="h-5 w-5" />
-              Upload Catch Photo
+              {isLoading ? "Uploading..." : "Upload Catch Photo"}
             </button>
           </div>
         </motion.div>

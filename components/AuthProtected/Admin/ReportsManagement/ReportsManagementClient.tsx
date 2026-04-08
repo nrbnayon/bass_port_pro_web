@@ -14,6 +14,7 @@ import {
   MoreVertical,
 } from "lucide-react";
 import { toast } from "sonner";
+import { resolveMediaUrl } from "@/lib/utils";
 import DashboardHeader from "@/components/Shared/DashboardHeader";
 import {
   useGetAdminReportsQuery,
@@ -26,17 +27,6 @@ import { DeleteConfirmationModal } from "@/components/Shared/DeleteConfirmationM
 import { Badge } from "@/components/ui/badge";
 import ReportFormModal from "./ReportFormModal";
 import Image from "next/image";
-
-const resolveMediaUrl = (url?: string) => {
-  if (!url) return "";
-  if (url.startsWith("data:") || url.startsWith("http://") || url.startsWith("https://")) {
-    return url;
-  }
-
-  const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
-  const origin = apiBase.replace(/\/api\/?$/, "");
-  return `${origin}${url.startsWith("/") ? "" : "/"}${url}`;
-};
 
 export default function ReportsManagementClient() {
   const [searchTerm, setSearchTerm] = useState("");

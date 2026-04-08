@@ -13,6 +13,7 @@ import Image from "next/image";
 import { reports as fallbackReports } from "@/data/landingData";
 import { TablePagination } from "@/components/Shared/TablePagination";
 import { toast } from "sonner";
+import { resolveMediaUrl } from "@/lib/utils";
 import ReportModal from "./ReportModal";
 import { LakeViewModel } from "@/lib/lakeMappers";
 import { ReportCard } from "@/types/landingData.types";
@@ -34,17 +35,6 @@ const parseNumberFromString = (value?: string) => {
 
 const sanitizeConditionValue = (value: string | undefined, allowed: string[]) =>
   value && allowed.includes(value) ? value : "";
-
-const resolveMediaUrl = (url?: string) => {
-  if (!url) return "";
-  if (url.startsWith("data:") || url.startsWith("http://") || url.startsWith("https://")) {
-    return url;
-  }
-
-  const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
-  const origin = apiBase.replace(/\/api\/?$/, "");
-  return `${origin}${url.startsWith("/") ? "" : "/"}${url}`;
-};
 
 export default function LakeReportsList({ lake, lakeId, onReportChanged }: LakeReportsListProps) {
   const { isAuthenticated } = useUser();

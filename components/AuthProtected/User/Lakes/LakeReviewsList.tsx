@@ -4,6 +4,7 @@ import React, { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { StarIcon, Message01Icon } from "@hugeicons/core-free-icons";
+import { resolveMediaUrl } from "@/lib/utils";
 import Image from "next/image";
 import { TablePagination } from "@/components/Shared/TablePagination";
 import { toast } from "sonner";
@@ -13,17 +14,6 @@ import {
 } from "@/redux/services/lakesApi";
 import { useUser } from "@/hooks/useUser";
 import AuthModal, { AuthView } from "@/components/Auth/AuthModal";
-
-const resolveMediaUrl = (url?: string) => {
-  if (!url) return "";
-  if (url.startsWith("data:") || url.startsWith("http://") || url.startsWith("https://")) {
-    return url;
-  }
-
-  const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
-  const origin = apiBase.replace(/\/api\/?$/, "");
-  return `${origin}${url.startsWith("/") ? "" : "/"}${url}`;
-};
 
 interface LakeReviewsListProps {
   lakeId: string;
@@ -82,7 +72,7 @@ export default function LakeReviewsList({ lakeId, onReviewChanged }: LakeReviews
   const [currentPage, setCurrentPage] = useState(1);
   const [submitLakeReview, { isLoading: isSubmitting }] = useSubmitLakeReviewMutation();
 
-  const { data, isError, isLoading } = useGetLakeReviewsQuery(
+  const { data, isError } = useGetLakeReviewsQuery(
     { id: lakeId, page: currentPage, limit: 3 },
     { skip: !lakeId },
   );

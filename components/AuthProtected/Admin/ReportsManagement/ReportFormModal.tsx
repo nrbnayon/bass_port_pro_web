@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { resolveMediaUrl } from "@/lib/utils";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Cancel01Icon } from "@hugeicons/core-free-icons";
 import {
@@ -14,22 +15,6 @@ import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import { ConfirmationModal } from "@/components/Shared/ConfirmationModal";
 import { DeleteConfirmationModal } from "@/components/Shared/DeleteConfirmationModal";
-
-const resolveMediaUrl = (url?: string) => {
-  if (!url) return "";
-  if (
-    url.startsWith("data:") ||
-    url.startsWith("http://") ||
-    url.startsWith("https://")
-  ) {
-    return url;
-  }
-
-  const apiBase =
-    process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
-  const origin = apiBase.replace(/\/api\/?$/, "");
-  return `${origin}${url.startsWith("/") ? "" : "/"}${url}`;
-};
 
 interface ReportFormModalProps {
   isOpen: boolean;
