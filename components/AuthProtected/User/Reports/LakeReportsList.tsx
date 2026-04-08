@@ -61,7 +61,7 @@ export default function LakeReportsList({ lake, lakeId, onReportChanged }: LakeR
     { id: lakeId, page: currentPage, limit: itemsPerPage },
     { skip: !lakeId },
   );
-  const [submitReport, { isLoading: isSubmitting }] = useSubmitReportMutation();
+  const [submitReport] = useSubmitReportMutation();
   const [uploadReportImage] = useUploadReportImageMutation();
 
   const fallbackFiltered = useMemo(

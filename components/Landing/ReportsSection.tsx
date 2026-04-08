@@ -16,6 +16,17 @@ import Image from "next/image";
 import { useState } from "react";
 import AuthModal, { AuthView } from "@/components/Auth/AuthModal";
 import { useUser } from "@/hooks/useUser";
+import { useGetReportsQuery } from "@/redux/services/fishingReportApi";
+
+const resolveMediaUrl = (url?: string) => {
+  if (!url) return "";
+  if (url.startsWith("data:") || url.startsWith("http://") || url.startsWith("https://")) {
+    return url;
+  }
+  const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+  const origin = apiBase.replace(/\/api\/?$/, "");
+  return `${origin}${url.startsWith("/") ? "" : "/"}${url}`;
+};
 
 export default function ReportsSection() {
   const { isAuthenticated } = useUser();
@@ -23,6 +34,33 @@ export default function ReportsSection() {
     isOpen: false,
     view: "login",
   });
+
+  const { data, isLoading, isError } = useGetReportsQuery({ limit: 10 });
+
+  const apiReportsRaw = data?.reports || [];
+  
+  // 1st priority: featured=true. Then original fetched sort (fishedAt desc).
+  const sortedReports = [...apiReportsRaw].sort((a, b) => {
+    if (a.featured && !b.featured) return -1;
+    if (!a.featured && b.featured) return 1;
+    return 0; // maintain original relative order
+  });
+
+  const apiReports = sortedReports.slice(0, 3).map((r) => ({
+    id: r._id,
+    angler: r.user?.name || "Unknown",
+    avatarImage: resolveMediaUrl(r.user?.avatar) || "",
+    lake: r.lake?.name || r.lakeName || "Unknown Lake",
+    date: new Date(r.fishedAt).toISOString().split("T")[0],
+    temp: r.conditions?.temp || "N/A",
+    catches: `${r.catchCount || 0} catches`,
+    text: r.text,
+    tags: r.tags || [],
+  }));
+
+  const displayReports = isError || (!isLoading && apiReports.length === 0) 
+    ? reports.slice(0, 3) 
+    : apiReports;
 
   const handleAllReportsClick = (e: React.MouseEvent) => {
     if (!isAuthenticated) {
@@ -61,7 +99,14 @@ export default function ReportsSection() {
         </div>
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 mt-8">
-          {reports.slice(0, 3).map((report, index) => (
+          {isLoading ? (
+            <>
+              <div className="w-full h-64 bg-gray-100 rounded-2xl animate-pulse" />
+              <div className="w-full h-64 bg-gray-100 rounded-2xl animate-pulse" />
+              <div className="w-full h-64 bg-gray-100 rounded-2xl animate-pulse" />
+            </>
+          ) : (
+            displayReports.map((report, index) => (
             <motion.article
               key={report.id}
               initial={{ opacity: 0, y: 20 }}
@@ -141,7 +186,7 @@ export default function ReportsSection() {
                 ))}
               </div>
             </motion.article>
-          ))}
+          )))}
         </div>
       </div>
       <AuthModal

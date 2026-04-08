@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   PlusSignIcon,
@@ -8,8 +8,10 @@ import {
   DashboardSquare01Icon,
 } from "@hugeicons/core-free-icons";
 import { Fish } from "lucide-react";
-import { reports as initialReports } from "@/data/landingData";
+import { reports as fallbackReports } from "@/data/landingData";
 import { ReportCard as ReportCardType } from "@/types/landingData.types";
+import { useGetReportsQuery, useGetReportLakeNamesQuery } from "@/redux/services/fishingReportApi";
+
 
 import { toast } from "sonner";
 import { useSearchParams } from "next/navigation";
@@ -21,11 +23,19 @@ import { useUser } from "@/hooks/useUser";
 import AuthModal, { AuthView } from "@/components/Auth/AuthModal";
 import { usePathname } from "next/navigation";
 
+const resolveMediaUrl = (url?: string) => {
+  if (!url) return "";
+  if (url.startsWith("data:") || url.startsWith("http://") || url.startsWith("https://")) {
+    return url;
+  }
+  const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+  const origin = apiBase.replace(/\/api\/?$/, "");
+  return `${origin}${url.startsWith("/") ? "" : "/"}${url}`;
+};
+
 export default function ReportsContentClient() {
-  const [reports, setReports] = useState<ReportCardType[]>(initialReports);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedLake, setSelectedLake] = useState("All Lakes");
-  const [isLoading, setIsLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { isAuthenticated } = useUser();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -39,48 +49,45 @@ export default function ReportsContentClient() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(6);
 
-  useEffect(() => {
-    // Simulate loading
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 800);
-    return () => clearTimeout(timer);
-  }, []);
+  const { data, isLoading, isError, refetch } = useGetReportsQuery({
+    search: searchQuery,
+    lake: selectedLake === "All Lakes" ? "" : selectedLake,
+    page: currentPage,
+    limit: itemsPerPage
+  });
 
-  const handleAddReport = (newReport: ReportCardType) => {
-    setReports([newReport, ...reports]);
+  const { data: lakesData } = useGetReportLakeNamesQuery();
+
+  const handleAddReport = () => {
     toast.success("Fishing report shared successfully!");
+    refetch();
   };
 
-  const filteredReports = useMemo(() => {
-    let result = [...reports];
+  const apiReports: ReportCardType[] = (data?.reports || []).map((r) => ({
+    id: r._id,
+    angler: r.user?.name || "Unknown",
+    avatarImage: resolveMediaUrl(r.user?.avatar) || "",
+    lake: r.lake?.name || r.lakeName || "Unknown Lake",
+    date: new Date(r.fishedAt).toISOString().split("T")[0],
+    temp: r.conditions?.temp || "N/A",
+    weather: r.conditions?.weather || "N/A",
+    waterLevel: r.conditions?.waterLevel || "Normal",
+    clarity: r.conditions?.clarity || "Clear",
+    pressure: r.conditions?.pressure || "Stable",
+    catches: `${r.catchCount || 0} catches`,
+    biggestCatch: r.biggestCatch ? `${r.biggestCatch} lbs` : "0 lbs",
+    text: r.text,
+    tags: r.tags || [],
+    score: `${r.score || 0}%`,
+    status: r.status || "active",
+  }));
 
-    // Filter by lake
-    if (selectedLake !== "All Lakes") {
-      result = result.filter((r) => r.lake === selectedLake);
-    }
+  const displayReports = isError || (!isLoading && apiReports.length === 0) 
+    ? fallbackReports.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage) 
+    : apiReports;
 
-    // Filter by search query
-    if (searchQuery) {
-      result = result.filter(
-        (r) =>
-          r.angler?.toLowerCase().includes(searchQuery) ||
-          r.lake?.toLowerCase().includes(searchQuery) ||
-          r.text?.toLowerCase().includes(searchQuery) ||
-          (r.tags && r.tags.some((tag) => tag.toLowerCase().includes(searchQuery))),
-      );
-    }
-
-    return result;
-  }, [reports, selectedLake, searchQuery]);
-
-  // Paginated Results
-  const totalItems = filteredReports.length;
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
-  const paginatedReports = filteredReports.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage,
-  );
+  const totalItems = isError ? fallbackReports.length : data?.pagination?.total || 0;
+  const totalPages = isError ? Math.ceil(fallbackReports.length / itemsPerPage) : data?.pagination?.pages || 1;
 
   // Reset to first page when filtering or searching changes
   useEffect(() => {
@@ -91,7 +98,7 @@ export default function ReportsContentClient() {
   // Get unique lakes for filter
   const uniqueLakes = [
     "All Lakes",
-    ...Array.from(new Set(reports.map((r) => r.lake))),
+    ...(lakesData?.lakes || []),
   ];
 
   return (
@@ -160,7 +167,7 @@ export default function ReportsContentClient() {
           <div className="w-full">
             <ReportListSkeleton count={3} />
           </div>
-        ) : paginatedReports.length === 0 ? (
+        ) : displayReports.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-32 bg-white rounded-[40px] border border-gray-100 text-center">
             <div className="h-20 w-20 rounded-full bg-gray-50 flex items-center justify-center text-gray-300 mb-6">
               <HugeiconsIcon
@@ -179,7 +186,7 @@ export default function ReportsContentClient() {
           <div className="w-full">
             {/* Reports List */}
             <div className="flex flex-col gap-6">
-              {paginatedReports.map((report, index) => (
+              {displayReports.map((report, index) => (
                 <ReportCard key={report.id} report={report} index={index} />
               ))}
             </div>
