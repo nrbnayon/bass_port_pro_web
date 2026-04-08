@@ -12,6 +12,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import { Trophy, Fish, Gauge } from "lucide-react";
 import { ReportCard as ReportCardType } from "@/types/landingData.types";
+import { resolveMediaUrl } from "@/lib/utils";
 
 interface ReportCardProps {
   report: ReportCardType;
@@ -33,7 +34,7 @@ export default function ReportCard({ report, index }: ReportCardProps) {
             {report.avatarImage &&
             !report.avatarImage.includes("avatar.png") ? (
               <Image
-                src={report.avatarImage}
+                src={resolveMediaUrl(report.avatarImage)}
                 alt={report.angler}
                 width={40}
                 height={40}

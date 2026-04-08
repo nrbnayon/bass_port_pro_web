@@ -24,6 +24,7 @@ export interface Lake {
   catchRate: number;
   recordBass: number;
   species: string[];
+  topTechniques?: string[];
   bestSeason?: string;
   nearestCity?: string;
   image: string;
@@ -82,6 +83,7 @@ export interface LakesQueryParams {
   order?: "asc" | "desc";
   featured?: boolean;
   status?: string;
+  _auth?: string;
 }
 
 export interface PaginatedLakes {
@@ -101,11 +103,48 @@ export interface ReviewsResponse {
   stats: { avgRating: number; totalReviews: number };
 }
 
+export interface LakeReportItem {
+  _id: string;
+  title?: string;
+  text: string;
+  species?: string;
+  image?: string;
+  tags?: string[];
+  score?: number;
+  catchCount?: number;
+  biggestCatch?: number;
+  fishedAt: string;
+  lakeName?: string;
+  lake?: {
+    _id: string;
+    name?: string;
+    slug?: string;
+    species?: string[];
+  };
+  conditions?: {
+    temp?: string;
+    weather?: string;
+    waterLevel?: string;
+    clarity?: string;
+    pressure?: string;
+  };
+  user?: {
+    _id: string;
+    name?: string;
+    avatar?: string;
+  };
+  status?: "active" | "pending" | "rejected" | "flagged";
+}
+
 const lakesApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     // ── Featured / landing page lakes ─────────────────────────────────────
-    getFeaturedLakes: builder.query<{ lakes: Lake[] }, { limit?: number }>({
-      query: ({ limit = 12 } = {}) => `/lakes/featured?limit=${limit}`,
+    getFeaturedLakes: builder.query<{ lakes: Lake[] }, { limit?: number; _auth?: string }>({
+      query: ({ limit = 12, _auth } = {}) => {
+        const q = new URLSearchParams({ limit: String(limit) });
+        if (_auth) q.append("_auth", _auth);
+        return `/lakes/featured?${q.toString()}`;
+      },
       providesTags: [{ type: "Lakes", id: "FEATURED" }],
     }),
 
@@ -132,9 +171,18 @@ const lakesApi = apiSlice.injectEndpoints({
     }),
 
     // ── Single lake by ID or slug ──────────────────────────────────────────
-    getLakeById: builder.query<{ lake: Lake }, string>({
-      query: (id) => `/lakes/${id}`,
-      providesTags: (_result, _err, id) => [{ type: "Lakes", id }],
+    getLakeById: builder.query<{ lake: Lake }, { id: string; _auth?: string }>({
+      query: ({ id, _auth }) => {
+        const q = _auth ? `?_auth=${_auth}` : "";
+        return `/lakes/${id}${q}`;
+      },
+      providesTags: (result, _err, { id }) => {
+        const tags: Array<{ type: "Lakes"; id: string }> = [{ type: "Lakes", id }];
+        if (result?.lake?._id && result.lake._id !== id) {
+          tags.push({ type: "Lakes", id: result.lake._id });
+        }
+        return tags;
+      },
     }),
 
     // ── Create lake ────────────────────────────────────────────────────────
@@ -196,7 +244,17 @@ const lakesApi = apiSlice.injectEndpoints({
     // ── Toggle favourite ───────────────────────────────────────────────────
     toggleFavouriteLake: builder.mutation<{ isFavourite: boolean }, string>({
       query: (id) => ({ url: `/lakes/${id}/favourite`, method: "POST" }),
-      invalidatesTags: (_result, _err, id) => [{ type: "Lakes", id }],
+      invalidatesTags: (_result, _err, id) => [
+        { type: "Lakes", id },
+        { type: "Lakes", id: "FAVOURITES" },
+      ],
+    }),
+
+    // ── My favourite lakes ────────────────────────────────────────────────
+    getMyFavouriteLakes: builder.query<PaginatedLakes, { page?: number; limit?: number }>({
+      query: ({ page = 1, limit = 12 } = {}) =>
+        `/lakes/favourites?page=${page}&limit=${limit}`,
+      providesTags: [{ type: "Lakes", id: "FAVOURITES" }],
     }),
 
     // ── Lake reviews ───────────────────────────────────────────────────────
@@ -240,15 +298,23 @@ const lakesApi = apiSlice.injectEndpoints({
 
     // ── Lake reports ───────────────────────────────────────────────────────
     getLakeReports: builder.query<
-      { reports: unknown[]; pagination: unknown },
+      {
+        reports: LakeReportItem[];
+        pagination: { page: number; limit: number; total: number; pages: number };
+      },
       { id: string; page?: number; limit?: number }
     >({
       query: ({ id, page = 1, limit = 6 }) =>
         `/lakes/${id}/reports?page=${page}&limit=${limit}`,
       providesTags: (_result, _err, { id }) => [{ type: "LakeReports", id }],
     }),
+    // ── Unique lake names ───────────────────────────────────────────────────
+    getLakeNames: builder.query<{ lakes: string[] }, void>({
+      query: () => "/lakes/names",
+      providesTags: [{ type: "Lakes", id: "NAMES" }],
+    }),
   }),
-  overrideExisting: false,
+  overrideExisting: true,
 });
 
 export const {
@@ -264,6 +330,8 @@ export const {
   useSubmitLakeReviewMutation,
   useDeleteLakeReviewMutation,
   useGetLakeReportsQuery,
+  useGetLakeNamesQuery,
+  useGetMyFavouriteLakesQuery,
 } = lakesApi;
 
 export default lakesApi;

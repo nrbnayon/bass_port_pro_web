@@ -9,7 +9,7 @@ export interface DashboardStats {
   totalUsers: StatMetric;
   totalLakes: StatMetric;
   totalReports: StatMetric;
-  lakeRequests: StatMetric;
+  bassPornRequests: StatMetric;
   totalCatches: StatMetric;
   totalReviews: StatMetric;
   totalComments?: StatMetric;

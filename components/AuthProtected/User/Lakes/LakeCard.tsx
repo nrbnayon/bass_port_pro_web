@@ -11,19 +11,29 @@ import {
   ViewIcon,
 } from "@hugeicons/core-free-icons";
 import { Fish } from "lucide-react";
-import { LakeCard as LakeCardType } from "@/types/landingData.types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AuthModal, { AuthView } from "@/components/Auth/AuthModal";
 import { useUser } from "@/hooks/useUser";
 import { useRouter } from "next/navigation";
+import { useToggleFavouriteLakeMutation } from "@/redux/services/lakesApi";
+import { LakeViewModel } from "@/lib/lakeMappers";
+import { toast } from "sonner";
 
 interface LakeCardProps {
-  lake: LakeCardType;
+  lake: LakeViewModel;
 }
 
 export default function LakeCard({ lake }: LakeCardProps) {
   const { isAuthenticated } = useUser();
   const router = useRouter();
+  const [toggleFavouriteLake] = useToggleFavouriteLakeMutation();
+  const [isFavourite, setIsFavourite] = useState(Boolean(lake.isFavourite));
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setIsFavourite(Boolean(lake.isFavourite));
+  }, [lake.isFavourite]);
+
   const [authModal, setAuthModal] = useState<{ isOpen: boolean; view: AuthView }>({
     isOpen: false,
     view: "login",
@@ -34,11 +44,11 @@ export default function LakeCard({ lake }: LakeCardProps) {
       e.preventDefault();
       setAuthModal({ isOpen: true, view: "login" });
     } else {
-      router.push(`/lakes/${lake.id}`);
+      router.push(`/lakes/${lake.slug || lake.id}`);
     }
   };
 
-  const handleFavouriteClick = (e: React.MouseEvent) => {
+  const handleFavouriteClick = async (e: React.MouseEvent) => {
     if (!isAuthenticated) {
       e.preventDefault();
       e.stopPropagation();
@@ -46,7 +56,23 @@ export default function LakeCard({ lake }: LakeCardProps) {
     } else {
       e.preventDefault();
       e.stopPropagation();
-      // Handle favourite logic here
+
+      if (!lake._id) {
+        setIsFavourite((prev) => !prev);
+        return;
+      }
+
+      try {
+        const response = await toggleFavouriteLake(lake._id).unwrap();
+        setIsFavourite(response.isFavourite);
+        toast.success(
+          response.isFavourite
+            ? "Added to favourites"
+            : "Removed from favourites",
+        );
+      } catch {
+        toast.error("Failed to update favourite");
+      }
     }
   };
 
@@ -95,7 +121,7 @@ export default function LakeCard({ lake }: LakeCardProps) {
           >
             <HugeiconsIcon
               icon={FavouriteIcon}
-              className="h-5 w-5"
+              className={`h-5 w-5 ${isFavourite ? "text-primary fill-primary" : ""}`}
               strokeWidth={2}
             />
           </div>
@@ -115,16 +141,16 @@ export default function LakeCard({ lake }: LakeCardProps) {
           </div>
         </div>
 
-        <div className="flex flex-1 flex-col p-5">
+        <div className="flex flex-1 flex-col p-2">
           <h3 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors leading-tight">
             {lake.name}
           </h3>
-          <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-[#64748B]">
+          <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-secondary">
             {lake.description}
           </p>
 
-          <div className="mt-3 grid grid-cols-3 gap-2">
-            <div className="flex flex-col items-center justify-center rounded-xl bg-[#1111110D] py-3 transition-colors group-hover:bg-black/5">
+          <div className="mt-2 grid grid-cols-3 gap-2">
+            <div className="flex flex-col items-center justify-center rounded-xl bg-[#1111110D] py-2 transition-colors group-hover:bg-black/5">
               <HugeiconsIcon
                 icon={TemperatureIcon}
                 className="h-5 w-5 text-[#EF4444]"
@@ -133,7 +159,7 @@ export default function LakeCard({ lake }: LakeCardProps) {
                 {lake.temp}
               </span>
             </div>
-            <div className="flex flex-col items-center justify-center rounded-xl bg-[#1111110D] py-3 transition-colors group-hover:bg-black/5">
+            <div className="flex flex-col items-center justify-center rounded-xl bg-[#1111110D] py-2 transition-colors group-hover:bg-black/5">
               <HugeiconsIcon
                 icon={ViewIcon}
                 className="h-5 w-5 text-[#3B82F6]"
@@ -142,12 +168,17 @@ export default function LakeCard({ lake }: LakeCardProps) {
                 {lake.clarity}
               </span>
             </div>
-            <div className="flex flex-col items-center justify-center rounded-xl bg-[#1111110D] py-3 transition-colors group-hover:bg-black/5">
+            <div className="flex flex-col items-center justify-center rounded-xl bg-[#1111110D] py-2 transition-colors group-hover:bg-black/5">
               <Fish className="h-5 w-5 text-[#22C55E]" />
               <span className="mt-1 text-xs font-semibold text-foreground">
                 {lake.catchRate}/hr
               </span>
             </div>
+          </div>
+
+          <div className="mt-3 flex items-center justify-between text-xs font-semibold text-secondary">
+            <span>{lake.reviewCount || 0} reviews</span>
+            <span>{lake.reportCount || 0} reports</span>
           </div>
 
           <div className="mt-3 flex flex-wrap gap-1.5">
@@ -166,7 +197,7 @@ export default function LakeCard({ lake }: LakeCardProps) {
             )}
           </div>
         </div>
-        </div>
+      </div>
       <AuthModal
         isOpen={authModal.isOpen}
         initialView={authModal.view}

@@ -43,6 +43,8 @@ export default function LakeManagementClient() {
     page,
     limit: 10,
     search: searchTerm,
+    sortBy: "createdAt",
+    order: "desc",
   });
 
   const [deleteLake, { isLoading: isDeleting }] = useDeleteLakeMutation();

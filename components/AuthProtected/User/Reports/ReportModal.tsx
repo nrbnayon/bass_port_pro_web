@@ -1,13 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Cancel01Icon, Message01Icon, Camera01Icon, CloudUploadIcon } from "@hugeicons/core-free-icons";
+import {
+  Cancel01Icon,
+  Message01Icon,
+  Camera01Icon,
+  CloudUploadIcon,
+} from "@hugeicons/core-free-icons";
 import { LakeCard, ReportCard } from "@/types/landingData.types";
 import { toast } from "sonner";
 import Image from "next/image";
 import { calculateReportSuccessRate } from "@/lib/reportScore";
+import { useGetLakeNamesQuery } from "@/redux/services/lakesApi";
 
 interface ReportModalProps {
   isOpen: boolean;
@@ -22,6 +28,16 @@ const generateReportId = () => `r${Date.now()}`;
 // Get current date string in YYYY-MM-DD format
 const getCurrentDateString = () => new Date().toISOString().split("T")[0];
 
+const validWeatherOptions = new Set([
+  "Sunny",
+  "Clear",
+  "Partly Cloudy",
+  "Overcast",
+  "Rainy",
+  "Windy",
+  "Stormy",
+]);
+
 export default function ReportModal({
   isOpen,
   onClose,
@@ -32,14 +48,40 @@ export default function ReportModal({
   const [catches, setCatches] = useState("");
   const [biggestCatch, setBiggestCatch] = useState("");
   const [selectedLake, setSelectedLake] = useState(lake?.name || "");
+  const [selectedSpecies, setSelectedSpecies] = useState(
+    lake?.species?.[0] || "",
+  );
   const [waterTemp, setWaterTemp] = useState(
     lake?.temp.replace("F", "") || "70",
   );
   const [waterClarity, setWaterClarity] = useState("Clear");
-  const [weatherStatus, setWeatherStatus] = useState(lake?.weather || "Sunny");
+  const [weatherStatus, setWeatherStatus] = useState(
+    lake && validWeatherOptions.has(lake.weather) ? lake.weather : "Sunny",
+  );
   const [pressure, setPressure] = useState("Stable");
   const [techniques, setTechniques] = useState("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [errors, setErrors] = useState<Set<string>>(new Set());
+
+  const { data: lakeNamesData } = useGetLakeNamesQuery();
+  const lakeNames = lakeNamesData?.lakes || [];
+
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSelectedLake(lake?.name || "");
+    setSelectedSpecies(lake?.species?.[0] || "");
+    setWaterTemp(lake?.temp.replace("F", "") || "70");
+    setWeatherStatus(
+      lake && validWeatherOptions.has(lake.weather) ? lake.weather : "Sunny",
+    );
+    setImagePreview(null);
+    setImageFile(null);
+    setErrors(new Set());
+  }, [isOpen, lake]);
 
   const parsedTags = Array.from(
     new Set(
@@ -66,6 +108,7 @@ export default function ReportModal({
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setImageFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
@@ -75,16 +118,38 @@ export default function ReportModal({
   };
 
   const handleSubmit = () => {
-    if (!reportText.trim() || !catches || !biggestCatch || !selectedLake) {
+    const newErrors = new Set<string>();
+    if (!reportText.trim()) newErrors.add("reportText");
+    if (!catches) newErrors.add("catches");
+    if (!biggestCatch) newErrors.add("biggestCatch");
+    if (!selectedLake.trim()) newErrors.add("selectedLake");
+    if (!selectedSpecies.trim()) newErrors.add("selectedSpecies");
+
+    // Enforce selection from lake list if not pre-set
+    if (
+      !lake &&
+      selectedLake.trim() &&
+      !lakeNames.includes(selectedLake.trim())
+    ) {
+      newErrors.add("selectedLake");
+      toast.error("Please select a valid lake from the dropdown.");
+      return;
+    }
+
+    if (newErrors.size > 0) {
+      setErrors(newErrors);
       toast.error("Please fill in all required fields.");
       return;
     }
+
+    setErrors(new Set());
 
     const newReport: ReportCard = {
       id: generateReportId(),
       angler: "You (Guest)",
       date: getCurrentDateString(),
       lake: selectedLake,
+      species: selectedSpecies,
       score: `${calculatedSuccessRate}%`,
       temp: `${waterTemp}°F`,
       catches: `${catches} catches`,
@@ -97,13 +162,17 @@ export default function ReportModal({
       clarity: waterClarity,
       pressure: pressure,
       image: imagePreview || undefined,
+      imageFile: imageFile || undefined,
     };
 
     onSubmit(newReport);
     setReportText("");
     setCatches("");
     setBiggestCatch("");
+    setSelectedSpecies(lake?.species?.[0] || "");
     setTechniques("");
+    setImageFile(null);
+    setImagePreview(null);
     onClose();
   };
 
@@ -123,21 +192,30 @@ export default function ReportModal({
           initial={{ opacity: 0, scale: 0.95, y: 10 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 10 }}
-          className="relative w-full max-w-2xl bg-white sm:rounded-2xl shadow-2xl p-0 my-auto h-full sm:h-auto max-h-none sm:max-h-[92vh] flex flex-col overflow-hidden"
+          className="relative w-full max-w-4xl bg-white sm:rounded-2xl shadow-2xl p-0 my-auto h-full sm:h-auto max-h-none sm:max-h-[92vh] flex flex-col overflow-hidden"
         >
           {/* Header - Fixed */}
-          <div className="sticky top-0 z-10 flex items-center justify-between bg-white px-5 py-3">
-            <h2 className="text-xl font-semibold text-foreground tracking-tight">
-              Submit Fishing Report
+          <div className="sticky top-0 z-10 grid grid-cols-3 bg-white px-5 py-3 items-center border-b border-gray-50">
+            <h2 className="text-xl font-bold text-foreground tracking-tight">
+              Fishing Report
             </h2>
-            <button
-              onClick={onClose}
-              aria-label="Close report modal"
-              title="Close"
-              className="rounded-full p-2 text-gray-400 bg-gray-50 transition-colors hover:bg-red-50 hover:text-red-500 cursor-pointer"
-            >
-              <HugeiconsIcon icon={Cancel01Icon} className="h-6 w-6" />
-            </button>
+            <div className="flex justify-center">
+              <div className="rounded-full border border-emerald-100 bg-emerald-50 px-4 py-1.5 flex items-center gap-2 text-[10px] font-bold text-center">
+                <p className="uppercase tracking-widest text-emerald-700">
+                  Success Rate - {calculatedSuccessRate}%
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center justify-end">
+              <button
+                onClick={onClose}
+                aria-label="Close report modal"
+                title="Close"
+                className="rounded-full p-2 text-gray-400 bg-gray-50 transition-colors hover:bg-red-50 hover:text-red-500 cursor-pointer"
+              >
+                <HugeiconsIcon icon={Cancel01Icon} className="h-6 w-6" />
+              </button>
+            </div>
           </div>
 
           {/* Form Content - Scrollable */}
@@ -199,31 +277,57 @@ export default function ReportModal({
                 <label className="text-sm font-semibold text-gray-500 ml-1">
                   Lake <span className="text-red-500">*</span>
                 </label>
-                <div className="relative group">
-                  <input
-                    type="text"
-                    value={selectedLake}
-                    onChange={(e) => setSelectedLake(e.target.value)}
-                    placeholder="Select a lake"
-                    className="w-full rounded-2xl border border-gray-100 bg-gray-50/50 p-4 font-semibold text-foreground focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all border-solid placeholder:text-gray-300"
-                    disabled={!!lake}
-                  />
-                  {!lake && (
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                      <svg
-                        className="h-5 w-5 text-gray-400"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
+                <div className="relative">
+                  {lake ? (
+                    <input
+                      type="text"
+                      aria-label="select"
+                      value={selectedLake}
+                      readOnly
+                      disabled
+                      className="w-full rounded-2xl border border-gray-100 bg-gray-50/50 p-3 font-semibold text-gray-400 cursor-not-allowed"
+                    />
+                  ) : (
+                    <>
+                      <select
+                        value={selectedLake}
+                        onChange={(e) => {
+                          setSelectedLake(e.target.value);
+                          if (errors.has("selectedLake")) {
+                            const next = new Set(errors);
+                            next.delete("selectedLake");
+                            setErrors(next);
+                          }
+                        }}
+                        className={`w-full rounded-2xl border bg-gray-50/50 p-3 font-semibold text-foreground focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all appearance-none cursor-pointer ${
+                          errors.has("selectedLake")
+                            ? "border-red-400 focus:ring-red-500/10"
+                            : "border-gray-100"
+                        }`}
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
-                    </div>
+                        <option value="" disabled>Select a lake</option>
+                        {lakeNames.map((name) => (
+                          <option key={name} value={name}>
+                            {name}
+                          </option>
+                        ))}
+                      </select>
+                      <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                        <svg
+                          className="h-5 w-5 text-gray-400"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M19 9l-7 7-7-7"
+                          />
+                        </svg>
+                      </div>
+                    </>
                   )}
                 </div>
               </div>
@@ -358,9 +462,20 @@ export default function ReportModal({
                   <input
                     type="number"
                     value={catches}
-                    onChange={(e) => setCatches(e.target.value)}
+                    onChange={(e) => {
+                      setCatches(e.target.value);
+                      if (errors.has("catches")) {
+                        const next = new Set(errors);
+                        next.delete("catches");
+                        setErrors(next);
+                      }
+                    }}
                     placeholder="Total fish caught"
-                    className="w-full rounded-2xl border border-gray-100 bg-white px-4 py-3 font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-solid placeholder:text-gray-300"
+                    className={`w-full rounded-2xl border bg-white px-4 py-3 font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-solid placeholder:text-gray-300 ${
+                      errors.has("catches")
+                        ? "border-red-400"
+                        : "border-gray-100"
+                    }`}
                   />
                 </div>
                 <div className="flex flex-col gap-2">
@@ -370,9 +485,20 @@ export default function ReportModal({
                   <input
                     type="number"
                     value={biggestCatch}
-                    onChange={(e) => setBiggestCatch(e.target.value)}
+                    onChange={(e) => {
+                      setBiggestCatch(e.target.value);
+                      if (errors.has("biggestCatch")) {
+                        const next = new Set(errors);
+                        next.delete("biggestCatch");
+                        setErrors(next);
+                      }
+                    }}
                     placeholder="Weight of kicker"
-                    className="w-full rounded-2xl border border-gray-100 bg-white px-4 py-3 font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-solid placeholder:text-gray-300"
+                    className={`w-full rounded-2xl border bg-white px-4 py-3 font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-solid placeholder:text-gray-300 ${
+                      errors.has("biggestCatch")
+                        ? "border-red-400"
+                        : "border-gray-100"
+                    }`}
                   />
                 </div>
               </div>
@@ -381,23 +507,96 @@ export default function ReportModal({
                 <label className="text-sm font-semibold text-gray-500 ml-1">
                   Techniques (comma separated)
                 </label>
+                <div className="flex flex-wrap gap-2 mb-1">
+                  {[
+                    "Flipping",
+                    "Swim Jigs",
+                    "Topwater",
+                    "Crankbaits",
+                    "Spinnerbaits",
+                    "Texas Rig",
+                    "Drop Shot",
+                  ].map((tech) => (
+                    <button
+                      key={tech}
+                      type="button"
+                      onClick={() => {
+                        const current = techniques
+                          .split(",")
+                          .map((t) => t.trim())
+                          .filter(Boolean);
+                        if (
+                          !current.some(
+                            (t) => t.toLowerCase() === tech.toLowerCase(),
+                          )
+                        ) {
+                          setTechniques(
+                            [...current, tech].join(", ") +
+                              (current.length === 0 ? ", " : ""),
+                          );
+                        }
+                      }}
+                      className="px-3 py-1.5 bg-gray-50 hover:bg-primary hover:text-white text-xs font-bold rounded-xl text-gray-500 transition-colors cursor-pointer"
+                    >
+                      + {tech}
+                    </button>
+                  ))}
+                </div>
                 <input
                   type="text"
                   value={techniques}
-                  onChange={(e) => setTechniques(e.target.value)}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    // Automatically add space after comma if user types it
+                    if (val.endsWith(",") && !val.endsWith(", ")) {
+                      setTechniques(val + " ");
+                    } else {
+                      setTechniques(val);
+                    }
+                  }}
                   placeholder="e.g., Texas Rig, Crankbait, Topwater"
                   className="w-full rounded-2xl border border-gray-100 bg-white px-4 py-3 font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-solid placeholder:text-gray-300"
                 />
               </div>
 
-              <div className="rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3">
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-semibold text-gray-500 ml-1">
+                  Target Species <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  list="report-species-options"
+                  value={selectedSpecies}
+                  onChange={(e) => {
+                    setSelectedSpecies(e.target.value);
+                    if (errors.has("selectedSpecies")) {
+                      const next = new Set(errors);
+                      next.delete("selectedSpecies");
+                      setErrors(next);
+                    }
+                  }}
+                  placeholder="e.g., Largemouth Bass"
+                  className={`w-full rounded-2xl border bg-white px-4 py-3 font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-solid placeholder:text-gray-300 ${
+                    errors.has("selectedSpecies")
+                      ? "border-red-400"
+                      : "border-gray-100"
+                  }`}
+                />
+                <datalist id="report-species-options">
+                  {(lake?.species || []).map((species) => (
+                    <option key={species} value={species} />
+                  ))}
+                </datalist>
+              </div>
+
+              {/* <div className="rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3 flex justify-between items-center gap-2">
                 <p className="text-xs font-semibold uppercase tracking-wider text-emerald-700">
                   Success Rate (Auto Calculated)
                 </p>
                 <p className="mt-1 text-2xl font-bold text-emerald-600">
                   {calculatedSuccessRate}%
                 </p>
-              </div>
+              </div> */}
 
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-semibold text-gray-500 ml-1">
@@ -405,9 +604,20 @@ export default function ReportModal({
                 </label>
                 <textarea
                   value={reportText}
-                  onChange={(e) => setReportText(e.target.value)}
+                  onChange={(e) => {
+                    setReportText(e.target.value);
+                    if (errors.has("reportText")) {
+                      const next = new Set(errors);
+                      next.delete("reportText");
+                      setErrors(next);
+                    }
+                  }}
                   placeholder="Describe your fishing experience, patterns, and conditions..."
-                  className="w-full h-32 rounded-2xl border border-gray-100 bg-white px-4 py-3 font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-solid resize-none placeholder:text-gray-300"
+                  className={`w-full h-32 rounded-2xl border bg-white px-4 py-3 font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-solid resize-none placeholder:text-gray-300 ${
+                    errors.has("reportText")
+                      ? "border-red-400"
+                      : "border-gray-100"
+                  }`}
                 />
               </div>
             </div>

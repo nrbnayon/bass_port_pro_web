@@ -289,6 +289,7 @@ export default function SettingsPage() {
                 </button>
                 <input
                   ref={fileInputRef}
+                  aria-label="file upload"
                   type="file"
                   accept="image/*"
                   onChange={handleAvatarChange}

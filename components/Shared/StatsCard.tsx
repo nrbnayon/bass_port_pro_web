@@ -1,6 +1,6 @@
 // components/Dashboard/Shared/StatsCard.tsx
 import { cn } from "@/lib/utils";
-import { LucideIcon, TrendingUp } from "lucide-react";
+import { LucideIcon, TrendingUp, TrendingDown } from "lucide-react";
 
 interface StatsCardProps {
   title: string;
@@ -23,10 +23,10 @@ export function StatsCard({
   subtitle,
   className,
 }: StatsCardProps) {
-  // Extract percentage from subtitle if exists
-  const percentageMatch = subtitle?.match(/(\d+\.?\d*)%/);
-  const percentage = percentageMatch ? percentageMatch[1] : null;
-  const subtitleText = subtitle?.replace(/(\d+\.?\d*)%\s*/, '') || '';
+  // Extract trend value (e.g. "+5", "-3", "12%") from subtitle if exists
+  const trendMatch = subtitle?.match(/^([+-]?\d+\.?\d*%?)\s*(.*)/);
+  const trendValue = trendMatch ? trendMatch[1] : null;
+  const subtitleText = trendMatch ? trendMatch[2] : subtitle || '';
 
   return (
     <div
@@ -40,10 +40,25 @@ export function StatsCard({
         <div className="text-3xl font-semibold text-foreground">{value}</div>
         {subtitle && (
           <div className="flex items-center gap-1 text-xs">
-            {percentage && (
+            {trendValue && isUp !== undefined && (
               <>
-                <TrendingUp className="w-3 h-3 text-primary" />
-                <span className="text-primary font-medium">{percentage}%</span>
+                {isUp ? (
+                  <TrendingUp className="w-3 h-3 text-green-500" />
+                ) : (
+                  <TrendingDown className="w-3 h-3 text-red-500" />
+                )}
+                <span className={isUp ? "text-green-500 font-medium" : "text-red-500 font-medium"}>
+                  {trendValue}
+                </span>
+              </>
+            )}
+            {!trendValue && isUp !== undefined && (
+              <>
+                {isUp ? (
+                  <TrendingUp className="w-3 h-3 text-green-500" />
+                ) : (
+                  <TrendingDown className="w-3 h-3 text-red-500" />
+                )}
               </>
             )}
             <span className="text-secondary">{subtitleText}</span>
