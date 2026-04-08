@@ -173,6 +173,8 @@ export default function AuthModal({
             {/* Close Button */}
             <button
               onClick={handleClose}
+              aria-label="Close authentication modal"
+              title="Close"
               className="absolute right-6 top-6 text-gray-400 hover:text-red-600 hover:bg-red-500/10 rounded-full transition-colors z-[220] cursor-pointer p-1"
             >
               <HugeiconsIcon icon={Cancel01Icon} className="w-6 h-6" />
@@ -340,6 +342,8 @@ function LoginView({
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              title={showPassword ? "Hide password" : "Show password"}
               className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-500 cursor-pointer"
             >
               <HugeiconsIcon
@@ -526,6 +530,8 @@ function SignupView({
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              title={showPassword ? "Hide password" : "Show password"}
               className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-500 cursor-pointer"
             >
               <HugeiconsIcon
@@ -785,6 +791,8 @@ function OTPView({
             id={`otp-${idx}`}
             type="text"
             inputMode="numeric"
+            aria-label={`OTP digit ${idx + 1}`}
+            title={`OTP digit ${idx + 1}`}
             value={digit}
             onChange={(e) => handleChange(idx, e.target.value)}
             onKeyDown={(e) => handleKeyDown(idx, e)}
@@ -886,6 +894,8 @@ function ResetPasswordView({
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              title={showPassword ? "Hide password" : "Show password"}
               className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-500 cursor-pointer"
             >
               <HugeiconsIcon
