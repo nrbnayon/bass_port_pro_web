@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import Image from "next/image";
 
 import { useUploadCatchMutation } from "@/redux/services/bassPornApi";
+import { useGetLakeNamesQuery } from "@/redux/services/lakesApi";
 
 interface UploadCatchModalProps {
   isOpen: boolean;
@@ -36,6 +37,9 @@ export default function UploadCatchModal({
 
   const [uploadCatch, { isLoading }] = useUploadCatchMutation();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  const { data: lakeNamesData } = useGetLakeNamesQuery();
+  const lakeNames = lakeNamesData?.lakes || [];
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -176,13 +180,35 @@ export default function UploadCatchModal({
               <label className="text-sm font-semibold text-gray-500 ml-1">
                 Lake Name <span className="text-red-500">*</span>
               </label>
-              <input
-                type="text"
-                value={lakeName}
-                onChange={(e) => setLakeName(e.target.value)}
-                placeholder="e.g., Lake Fork"
-                className="w-full rounded-2xl border border-gray-100 bg-white px-4 py-3 font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-solid placeholder:text-gray-300"
-              />
+              <div className="relative">
+                <select
+                  value={lakeName}
+                  onChange={(e) => setLakeName(e.target.value)}
+                  className="w-full rounded-2xl border border-gray-100 bg-white px-4 py-3 font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-solid appearance-none cursor-pointer"
+                >
+                  <option value="" disabled>Select a lake</option>
+                  {lakeNames.map((name) => (
+                    <option key={name} value={name}>
+                      {name}
+                    </option>
+                  ))}
+                </select>
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                  <svg
+                    className="h-5 w-5 text-gray-400"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </div>
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">

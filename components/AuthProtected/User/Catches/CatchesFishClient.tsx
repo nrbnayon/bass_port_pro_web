@@ -17,7 +17,7 @@ import {
 import UploadCatchModal from "./UploadCatchModal";
 import CatchDetailsModal from "./CatchDetailsModal";
 import { toast } from "sonner";
-import { Fish } from "lucide-react";
+import { Fish, FishIcon, MapPinIcon } from "lucide-react";
 import { CatchGridSkeleton } from "@/components/Skeleton/CatchGridSkeleton";
 import { TablePagination } from "@/components/Shared/TablePagination";
 import { useSearchParams, usePathname } from "next/navigation";
@@ -232,7 +232,7 @@ export default function CatchesFishClient() {
             <div className="flex items-center justify-between gap-4 mb-3">
               <div>
                 <h2 className="text-2xl font-bold tracking-tight text-foreground">
-                  My Uploads
+                  My Catches
                 </h2>
                 <p className="text-sm font-medium text-gray-400">
                   Keep track of your submitted catches while they wait for
@@ -255,25 +255,29 @@ export default function CatchesFishClient() {
                 No uploads yet. Your next catch will appear here.
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {(myCatchesData?.catches || []).map((item) => (
-                  <button
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                {(myCatchesData?.catches || []).map((item, index) => (
+                  <motion.article
                     key={item._id}
-                    type="button"
+                    layout
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: index * 0.05 }}
+                    className="group relative cursor-pointer border border-[#F3F4F6] rounded-2xl overflow-hidden hover:border-primary/20 hover:shadow-lg transition-all duration-300 bg-white"
                     onClick={() => openDetails(item)}
-                    aria-label={`Open catch details for ${item.species} from ${item.lake?.name || item.lakeName}`}
-                    title={`Open details for ${item.species}`}
-                    className="group text-left overflow-hidden rounded-2xl border border-gray-100 hover:border-primary/10 bg-white hover:shadow-sm transition-all cursor-pointer"
                   >
-                    <div className="relative aspect-[4/3] overflow-hidden">
+                    <div className="relative h-[240px] overflow-hidden rounded-t-2xl bg-gray-900">
                       <Image
                         src={resolveMediaUrl(item.image)}
                         alt={item.species}
                         fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                        className="object-cover transition-transform group-hover:scale-105"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-                      <div className="absolute left-3 top-3">
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+
+                      {/* Status Badge */}
+                      <div className="absolute left-3 top-3 z-10">
                         <Badge
                           variant={
                             item.status === "active"
@@ -289,21 +293,75 @@ export default function CatchesFishClient() {
                           {item.status === "active" ? "Approved" : item.status}
                         </Badge>
                       </div>
-                      <div className="absolute bottom-3 left-3 right-3 text-white">
-                        <p className="text-sm font-bold line-clamp-1">
-                          {item.species}
-                        </p>
-                        <p className="text-xs font-medium text-white/80 line-clamp-1">
-                          {item.lakeName}
-                        </p>
+
+                      {/* Weight Badge (only if active) */}
+                      {item.status === "active" && (
+                        <div className="absolute right-3 top-3 z-10">
+                          <span className="rounded-full bg-primary px-3 py-1 text-[10px] font-semibold text-white shadow-xl shadow-primary/20">
+                            {item.weight} {item.weightUnit}
+                          </span>
+                        </div>
+                      )}
+
+                      <div className="absolute inset-x-0 bottom-0 p-3 text-white">
+                        <div className="flex items-center gap-1.5 text-white/80">
+                          <HugeiconsIcon
+                            icon={Location01Icon}
+                            className="h-3.5 w-3.5"
+                          />
+                          <p className="text-xs font-bold line-clamp-1">
+                            {item.lake?.name || item.lakeName}
+                          </p>
+                        </div>
                       </div>
                     </div>
-                    <div className="p-4">
-                      <p className="text-sm font-medium text-gray-500 line-clamp-2">
-                        {item.description || "No description provided."}
-                      </p>
+
+                    <div className="my-3 px-3 pb-1">
+                      <div className="flex flex-col">
+                        <div className="flex items-center justify-between w-full">
+                          <h3 className="text-sm font-black text-foreground truncate max-w-[70%]">
+                            {item.species}
+                          </h3>
+                          <div className="flex items-center gap-1">
+                            <HugeiconsIcon
+                              icon={FavouriteIcon}
+                              className={`h-3.5 w-3.5 transition-colors ${
+                                item.isFavourite
+                                  ? "text-red-500 fill-red-500"
+                                  : "text-gray-300"
+                              }`}
+                            />
+                            <span
+                              className={`text-xs font-black transition-colors ${
+                                item.isFavourite
+                                  ? "text-red-500"
+                                  : "text-foreground"
+                              }`}
+                            >
+                              {item.likes || 0}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-4 mt-2">
+                          {item.length ? (
+                            <div className="flex items-center gap-1.5 text-[11px] font-bold text-gray-400 uppercase tracking-wider">
+                              <HugeiconsIcon
+                                icon={RulerIcon}
+                                className="h-4 w-4"
+                              />
+                              {item.length}&quot;
+                            </div>
+                          ) : null}
+                          {item.technique ? (
+                            <div className="flex items-center gap-1.5 text-[11px] font-bold text-gray-400 uppercase tracking-wider line-clamp-1">
+                              <Fish className="h-3.5 w-3.5 shrink-0" />
+                              <span className="truncate">{item.technique}</span>
+                            </div>
+                          ) : null}
+                        </div>
+                      </div>
                     </div>
-                  </button>
+                  </motion.article>
                 ))}
               </div>
             )}
