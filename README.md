@@ -1,145 +1,111 @@
-# Quick Hire Frontend
+# BassInsight Frontend
 
-Modern job portal frontend built with Next.js, React, and TypeScript.
+Modern fishing community and lake monitoring platform built with Next.js, React, and TypeScript.
 
-This app includes:
-- Public landing pages and job browsing
-- Authentication flows (sign in, sign up, forgot/reset password, OTP verification)
-- Role-based dashboards (User/Admin)
-- Admin job and application management views
-- Reusable UI components with responsive layouts
+## Core Features
+
+- **Lake Explorations**: Comprehensive database of lakes with weather, species, and water conditions.
+- **Fishing Reports**: User-generated fishing reports with success rate calculations and detailed conditions.
+- **Catches Gallery**: Community-driven gallery of catches with photo moderation workflows.
+- **Authentication**: Secure authentication flows (Sign In, Sign Up, OTP Verification, Password Recovery).
+- **Role-Based Dashboards**:
+  - **User**: Manage profile, view personal catches, and track favorite lakes.
+  - **Admin**: Comprehensive management of lakes, reports, users, and catch moderation.
+- **Interactive UI**: Responsive layouts with smooth animations and dark mode support.
 
 ## Tech Stack
 
-- Next.js 16 (App Router)
-- React 19 + TypeScript
-- Tailwind CSS 4
-- Redux Toolkit + RTK Query
-- Framer Motion
-- Recharts
-- Radix UI
+- **Framework**: [Next.js 16 (App Router)](https://nextjs.org/)
+- **Library**: [React 19](https://reactjs.org/)
+- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
+- **State Management**: [Redux Toolkit](https://redux-toolkit.js.org/) + [RTK Query](https://redux-toolkit.js.org/rtk-query/overview)
+- **Animations**: [Framer Motion](https://www.framer.com/motion/)
+- **Icons**: [Hugeicons](https://hugeicons.com/), [Lucide](https://lucide.dev/), [Tabler](https://tabler-icons.io/)
+- **UI Components**: [Radix UI](https://www.radix-ui.com/) primitives
+- **Forms**: [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/)
 
 ## Prerequisites
 
-- Node.js 18+
-- npm 9+
+- **Node.js**: 18.x or higher
+- **Package Manager**: npm 9.x or higher
 
 ## Getting Started
 
-1. Install dependencies:
+1. **Install dependencies**:
 
-```bash
-npm install
-```
+   ```bash
+   npm install
+   ```
 
-2. Configure environment variables in `.env` (or `.env.local`):
+2. **Environment Configuration**:
+   Create a `.env.local` file in the root directory:
 
-```env
-NODE_ENV=development
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-NEXT_PUBLIC_API_URL=http://localhost:5000/api
+   ```env
+   NODE_ENV=development
+   NEXT_PUBLIC_API_URL=http://localhost:5000/api
+   ```
 
-# Cloudinary (client-safe vars only)
-NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloud_name
-NEXT_PUBLIC_CLOUDINARY_API_KEY=your_api_key
-```
+3. **Development Server**:
 
-> Do not expose private secrets in frontend environment files. Keep server-only keys in the backend.
+   ```bash
+   npm run dev
+   ```
 
-3. Run the dev server:
-
-```bash
-npm run dev
-```
-
-4. Open:
-
-`http://localhost:3000`
+4. **Access the App**:
+   Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Available Scripts
 
-- `npm run dev` - Start development server
-- `npm run build` - Build production bundle
-- `npm start` - Start production server
-- `npm run lint` - Run ESLint
+- `npm run dev`: Starts the development server with Webpack.
+- `npm run build`: Generates the production build.
+- `npm start`: Runs the built application in production mode.
+- `npm run lint`: Executes ESLint for code quality checks.
 
 ## Project Structure
 
 ```text
-quick_hire_frontend/
-├─ app/
-│  ├─ (auth)/               # Auth routes
-│  ├─ (roles)/              # Role-based route groups
-│  ├─ api/                  # App-router API handlers
-│  ├─ layout.tsx
-│  ├─ page.tsx
-│  └─ globals.css
-├─ components/
-│  ├─ Admin/
-│  ├─ Auth/
-│  ├─ Landing/
-│  ├─ Shared/
-│  ├─ Sidebar/
-│  └─ ui/
-├─ redux/
-│  ├─ services/             # RTK Query API slices
-│  ├─ features/
-│  ├─ store.ts
-│  └─ StoreProvider.tsx
-├─ hooks/                   # Custom hooks
-├─ lib/                     # Utilities and validators
-├─ data/                    # Local demo/static data
-├─ public/                  # Static files (icons/images/sw)
-├─ types/                   # Shared TypeScript types
-└─ next.config.ts
+frontend/
+├── app/                    # Next.js App Router (Auth, Admin, User routes)
+│   ├── (auth)/             # Authentication pages
+│   ├── (roles)/            # Protected dashboards (Admin/User)
+│   └── globals.css         # Global styling
+├── components/             # Reusable UI components
+│   ├── AuthProtected/     # Components requiring authentication
+│   ├── Landing/           # Public landing page sections
+│   ├── Shared/            # Reusable components (Table, Pagination, etc.)
+│   └── ui/                # Core UI primitives (Shadcn-like)
+├── redux/                 # State management
+│   ├── services/           # RTK Query API definitions
+│   ├── features/           # Redux slices
+│   └── store.ts            # Store configuration
+├── hooks/                  # Custom React hooks
+├── lib/                    # Utility functions and shared logic
+├── public/                 # Static assets (images, icons)
+├── types/                  # TypeScript interfaces and types
+└── next.config.ts          # Next.js configuration
 ```
 
 ## API Integration
 
-The frontend communicates with backend endpoints through RTK Query services in `redux/services`.
-
-- Base URL comes from `NEXT_PUBLIC_API_URL`
-- Auth, jobs, applications, and dashboard resources are fetched via centralized API slices
-
-## Authentication & Roles
-
-Current route organization supports:
-
-- Public/guest pages
-- Auth pages (`signin`, `signup`, password reset, OTP)
-- Role-based dashboard areas under `app/(roles)`
-
-Access logic is handled through shared permission utilities and role-aware components.
+The application uses **RTK Query** for efficient API communication. All endpoints are centralized in `redux/services/`, ensuring consistent data fetching, caching, and state synchronization across the platform.
 
 ## Build & Deployment
 
-### Production Build
+To prepare the application for production:
 
 ```bash
 npm run build
 npm start
 ```
 
-### Recommended Hosting
-
-- Vercel (best for Next.js)
-- Any Node.js host that supports Next.js server runtime
-
-Before deployment, set production env values (especially `NEXT_PUBLIC_API_URL`) to your deployed backend URL.
+For deployment, it is recommended to use [Vercel](https://vercel.com/) or any platform supporting the Next.js runtime. Ensure the `NEXT_PUBLIC_API_URL` is set to your production backend.
 
 ## Troubleshooting
 
-- If API requests fail in production, verify CORS and `NEXT_PUBLIC_API_URL`.
-- If images fail, verify allowed image domains in `next.config.ts`.
-- On Windows paths containing `&`, npm scripts can fail. Use PowerShell script shell:
+- **CORS Issues**: Ensure the backend allows requests from your frontend domain.
+- **Image Loading**: If external images fail to load, verify the `remotePatterns` in `next.config.ts`.
+- **Windows Scripts**: If npm scripts fail on Windows, ensure your shell is set correctly or use PowerShell.
 
-```powershell
-$env:npm_config_script_shell="$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe"
-npm install
-```
+## License
 
-## Notes for Contributors
-
-- Keep changes typed and lint-clean.
-- Reuse shared UI primitives from `components/ui` and shared utilities.
-- Prefer updating existing patterns over introducing new architecture for small features.
+ISC License.
