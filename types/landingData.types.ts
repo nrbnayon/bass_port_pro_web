@@ -60,6 +60,7 @@ export type ReportCard = {
   tags?: string[];
   avatarImage?: string;
   image?: string;
+  imageFile?: File;
   biggestCatch?: string;
   weather?: string;
   waterLevel?: string; // This might be used as pressure or actually water level? The image shows Pressure.

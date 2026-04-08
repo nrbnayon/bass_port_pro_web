@@ -1,17 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import {
   FishingReport,
+  useDeleteReportMutation,
   useUpdateReportMutation,
 } from "@/redux/services/fishingReportApi";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
+import { ConfirmationModal } from "@/components/Shared/ConfirmationModal";
+import { DeleteConfirmationModal } from "@/components/Shared/DeleteConfirmationModal";
 
 const resolveMediaUrl = (url?: string) => {
   if (!url) return "";
@@ -35,14 +38,19 @@ interface ReportFormModalProps {
   isOpen: boolean;
   onClose: () => void;
   report: FishingReport | null;
+  onSuccess?: () => void;
 }
 
 export default function ReportFormModal({
   isOpen,
   onClose,
   report,
+  onSuccess,
 }: ReportFormModalProps) {
   const [updateReport, { isLoading: isUpdating }] = useUpdateReportMutation();
+  const [deleteReport, { isLoading: isDeleting }] = useDeleteReportMutation();
+  const [isRejectOpen, setIsRejectOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
   const { register, handleSubmit, reset } = useForm<ReportFormValues>({
     resolver: zodResolver(reportSchema),
@@ -75,9 +83,48 @@ export default function ReportFormModal({
       }).unwrap();
 
       toast.success("Report updated successfully");
-      // Don't close automatically so they can see the change, or close if you want
+      onSuccess?.();
+      onClose();
     } catch (error: any) {
       toast.error(error?.data?.message || "Failed to update report");
+    }
+  };
+
+  const handleApprove = async () => {
+    if (!report) return;
+    try {
+      await updateReport({ id: report._id, data: { status: "active" } }).unwrap();
+      toast.success("Report approved successfully");
+      onSuccess?.();
+      onClose();
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Failed to approve report");
+    }
+  };
+
+  const handleReject = async () => {
+    if (!report) return;
+    try {
+      await updateReport({ id: report._id, data: { status: "rejected" } }).unwrap();
+      toast.success("Report rejected successfully");
+      onSuccess?.();
+      setIsRejectOpen(false);
+      onClose();
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Failed to reject report");
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!report) return;
+    try {
+      await deleteReport(report._id).unwrap();
+      toast.success("Report deleted successfully");
+      onSuccess?.();
+      setIsDeleteOpen(false);
+      onClose();
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Failed to delete report");
     }
   };
 
@@ -183,17 +230,9 @@ export default function ReportFormModal({
                   {report?.status === "active" ? "Approved" : report?.status}
                 </Badge>
 
-                {/* Status Switcher (For Admin to actually change it) */}
-                <select
-                  {...register("status")}
-                  onChange={handleSubmit(onSubmit)}
-                  className="bg-gray-50 border-none rounded-lg px-2 py-1 text-xs font-medium text-gray-500 focus:ring-0 cursor-pointer hover:bg-gray-100 transition-colors"
-                >
-                  <option value="active">Approve</option>
-                  <option value="pending">Pending</option>
-                  <option value="rejected">Reject</option>
-                  <option value="flagged">Flag</option>
-                </select>
+                <span className="text-xs font-medium text-secondary">
+                  Use actions below to moderate this report.
+                </span>
               </div>
             </div>
 
@@ -208,6 +247,34 @@ export default function ReportFormModal({
           </div>
 
           {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-3 pt-4">
+            <button
+              type="button"
+              onClick={() => setIsDeleteOpen(true)}
+              disabled={isUpdating || isDeleting}
+              className="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-2xl transition-all active:scale-[0.98] disabled:opacity-70 disabled:hover:scale-100 cursor-pointer"
+            >
+              Delete
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsRejectOpen(true)}
+              disabled={isUpdating || isDeleting}
+              className="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 rounded-2xl transition-all active:scale-[0.98] disabled:opacity-70 disabled:hover:scale-100 cursor-pointer"
+            >
+              Reject
+            </button>
+            
+            <button
+              type="button"
+              onClick={handleApprove}
+              disabled={isUpdating || isDeleting}
+              className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 rounded-2xl transition-all active:scale-[0.98] disabled:opacity-70 disabled:hover:scale-100 cursor-pointer"
+            >
+              Approve
+            </button>
+          </div>
+
           <div className="flex flex-col sm:flex-row gap-3 pt-4">
             <button
               type="button"
@@ -234,6 +301,27 @@ export default function ReportFormModal({
           </div>
         </div>
       </div>
+
+      <ConfirmationModal
+        isOpen={isRejectOpen}
+        onClose={() => setIsRejectOpen(false)}
+        onConfirm={handleReject}
+        title="Reject Report"
+        message={`Are you sure you want to reject \"${report?.title || "this report"}\"?`}
+        confirmText="Reject"
+        cancelText="Cancel"
+        isDestructive
+        isLoading={isUpdating}
+      />
+
+      <DeleteConfirmationModal
+        isOpen={isDeleteOpen}
+        onClose={() => setIsDeleteOpen(false)}
+        onConfirm={handleDelete}
+        isLoading={isDeleting}
+        title="Delete Report"
+        description={`Warning: You are about to permanently delete \"${report?.title || "this report"}\". This action cannot be undone.`}
+      />
     </div>
   );
 }

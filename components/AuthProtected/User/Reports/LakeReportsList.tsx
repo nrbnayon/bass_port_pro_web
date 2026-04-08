@@ -17,7 +17,7 @@ import ReportModal from "./ReportModal";
 import { LakeViewModel } from "@/lib/lakeMappers";
 import { ReportCard } from "@/types/landingData.types";
 import { useGetLakeReportsQuery } from "@/redux/services/lakesApi";
-import { useSubmitReportMutation } from "@/redux/services/fishingReportApi";
+import { useSubmitReportMutation, useUploadReportImageMutation } from "@/redux/services/fishingReportApi";
 import { useUser } from "@/hooks/useUser";
 import AuthModal, { AuthView } from "@/components/Auth/AuthModal";
 
@@ -62,6 +62,7 @@ export default function LakeReportsList({ lake, lakeId, onReportChanged }: LakeR
     { skip: !lakeId },
   );
   const [submitReport, { isLoading: isSubmitting }] = useSubmitReportMutation();
+  const [uploadReportImage] = useUploadReportImageMutation();
 
   const fallbackFiltered = useMemo(
     () =>
@@ -116,13 +117,21 @@ export default function LakeReportsList({ lake, lakeId, onReportChanged }: LakeR
     }
 
     try {
+      let submittedImageUrl = newReport.image || "";
+      if (newReport.imageFile) {
+        const formData = new FormData();
+        formData.append("image", newReport.imageFile);
+        const uploadResponse = await uploadReportImage(formData).unwrap();
+        submittedImageUrl = uploadResponse.url || "";
+      }
+
       await submitReport({
         lakeId,
         lakeName: lake.name,
         title: `${lake.name} trip report`,
         text: newReport.text || "",
         species: newReport.species || "",
-        image: newReport.image || "",
+        image: submittedImageUrl,
         tags: newReport.tags || [],
         conditions: {
           temp: newReport.temp,

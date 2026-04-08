@@ -53,6 +53,7 @@ export default function ReportModal({
   const [pressure, setPressure] = useState("Stable");
   const [techniques, setTechniques] = useState("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -63,6 +64,7 @@ export default function ReportModal({
     setWaterTemp(lake?.temp.replace("F", "") || "70");
     setWeatherStatus(lake && validWeatherOptions.has(lake.weather) ? lake.weather : "Sunny");
     setImagePreview(null);
+    setImageFile(null);
   }, [isOpen, lake]);
 
   const parsedTags = Array.from(
@@ -90,6 +92,7 @@ export default function ReportModal({
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setImageFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
@@ -127,6 +130,7 @@ export default function ReportModal({
       clarity: waterClarity,
       pressure: pressure,
       image: imagePreview || undefined,
+      imageFile: imageFile || undefined,
     };
 
     onSubmit(newReport);
@@ -135,6 +139,8 @@ export default function ReportModal({
     setBiggestCatch("");
     setSelectedSpecies(lake?.species?.[0] || "");
     setTechniques("");
+    setImageFile(null);
+    setImagePreview(null);
     onClose();
   };
 

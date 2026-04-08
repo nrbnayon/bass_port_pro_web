@@ -42,6 +42,7 @@ export default function ReportsManagementClient() {
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(1);
   const [viewMode, setViewMode] = useState<"card" | "table">("table");
+  const [statusFilter, setStatusFilter] = useState<"all" | "active" | "pending" | "rejected">("all");
 
   // Form Modal State
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -55,10 +56,13 @@ export default function ReportsManagementClient() {
     null,
   );
 
-  const { data, isLoading, isError } = useGetAdminReportsQuery({
+  const { data, isLoading, isError, refetch } = useGetAdminReportsQuery({
     page,
     limit: 10,
     search: searchTerm,
+    status: statusFilter,
+    sortBy: "createdAt",
+    order: "desc",
   });
 
   const [deleteReport, { isLoading: isDeleting }] = useDeleteReportMutation();
@@ -186,12 +190,29 @@ export default function ReportsManagementClient() {
                 type="text"
                 placeholder="Search by title, lake, or user..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setPage(1);
+                }}
                 className="w-full pl-10 pr-4 py-2 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 transition-all text-sm h-11"
               />
             </div>
 
             <div className="flex items-center gap-3 w-full sm:w-auto">
+              <select
+                value={statusFilter}
+                onChange={(e) => {
+                  setStatusFilter(e.target.value as "all" | "active" | "pending" | "rejected");
+                  setPage(1);
+                }}
+                className="h-11 rounded-xl border border-gray-200 bg-white px-3 text-sm font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+              >
+                <option value="all">All</option>
+                <option value="active">Approved</option>
+                <option value="pending">Pending</option>
+                <option value="rejected">Rejected</option>
+              </select>
+
               <div className="flex items-center p-1 bg-gray-50 rounded-xl border border-border">
                 <button
                   type="button"
@@ -212,6 +233,17 @@ export default function ReportsManagementClient() {
                   <LayoutGrid className="w-4 h-4" />
                 </button>
               </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            <div className="rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700">Approved Reports</p>
+              <p className="mt-1 text-2xl font-bold text-emerald-600">{data?.stats?.approved ?? 0}</p>
+            </div>
+            <div className="rounded-xl border border-amber-100 bg-amber-50 px-4 py-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-amber-700">Pending Reports</p>
+              <p className="mt-1 text-2xl font-bold text-amber-600">{data?.stats?.pending ?? 0}</p>
             </div>
           </div>
 
@@ -384,6 +416,7 @@ export default function ReportsManagementClient() {
             setSelectedReport(null);
           }}
           report={selectedReport}
+          onSuccess={refetch}
         />
       )}
 

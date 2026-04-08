@@ -58,6 +58,11 @@ export interface PaginatedReports {
     total: number;
     pages: number;
   };
+  stats?: {
+    approved: number;
+    pending: number;
+    total: number;
+  };
 }
 
 export interface SubmitReportPayload {
@@ -158,6 +163,14 @@ const fishingReportApi = apiSlice.injectEndpoints({
       },
     }),
 
+    uploadReportImage: builder.mutation<{ url: string; message?: string }, FormData>({
+      query: (formData) => ({
+        url: "/reports/upload-image",
+        method: "POST",
+        body: formData,
+      }),
+    }),
+
     // ── Update report ───────────────────────────────────────────────────────
     updateReport: builder.mutation<{ report: FishingReport }, { id: string; data: Partial<FishingReport> }>({
       query: ({ id, data }) => ({
@@ -198,6 +211,7 @@ export const {
   useGetReportByIdQuery,
   useGetReportLakeNamesQuery,
   useSubmitReportMutation,
+  useUploadReportImageMutation,
   useUpdateReportMutation,
   useDeleteReportMutation,
   useToggleHelpfulReportMutation,
