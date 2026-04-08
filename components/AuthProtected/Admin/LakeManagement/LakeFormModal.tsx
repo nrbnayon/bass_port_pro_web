@@ -321,7 +321,7 @@ export default function LakeFormModal({
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="space-y-2">
                 <label className="text-sm font-bold text-secondary ml-1">
                   Lake Name <span className="text-red-500">*</span>
@@ -358,6 +358,20 @@ export default function LakeFormModal({
                     ))}
                   </datalist>
                 </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-secondary ml-1">
+                  Nearest City
+                </label>
+                <input
+                  name="nearestCity"
+                  aria-label="Nearest city"
+                  title="Nearest city"
+                  value={formData.nearestCity}
+                  onChange={handleChange}
+                  placeholder="e.g. Guntersville, AL"
+                  className="w-full px-5 py-3 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+                />
               </div>
             </div>
           </div>

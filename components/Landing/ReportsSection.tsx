@@ -35,18 +35,11 @@ export default function ReportsSection() {
     view: "login",
   });
 
-  const { data, isLoading, isError } = useGetReportsQuery({ limit: 10 });
+  const { data, isLoading, isError } = useGetReportsQuery({ limit: 10, sortBy: "createdAt", order: "desc" });
 
   const apiReportsRaw = data?.reports || [];
-  
-  // 1st priority: featured=true. Then original fetched sort (fishedAt desc).
-  const sortedReports = [...apiReportsRaw].sort((a, b) => {
-    if (a.featured && !b.featured) return -1;
-    if (!a.featured && b.featured) return 1;
-    return 0; // maintain original relative order
-  });
 
-  const apiReports = sortedReports.slice(0, 3).map((r) => ({
+  const apiReports = apiReportsRaw.map((r) => ({
     id: r._id,
     angler: r.user?.name || "Unknown",
     avatarImage: resolveMediaUrl(r.user?.avatar) || "",
@@ -59,7 +52,7 @@ export default function ReportsSection() {
   }));
 
   const displayReports = isError || (!isLoading && apiReports.length === 0) 
-    ? reports.slice(0, 3) 
+    ? reports.slice(0, 10) 
     : apiReports;
 
   const handleAllReportsClick = (e: React.MouseEvent) => {
@@ -101,9 +94,9 @@ export default function ReportsSection() {
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 mt-8">
           {isLoading ? (
             <>
-              <div className="w-full h-64 bg-gray-100 rounded-2xl animate-pulse" />
-              <div className="w-full h-64 bg-gray-100 rounded-2xl animate-pulse" />
-              <div className="w-full h-64 bg-gray-100 rounded-2xl animate-pulse" />
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="w-full h-[320px] bg-gray-50 rounded-2xl animate-pulse ring-1 ring-gray-100" />
+              ))}
             </>
           ) : (
             displayReports.map((report, index) => (
