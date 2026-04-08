@@ -160,7 +160,7 @@ export default function ReportModal({
           initial={{ opacity: 0, scale: 0.95, y: 10 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 10 }}
-          className="relative w-full max-w-2xl bg-white sm:rounded-2xl shadow-2xl p-0 my-auto h-full sm:h-auto max-h-none sm:max-h-[92vh] flex flex-col overflow-hidden"
+          className="relative w-full max-w-4xl bg-white sm:rounded-2xl shadow-2xl p-0 my-auto h-full sm:h-auto max-h-none sm:max-h-[92vh] flex flex-col overflow-hidden"
         >
           {/* Header - Fixed */}
           <div className="sticky top-0 z-10 flex items-center justify-between bg-white px-5 py-3">
@@ -418,10 +418,35 @@ export default function ReportModal({
                 <label className="text-sm font-semibold text-gray-500 ml-1">
                   Techniques (comma separated)
                 </label>
+                <div className="flex flex-wrap gap-2 mb-1">
+                  {["Flipping", "Swim Jigs", "Topwater", "Crankbaits", "Spinnerbaits", "Texas Rig", "Drop Shot"].map((tech) => (
+                    <button
+                      key={tech}
+                      type="button"
+                      onClick={() => {
+                        const current = techniques.split(",").map((t) => t.trim()).filter(Boolean);
+                        if (!current.some(t => t.toLowerCase() === tech.toLowerCase())) {
+                          setTechniques([...current, tech].join(", ") + (current.length === 0 ? ", " : ""));
+                        }
+                      }}
+                      className="px-3 py-1.5 bg-gray-50 hover:bg-primary hover:text-white text-xs font-bold rounded-xl text-gray-500 transition-colors cursor-pointer"
+                    >
+                      + {tech}
+                    </button>
+                  ))}
+                </div>
                 <input
                   type="text"
                   value={techniques}
-                  onChange={(e) => setTechniques(e.target.value)}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    // Automatically add space after comma if user types it
+                    if (val.endsWith(",") && !val.endsWith(", ")) {
+                      setTechniques(val + " ");
+                    } else {
+                      setTechniques(val);
+                    }
+                  }}
                   placeholder="e.g., Texas Rig, Crankbait, Topwater"
                   className="w-full rounded-2xl border border-gray-100 bg-white px-4 py-3 font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border-solid placeholder:text-gray-300"
                 />

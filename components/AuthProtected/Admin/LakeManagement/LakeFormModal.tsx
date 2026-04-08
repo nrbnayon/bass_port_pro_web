@@ -165,15 +165,25 @@ export default function LakeFormModal({
     setSpeciesInput("");
   };
 
-  const addTechnique = () => {
-    const value = techniquesInput.trim();
-    if (!value || formData.topTechniques.some(t => t.toLowerCase() === value.toLowerCase())) return;
+  const addTechnique = (techToAdd?: string) => {
+    const value = (
+      typeof techToAdd === "string" ? techToAdd : techniquesInput
+    ).trim();
+    if (
+      !value ||
+      formData.topTechniques.some(
+        (t) => t.toLowerCase() === value.toLowerCase(),
+      )
+    ) {
+      if (typeof techToAdd !== "string") setTechniquesInput("");
+      return;
+    }
 
     setFormData((prev) => ({
       ...prev,
       topTechniques: [...prev.topTechniques, value],
     }));
-    setTechniquesInput("");
+    if (typeof techToAdd !== "string") setTechniquesInput("");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -228,7 +238,7 @@ export default function LakeFormModal({
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
-      <div className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-4 duration-500 max-h-[90vh] flex flex-col">
+      <div className="bg-white rounded-2xl w-full max-w-4xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-4 duration-500 max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="px-5 py-3 border-b border-gray-100 flex items-center justify-between bg-white sticky top-0 z-10">
           <div>
@@ -361,7 +371,7 @@ export default function LakeFormModal({
               name="description"
               value={formData.description}
               onChange={handleChange}
-              rows={2}
+              rows={3}
               placeholder="Briefly describe the lake's history, fishing features, and access..."
               className="w-full px-5 py-4 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-primary/20 transition-all font-medium resize-none"
             />
@@ -448,63 +458,84 @@ export default function LakeFormModal({
                     className="w-full px-5 py-3 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
                   />
                 </div>
-
-                <div className="space-y-3">
-                  <label className="text-sm font-bold text-secondary ml-1">
-                    Top Techniques
-                  </label>
-                  <div className="flex gap-2">
-                    <input
-                      id="new-technique"
-                      value={techniquesInput}
-                      onChange={(e) => setTechniquesInput(e.target.value)}
-                      placeholder="Add technique..."
-                      className="flex-1 px-4 py-2 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-primary/20 font-medium"
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          e.preventDefault();
-                          addTechnique();
-                        }
-                      }}
-                    />
-                    <Button
+              </div>
+              <div className="space-y-3 col-span-2">
+                <label className="text-sm font-bold text-secondary ml-1">
+                  Top Techniques
+                </label>
+                <div className="flex flex-wrap gap-2 mb-1">
+                  {[
+                    "Flipping",
+                    "Swim Jigs",
+                    "Topwater",
+                    "Crankbaits",
+                    "Spinnerbaits",
+                    "Texas Rig",
+                    "Drop Shot",
+                  ].map((tech) => (
+                    <button
+                      key={tech}
                       type="button"
-                      variant="outline"
-                      className="rounded-xl h-[42px]"
-                      onClick={addTechnique}
+                      onClick={() => addTechnique(tech)}
+                      className="px-3 py-1.5 bg-gray-100 hover:bg-primary hover:text-white text-xs font-bold rounded-xl text-secondary transition-colors cursor-pointer"
                     >
-                      <Plus className="w-4 h-4" />
-                    </Button>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {formData.topTechniques.map((t) => (
-                      <span
-                        key={t}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary/10 text-primary text-xs font-bold"
+                      + {tech}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex gap-2 w-full">
+                  <input
+                    id="new-technique"
+                    value={techniquesInput}
+                    onChange={(e) => setTechniquesInput(e.target.value)}
+                    placeholder="Type and press Enter or Comma..."
+                    className="flex-1 w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-primary/20 font-medium"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === ",") {
+                        e.preventDefault();
+                        addTechnique();
+                      }
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="rounded-xl h-[48px] px-6 bg-gray-50 border-none hover:bg-primary hover:text-white transition-colors"
+                    onClick={() => addTechnique()}
+                  >
+                    <Plus className="w-5 h-5" />
+                  </Button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {formData.topTechniques.map((t) => (
+                    <span
+                      key={t}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary/10 text-primary text-xs font-bold"
+                    >
+                      {t}
+                      <button
+                        type="button"
+                        aria-label={`Remove ${t}`}
+                        title={`Remove ${t}`}
+                        onClick={() =>
+                          setFormData((p) => ({
+                            ...p,
+                            topTechniques: p.topTechniques.filter(
+                              (tech) => tech !== t,
+                            ),
+                          }))
+                        }
+                        className="hover:text-red-500 transition-colors cursor-pointer"
                       >
-                        {t}
-                        <button
-                          type="button"
-                          aria-label={`Remove ${t}`}
-                          title={`Remove ${t}`}
-                          onClick={() =>
-                            setFormData((p) => ({
-                              ...p,
-                              topTechniques: p.topTechniques.filter((tech) => tech !== t),
-                            }))
-                          }
-                          className="hover:text-red-500 transition-colors cursor-pointer"
-                        >
-                          <X className="w-3 h-3" />
-                        </button>
-                      </span>
-                    ))}
-                    {formData.topTechniques.length === 0 && (
-                      <p className="text-xs text-secondary italic">
-                        No techniques added yet.
-                      </p>
-                    )}
-                  </div>
+                        <X className="w-3 h-3" />
+                      </button>
+                    </span>
+                  ))}
+                  {formData.topTechniques.length === 0 && (
+                    <p className="text-xs text-secondary italic">
+                      No techniques added yet.
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
@@ -616,7 +647,7 @@ export default function LakeFormModal({
                 Visibility Status
               </label>
               <div className="flex gap-2">
-                {["pending", "active", "rejected", "closed"].map((s) => (
+                {["pending", "active", "closed"].map((s) => (
                   <button
                     key={s}
                     type="button"

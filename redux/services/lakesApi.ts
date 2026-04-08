@@ -24,6 +24,7 @@ export interface Lake {
   catchRate: number;
   recordBass: number;
   species: string[];
+  topTechniques?: string[];
   bestSeason?: string;
   nearestCity?: string;
   image: string;

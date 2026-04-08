@@ -46,7 +46,7 @@ export const mapApiLakeToView = (lake: ApiLake): LakeViewModel => ({
   avgDepth: lake.avgDepth || 0,
   favouriteCount: lake.favouriteCount || 0,
   ratingCount: lake.ratingCount || 0,
-  topTechniques: computeTopTechniques(lake.seasonalPatterns),
+  topTechniques: lake.topTechniques?.length ? lake.topTechniques : computeTopTechniques(lake.seasonalPatterns),
 });
 
 export const mapStaticLakeToView = (lake: LakeCard): LakeViewModel => ({
