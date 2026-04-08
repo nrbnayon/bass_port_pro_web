@@ -59,6 +59,7 @@ export default function LakeFormModal({
     status: "pending" | "active" | "rejected" | "closed";
     featured: boolean;
     species: string[];
+    topTechniques: string[];
     bestSeason: string;
     nearestCity: string;
     recordBass: number;
@@ -74,6 +75,7 @@ export default function LakeFormModal({
     status: "pending",
     featured: false,
     species: [],
+    topTechniques: [],
     bestSeason: "",
     nearestCity: "",
     recordBass: 0,
@@ -83,6 +85,7 @@ export default function LakeFormModal({
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [speciesInput, setSpeciesInput] = useState("");
+  const [techniquesInput, setTechniquesInput] = useState("");
 
   useEffect(() => {
     if (isOpen) {
@@ -99,6 +102,7 @@ export default function LakeFormModal({
           status: lake.status || "active",
           featured: lake.featured || false,
           species: lake.species || [],
+          topTechniques: (lake as any).topTechniques || [],
           bestSeason: lake.bestSeason || "",
           nearestCity: lake.nearestCity || "",
           recordBass: lake.recordBass || 0,
@@ -117,6 +121,7 @@ export default function LakeFormModal({
           status: "active",
           featured: false,
           species: [],
+          topTechniques: [],
           bestSeason: "",
           nearestCity: "",
           recordBass: 0,
@@ -160,6 +165,17 @@ export default function LakeFormModal({
     setSpeciesInput("");
   };
 
+  const addTechnique = () => {
+    const value = techniquesInput.trim();
+    if (!value || formData.topTechniques.some(t => t.toLowerCase() === value.toLowerCase())) return;
+
+    setFormData((prev) => ({
+      ...prev,
+      topTechniques: [...prev.topTechniques, value],
+    }));
+    setTechniquesInput("");
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -184,6 +200,7 @@ export default function LakeFormModal({
     data.append("catchRate", formData.catchRate.toString());
 
     formData.species.forEach((s) => data.append("species", s));
+    formData.topTechniques.forEach((t) => data.append("topTechniques", t));
 
     if (imageFile) {
       data.append("image", imageFile);
@@ -418,17 +435,77 @@ export default function LakeFormModal({
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <label className="text-sm font-bold text-secondary ml-1">
-                  Best Fishing Season(s)
-                </label>
-                <input
-                  name="bestSeason"
-                  value={formData.bestSeason}
-                  onChange={handleChange}
-                  placeholder="e.g. Spring, Fall"
-                  className="w-full px-5 py-3 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
-                />
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <label className="text-sm font-bold text-secondary ml-1">
+                    Best Fishing Season(s)
+                  </label>
+                  <input
+                    name="bestSeason"
+                    value={formData.bestSeason}
+                    onChange={handleChange}
+                    placeholder="e.g. Spring, Fall"
+                    className="w-full px-5 py-3 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+                  />
+                </div>
+
+                <div className="space-y-3">
+                  <label className="text-sm font-bold text-secondary ml-1">
+                    Top Techniques
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      id="new-technique"
+                      value={techniquesInput}
+                      onChange={(e) => setTechniquesInput(e.target.value)}
+                      placeholder="Add technique..."
+                      className="flex-1 px-4 py-2 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-primary/20 font-medium"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          addTechnique();
+                        }
+                      }}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="rounded-xl h-[42px]"
+                      onClick={addTechnique}
+                    >
+                      <Plus className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {formData.topTechniques.map((t) => (
+                      <span
+                        key={t}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary/10 text-primary text-xs font-bold"
+                      >
+                        {t}
+                        <button
+                          type="button"
+                          aria-label={`Remove ${t}`}
+                          title={`Remove ${t}`}
+                          onClick={() =>
+                            setFormData((p) => ({
+                              ...p,
+                              topTechniques: p.topTechniques.filter((tech) => tech !== t),
+                            }))
+                          }
+                          className="hover:text-red-500 transition-colors cursor-pointer"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </span>
+                    ))}
+                    {formData.topTechniques.length === 0 && (
+                      <p className="text-xs text-secondary italic">
+                        No techniques added yet.
+                      </p>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
