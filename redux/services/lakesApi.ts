@@ -83,6 +83,7 @@ export interface LakesQueryParams {
   order?: "asc" | "desc";
   featured?: boolean;
   status?: string;
+  _auth?: string;
 }
 
 export interface PaginatedLakes {
@@ -138,8 +139,12 @@ export interface LakeReportItem {
 const lakesApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     // ── Featured / landing page lakes ─────────────────────────────────────
-    getFeaturedLakes: builder.query<{ lakes: Lake[] }, { limit?: number }>({
-      query: ({ limit = 12 } = {}) => `/lakes/featured?limit=${limit}`,
+    getFeaturedLakes: builder.query<{ lakes: Lake[] }, { limit?: number; _auth?: string }>({
+      query: ({ limit = 12, _auth } = {}) => {
+        const q = new URLSearchParams({ limit: String(limit) });
+        if (_auth) q.append("_auth", _auth);
+        return `/lakes/featured?${q.toString()}`;
+      },
       providesTags: [{ type: "Lakes", id: "FEATURED" }],
     }),
 
@@ -166,9 +171,12 @@ const lakesApi = apiSlice.injectEndpoints({
     }),
 
     // ── Single lake by ID or slug ──────────────────────────────────────────
-    getLakeById: builder.query<{ lake: Lake }, string>({
-      query: (id) => `/lakes/${id}`,
-      providesTags: (result, _err, id) => {
+    getLakeById: builder.query<{ lake: Lake }, { id: string; _auth?: string }>({
+      query: ({ id, _auth }) => {
+        const q = _auth ? `?_auth=${_auth}` : "";
+        return `/lakes/${id}${q}`;
+      },
+      providesTags: (result, _err, { id }) => {
         const tags: Array<{ type: "Lakes"; id: string }> = [{ type: "Lakes", id }];
         if (result?.lake?._id && result.lake._id !== id) {
           tags.push({ type: "Lakes", id: result.lake._id });

@@ -18,7 +18,7 @@ import Link from "next/link";
 
 export default function LakesSection() {
   const pathname = usePathname();
-  const { isAuthenticated } = useUser();
+  const { isAuthenticated, isLoading: isUserLoading } = useUser();
 
   const [authModal, setAuthModal] = useState<{ isOpen: boolean; view: AuthView }>({
     isOpen: false,
@@ -29,7 +29,14 @@ export default function LakesSection() {
     data: apiLakesData,
     isLoading: isLakesLoading,
     isError: isLakesError,
-  } = useGetFeaturedLakesQuery({ limit: 8 });
+  } = useGetFeaturedLakesQuery({
+    limit: 8,
+    _auth: isUserLoading
+      ? "checking"
+      : isAuthenticated
+        ? "authenticated"
+        : "guest",
+  });
 
   const lakes = useMemo(() => {
     if (apiLakesData?.lakes?.length) {

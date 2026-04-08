@@ -19,13 +19,18 @@ import { useGetCatchesQuery, useToggleFavouriteCatchMutation } from "@/redux/ser
 import { resolveMediaUrl } from "@/lib/utils";
 
 export default function TrophySection() {
-  const { isAuthenticated } = useUser();
+  const { isAuthenticated, isLoading: isUserLoading } = useUser();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   const { data, isLoading } = useGetCatchesQuery({
     limit: 4,
     sortBy: "likes",
     order: "desc",
+    _auth: isUserLoading
+      ? "checking"
+      : isAuthenticated
+        ? "authenticated"
+        : "guest",
   });
 
   const [toggleFavourite] = useToggleFavouriteCatchMutation();
@@ -123,7 +128,17 @@ export default function TrophySection() {
                   </button>
 
                   <div className="absolute inset-x-0 bottom-0 p-6 text-white translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-                    <h3 className="text-xl font-bold">{item.user?.name || "Angler"}</h3>
+                    <div className="flex items-center justify-between gap-4">
+                      <h3 className="text-xl font-bold truncate">{item.user?.name || "Angler"}</h3>
+                      {((item.likes || 0) + (item.favouriteCount || 0)) > 0 && (
+                        <div className="flex items-center gap-1.5 bg-white/10 backdrop-blur-sm rounded-full px-2 py-1 border border-white/10">
+                          <HugeiconsIcon icon={FavouriteIcon} className="h-3 w-3 text-red-500 fill-red-500" />
+                          <span className="text-xs font-bold text-white">
+                            {(item.likes || 0) + (item.favouriteCount || 0)}
+                          </span>
+                        </div>
+                      )}
+                    </div>
                     <div className="mt-2 flex items-center gap-1.5 text-white/80">
                       <HugeiconsIcon
                         icon={Location01Icon}

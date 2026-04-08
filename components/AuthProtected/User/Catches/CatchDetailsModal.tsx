@@ -112,7 +112,11 @@ export default function CatchDetailsModal({
                   }
                   className="capitalize px-3 py-1 text-xs font-semibold rounded-full"
                 >
-                  {catchItem.status === "active" ? "Approved" : catchItem.status}
+                  {catchItem.status === "active"
+                    ? "Approved"
+                    : catchItem.status === "pending"
+                      ? "Under Review"
+                      : catchItem.status}
                 </Badge>
                 <button
                   onClick={onClose}

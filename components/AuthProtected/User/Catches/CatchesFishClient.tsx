@@ -49,7 +49,7 @@ export default function CatchesFishClient() {
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const searchParams = useSearchParams();
   const pathname = usePathname();
-  const { isAuthenticated } = useUser();
+  const { isAuthenticated, isLoading: isUserLoading } = useUser();
   const [authModal, setAuthModal] = useState<{
     isOpen: boolean;
     view: AuthView;
@@ -75,6 +75,11 @@ export default function CatchesFishClient() {
       search: searchQuery,
       sortBy: sortBy,
       order: "desc",
+      _auth: isUserLoading
+        ? "checking"
+        : isAuthenticated
+          ? "authenticated"
+          : "guest",
     },
     { skip: showFavouriteOnly },
   );
@@ -290,7 +295,11 @@ export default function CatchesFishClient() {
                           }
                           className="capitalize px-2.5 py-1 text-[10px] font-semibold rounded-full shadow-sm"
                         >
-                          {item.status === "active" ? "Approved" : item.status}
+                          {item.status === "active"
+                            ? "Approved"
+                            : item.status === "pending"
+                              ? "Under Review"
+                              : item.status}
                         </Badge>
                       </div>
 
@@ -338,7 +347,7 @@ export default function CatchesFishClient() {
                                   : "text-foreground"
                               }`}
                             >
-                              {item.likes || 0}
+                              {(item.likes || 0) + (item.favouriteCount || 0)}
                             </span>
                           </div>
                         </div>
@@ -478,7 +487,7 @@ export default function CatchesFishClient() {
                                     : "text-foreground"
                                 }`}
                               >
-                                {item.likes || 0}
+                                {(item.likes || 0) + (item.favouriteCount || 0)}
                               </span>
                             </div>
                           </div>

@@ -18,6 +18,7 @@ export interface CatchItem {
   image: string;
   images?: string[];
   likes: number;
+  favouriteCount: number;
   commentCount: number;
   status: "active" | "pending" | "rejected" | "flagged";
   featured: boolean;
@@ -38,6 +39,7 @@ export interface BassPornQueryParams {
   user?: string;
   featured?: boolean;
   status?: string;
+  _auth?: string;
 }
 
 export interface PaginatedCatches {
@@ -154,7 +156,12 @@ const bassPornApi = apiSlice.injectEndpoints({
     // ── Like / unlike ──────────────────────────────────────────────────────
     toggleLikeCatch: builder.mutation<{ likes: number; isLiked: boolean }, string>({
       query: (id) => ({ url: `/bassporn/${id}/like`, method: "POST" }),
-      invalidatesTags: (_r, _e, id) => [{ type: "BassPorn", id }],
+      invalidatesTags: (_r, _e, id) => [
+        { type: "BassPorn", id },
+        { type: "BassPorn", id: "LIST" },
+        { type: "MyCatches", id: "LIST" },
+        { type: "FavouriteCatches", id: "LIST" },
+      ],
     }),
 
     // ── Favourite / unfavourite ─────────────────────────────────────────────
@@ -162,6 +169,8 @@ const bassPornApi = apiSlice.injectEndpoints({
       query: (id) => ({ url: `/bassporn/${id}/favourite`, method: "POST" }),
       invalidatesTags: (_r, _e, id) => [
         { type: "BassPorn", id },
+        { type: "BassPorn", id: "LIST" },
+        { type: "MyCatches", id: "LIST" },
         { type: "FavouriteCatches", id: "LIST" },
       ],
     }),
