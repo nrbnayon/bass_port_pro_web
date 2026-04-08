@@ -17,7 +17,7 @@ import { LakeViewModel } from "@/lib/lakeMappers";
 
 interface LakeDetailsHeroProps {
   lake: LakeViewModel;
-  onFavouriteChanged?: () => void;
+  onFavouriteChanged?: (isFavourite: boolean) => void;
 }
 
 export default function LakeDetailsHero({ lake, onFavouriteChanged }: LakeDetailsHeroProps) {
@@ -41,7 +41,7 @@ export default function LakeDetailsHero({ lake, onFavouriteChanged }: LakeDetail
       const result = await toggleFavouriteLake(lake._id).unwrap();
       setIsFavourite(result.isFavourite);
       toast.success(result.isFavourite ? "Added to favourites" : "Removed from favourites");
-      onFavouriteChanged?.();
+      onFavouriteChanged?.(result.isFavourite);
     } catch {
       toast.error("Failed to update favourite");
     }

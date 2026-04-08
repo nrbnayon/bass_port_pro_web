@@ -16,6 +16,10 @@ export interface DashboardStats {
     value: number;
     trend: number;
   };
+  totalCatches: {
+    value: number;
+    trend: number;
+  };
 }
 
 export interface UserActivityData {

@@ -12,10 +12,11 @@ import { LakeViewModel } from "@/lib/lakeMappers";
 interface LakeDetailsWrapperProps {
   lake: LakeViewModel;
   lakeId: string;
-  onDataChanged?: () => void;
+  onReportChanged?: () => void;
+  onReviewChanged?: () => void;
 }
 
-export default function LakeDetailsWrapper({ lake, lakeId, onDataChanged }: LakeDetailsWrapperProps) {
+export default function LakeDetailsWrapper({ lake, lakeId, onReportChanged, onReviewChanged }: LakeDetailsWrapperProps) {
   const [activeTab, setActiveTab] = useState("overview");
 
   return (
@@ -36,10 +37,10 @@ export default function LakeDetailsWrapper({ lake, lakeId, onDataChanged }: Lake
                 >
                   {activeTab === "overview" && <LakeOverview lake={lake} />}
                   {activeTab === "reports" && (
-                    <LakeReportsList lake={lake} lakeId={lakeId} onReportChanged={onDataChanged} />
+                    <LakeReportsList lake={lake} lakeId={lakeId} onReportChanged={onReportChanged} />
                   )}
                   {activeTab === "reviews" && (
-                    <LakeReviewsList lakeId={lakeId} onReviewChanged={onDataChanged} />
+                    <LakeReviewsList lakeId={lakeId} onReviewChanged={onReviewChanged} />
                   )}
                 </motion.div>
               </AnimatePresence>

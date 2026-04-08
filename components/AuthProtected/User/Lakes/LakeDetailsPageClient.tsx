@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import CTASection from "@/components/Landing/CTASection";
 import LakeDetailsHero from "./LakeDetailsHero";
 import LakeDetailsWrapper from "./LakeDetailsWrapper";
@@ -8,6 +8,7 @@ import { useGetLakeByIdQuery } from "@/redux/services/lakesApi";
 import { getFallbackLakeByIdOrSlug, mapApiLakeToView } from "@/lib/lakeMappers";
 import Link from "next/link";
 import { useUser } from "@/hooks/useUser";
+import { LakeViewModel } from "@/lib/lakeMappers";
 
 interface LakeDetailsPageClientProps {
   id: string;
@@ -19,9 +20,52 @@ export default function LakeDetailsPageClient({
   const { isLoading: isAuthLoading } = useUser();
   const { data, isLoading, isError, refetch } = useGetLakeByIdQuery(id);
 
-  const lake = data?.lake
-    ? mapApiLakeToView(data.lake)
-    : getFallbackLakeByIdOrSlug(id);
+  const apiLake = data?.lake ? mapApiLakeToView(data.lake) : null;
+  const fallbackLake = useMemo(() => getFallbackLakeByIdOrSlug(id), [id]);
+  const [lakeState, setLakeState] = useState<LakeViewModel | null>(apiLake || fallbackLake);
+
+  useEffect(() => {
+    setLakeState(apiLake || fallbackLake);
+  }, [apiLake, fallbackLake]);
+
+  const handleFavouriteChanged = (isFavourite: boolean) => {
+    setLakeState((current) =>
+      current
+        ? {
+            ...current,
+            isFavourite,
+            favouriteCount: Math.max(0, (current.favouriteCount || 0) + (isFavourite ? 1 : -1)),
+          }
+        : current,
+    );
+    refetch();
+  };
+
+  const handleReportChanged = () => {
+    setLakeState((current) =>
+      current
+        ? {
+            ...current,
+            reportCount: (current.reportCount || 0) + 1,
+          }
+        : current,
+    );
+    refetch();
+  };
+
+  const handleReviewChanged = () => {
+    setLakeState((current) =>
+      current
+        ? {
+            ...current,
+            reviewCount: (current.reviewCount || 0) + 1,
+          }
+        : current,
+    );
+    refetch();
+  };
+
+  const lake = lakeState;
 
   useEffect(() => {
     if (!isAuthLoading) {
@@ -64,12 +108,13 @@ export default function LakeDetailsPageClient({
           API unavailable. Showing fallback lake data.
         </p>
       )}
-      <LakeDetailsHero lake={lake} onFavouriteChanged={refetch} />
+      <LakeDetailsHero lake={lake} onFavouriteChanged={handleFavouriteChanged} />
       <div className="p-5">
         <LakeDetailsWrapper
           lake={lake}
           lakeId={data?.lake?._id || ""}
-          onDataChanged={refetch}
+          onReportChanged={handleReportChanged}
+          onReviewChanged={handleReviewChanged}
         />
       </div>
       <CTASection />
