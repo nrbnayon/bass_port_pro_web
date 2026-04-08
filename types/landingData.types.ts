@@ -66,4 +66,5 @@ export type ReportCard = {
   waterLevel?: string; // This might be used as pressure or actually water level? The image shows Pressure.
   clarity?: string;
   pressure?: string;
+  status?: string;
 };

@@ -97,6 +97,7 @@ export default function LakeReportsList({ lake, lakeId, onReportChanged }: LakeR
     waterLevel: report.conditions?.waterLevel || "Normal",
     clarity: report.conditions?.clarity || "Clear",
     pressure: report.conditions?.pressure || "Stable",
+    status: report.status || "active",
   }));
 
   const displayReports = isError ? pagedFallback : apiReports;
@@ -242,8 +243,11 @@ export default function LakeReportsList({ lake, lakeId, onReportChanged }: LakeR
                         )}
                       </div>
                       <div>
-                        <h3 className="text-lg font-semibold text-foreground leading-none mb-1.5">
+                        <h3 className="text-lg font-semibold text-foreground leading-none mb-1.5 flex items-center gap-2">
                           {report.angler}
+                          {report.status === "pending" && (
+                            <span className="text-[10px] uppercase font-black tracking-widest px-2 py-0.5 rounded-md bg-amber-100 text-amber-600">Pending Review</span>
+                          )}
                         </h3>
                         <div className="flex items-center gap-2 text-gray-400 text-xs font-medium">
                           <HugeiconsIcon icon={Calendar01Icon} className="h-4 w-4" />

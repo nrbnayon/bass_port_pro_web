@@ -132,6 +132,7 @@ export interface LakeReportItem {
     name?: string;
     avatar?: string;
   };
+  status?: "active" | "pending" | "rejected" | "flagged";
 }
 
 const lakesApi = apiSlice.injectEndpoints({
