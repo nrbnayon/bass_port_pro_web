@@ -6,14 +6,17 @@ import LakeOverview from "./LakeOverview";
 import LakeReportsList from "../Reports/LakeReportsList";
 import LakeReviewsList from "./LakeReviewsList";
 import LakeSidebar from "./LakeSidebar";
-import { LakeCard } from "@/types/landingData.types";
 import { motion, AnimatePresence } from "framer-motion";
+import { LakeViewModel } from "@/lib/lakeMappers";
 
 interface LakeDetailsWrapperProps {
-  lake: LakeCard;
+  lake: LakeViewModel;
+  lakeId: string;
+  onReportChanged?: () => void;
+  onReviewChanged?: () => void;
 }
 
-export default function LakeDetailsWrapper({ lake }: LakeDetailsWrapperProps) {
+export default function LakeDetailsWrapper({ lake, lakeId, onReportChanged, onReviewChanged }: LakeDetailsWrapperProps) {
   const [activeTab, setActiveTab] = useState("overview");
 
   return (
@@ -33,8 +36,12 @@ export default function LakeDetailsWrapper({ lake }: LakeDetailsWrapperProps) {
                   transition={{ duration: 0.4 }}
                 >
                   {activeTab === "overview" && <LakeOverview lake={lake} />}
-                  {activeTab === "reports" && <LakeReportsList lake={lake} />}
-                  {activeTab === "reviews" && <LakeReviewsList />}
+                  {activeTab === "reports" && (
+                    <LakeReportsList lake={lake} lakeId={lakeId} onReportChanged={onReportChanged} />
+                  )}
+                  {activeTab === "reviews" && (
+                    <LakeReviewsList lakeId={lakeId} onReviewChanged={onReviewChanged} />
+                  )}
                 </motion.div>
               </AnimatePresence>
             </div>

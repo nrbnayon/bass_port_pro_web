@@ -41,6 +41,7 @@ export function DeleteConfirmationModal({
       >
         <button
           onClick={onClose}
+          aria-label="Close"
           disabled={isLoading}
           className="absolute right-4 top-4 p-2 text-gray-400 hover:text-secondary dark:hover:text-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
         >

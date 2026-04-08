@@ -4,11 +4,12 @@ import { apiSlice } from "./apiSlice";
 export interface FishingReport {
   _id: string;
   user: { _id: string; name: string; avatar?: string; location?: string };
-  lake?: { _id: string; name: string; slug: string; state?: string } | null;
+  lake?: { _id: string; name: string; slug: string; state?: string; species?: string[] } | null;
   lakeName: string;
   title: string;
   text: string;
   species: string;
+  image?: string;
   tags: string[];
   conditions: {
     temp?: string;
@@ -47,6 +48,7 @@ export interface ReportsQueryParams {
   user?: string;
   featured?: boolean;
   status?: string;
+  _auth?: string;
 }
 
 export interface PaginatedReports {
@@ -57,6 +59,32 @@ export interface PaginatedReports {
     total: number;
     pages: number;
   };
+  stats?: {
+    approved: number;
+    pending: number;
+    total: number;
+  };
+}
+
+export interface SubmitReportPayload {
+  lakeName: string;
+  lakeId?: string;
+  title?: string;
+  text: string;
+  species?: string;
+  image?: string;
+  tags?: string[];
+  conditions?: {
+    temp?: string;
+    weather?: string;
+    wind?: string;
+    waterLevel?: string;
+    clarity?: string;
+    pressure?: string;
+  };
+  catchCount?: number;
+  biggestCatch?: number;
+  fishedAt?: string;
 }
 
 const fishingReportApi = apiSlice.injectEndpoints({
@@ -104,9 +132,12 @@ const fishingReportApi = apiSlice.injectEndpoints({
     }),
 
     // ── Single report ───────────────────────────────────────────────────────
-    getReportById: builder.query<{ report: FishingReport }, string>({
-      query: (id) => `/reports/${id}`,
-      providesTags: (_r, _e, id) => [{ type: "Reports", id }],
+    getReportById: builder.query<{ report: FishingReport }, { id: string; _auth?: string }>({
+      query: ({ id, _auth }) => {
+        const q = _auth ? `?_auth=${_auth}` : "";
+        return `/reports/${id}${q}`;
+      },
+      providesTags: (_r, _e, { id }) => [{ type: "Reports", id }],
     }),
 
     // ── Lake names for filter ───────────────────────────────────────────────
@@ -116,16 +147,32 @@ const fishingReportApi = apiSlice.injectEndpoints({
     }),
 
     // ── Submit report ───────────────────────────────────────────────────────
-    submitReport: builder.mutation<{ report: FishingReport; message: string }, Partial<FishingReport>>({
+    submitReport: builder.mutation<{ report: FishingReport; message: string }, SubmitReportPayload>({
       query: (body) => ({
         url: "/reports",
         method: "POST",
         body,
       }),
-      invalidatesTags: [
-        { type: "Reports", id: "LIST" },
-        { type: "MyReports", id: "LIST" },
-      ],
+      invalidatesTags: (_result, _error, body) => {
+        const tags: Array<{ type: "Reports" | "MyReports" | "Lakes"; id: string }> = [
+          { type: "Reports", id: "LIST" },
+          { type: "MyReports", id: "LIST" },
+        ];
+
+        if (body.lakeId) {
+          tags.push({ type: "Lakes", id: body.lakeId });
+        }
+
+        return tags;
+      },
+    }),
+
+    uploadReportImage: builder.mutation<{ url: string; message?: string }, FormData>({
+      query: (formData) => ({
+        url: "/reports/upload-image",
+        method: "POST",
+        body: formData,
+      }),
     }),
 
     // ── Update report ───────────────────────────────────────────────────────
@@ -168,6 +215,7 @@ export const {
   useGetReportByIdQuery,
   useGetReportLakeNamesQuery,
   useSubmitReportMutation,
+  useUploadReportImageMutation,
   useUpdateReportMutation,
   useDeleteReportMutation,
   useToggleHelpfulReportMutation,

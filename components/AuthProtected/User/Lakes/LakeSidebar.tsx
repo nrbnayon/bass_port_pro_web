@@ -1,19 +1,19 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { HugeiconsIcon } from "@hugeicons/react";
 import {
-  Calendar03Icon,
-  DropletIcon,
-  ChartBarLineIcon,
-  LocationIcon,
-  Message01Icon,
-} from "@hugeicons/core-free-icons";
-import { Fish } from "lucide-react";
-import { LakeCard } from "@/types/landingData.types";
+  CalendarDays,
+  Droplets,
+  BarChart3,
+  MapPin,
+  MessageSquare,
+  Heart,
+  Fish,
+} from "lucide-react";
+import { LakeViewModel } from "@/lib/lakeMappers";
 
 interface LakeSidebarProps {
-  lake: LakeCard;
+  lake: LakeViewModel;
 }
 
 export default function LakeSidebar({ lake }: LakeSidebarProps) {
@@ -21,20 +21,22 @@ export default function LakeSidebar({ lake }: LakeSidebarProps) {
     {
       label: "Surface Area",
       value: `${lake.size.toLocaleString()} acres`,
-      icon: DropletIcon,
+      icon: Droplets,
     },
     {
       label: "Max Depth",
       value: `${lake.maxDepth || "N/A"} ft`,
-      icon: ChartBarLineIcon,
+      icon: BarChart3,
     },
     {
       label: "Best Season",
       value: lake.bestSeason || "Seasonal",
-      icon: Calendar03Icon,
+      icon: CalendarDays,
     },
-    { label: "City", value: lake.nearestCity || "Unknown", icon: LocationIcon },
-    { label: "Reviews", value: (lake.reviewCount || 0).toString(), icon: Message01Icon },
+    { label: "City", value: lake.nearestCity || "Unknown", icon: MapPin },
+    { label: "Reviews", value: (lake.reviewCount || 0).toString(), icon: MessageSquare },
+    { label: "Reports", value: (lake.reportCount || 0).toString(), icon: Fish },
+    { label: "Favourites", value: (lake.favouriteCount || 0).toString(), icon: Heart },
   ];
 
   return (
@@ -50,7 +52,7 @@ export default function LakeSidebar({ lake }: LakeSidebarProps) {
               className="flex items-center justify-between border-b border-gray-100 pb-3 last:border-0 last:pb-0"
             >
               <div className="flex items-center gap-2 text-gray-500">
-                <HugeiconsIcon icon={fact.icon} className="h-5 w-5" />
+                <fact.icon className="h-5 w-5" />
                 <span className="text-sm font-semibold">{fact.label}</span>
               </div>
               <span className="text-sm font-bold text-foreground">
@@ -65,9 +67,9 @@ export default function LakeSidebar({ lake }: LakeSidebarProps) {
         <h3 className="text-lg font-bold tracking-tight text-foreground border-b border-gray-100 pb-4 mb-6">
           Target Species
         </h3>
-        <ul className="space-y-3">
+        <div className="space-y-3">
           {lake.species.map((s, index) => (
-            <motion.li
+            <motion.div
               key={s}
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -78,9 +80,9 @@ export default function LakeSidebar({ lake }: LakeSidebarProps) {
                 <Fish className="h-5 w-5" strokeWidth={2} />
               </div>
               <span className="text-sm font-bold tracking-tight">{s}</span>
-            </motion.li>
+            </motion.div>
           ))}
-        </ul>
+        </div>
       </section>
     </div>
   );

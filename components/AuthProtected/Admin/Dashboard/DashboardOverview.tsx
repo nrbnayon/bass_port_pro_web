@@ -117,7 +117,7 @@ const DashboardOverview = () => {
               icon={Users}
               iconBgColor="#F3F4F6"
               iconColor="#6B7280"
-              subtitle={`${stats.totalUsers?.trend >= 0 ? '+' : ''}${stats.totalUsers?.trend} vs last month`}
+              subtitle={`${stats.totalUsers?.trend >= 0 ? "+" : ""}${stats.totalUsers?.trend} vs last month`}
               isUp={stats.totalUsers?.trend >= 0}
             />
             <StatsCard
@@ -126,7 +126,7 @@ const DashboardOverview = () => {
               icon={MapPin}
               iconBgColor="#DCFCE7"
               iconColor="#22C55E"
-              subtitle={`${stats.totalLakes?.trend >= 0 ? '+' : ''}${stats.totalLakes?.trend} vs last month`}
+              subtitle={`${stats.totalLakes?.trend >= 0 ? "+" : ""}${stats.totalLakes?.trend} vs last month`}
               isUp={stats.totalLakes?.trend >= 0}
             />
             <StatsCard
@@ -135,17 +135,17 @@ const DashboardOverview = () => {
               icon={FileText}
               iconBgColor="#FFEDD5"
               iconColor="#F97316"
-              subtitle={`+${stats.totalReports?.trend} New this month`}
-              isUp={true}
+              subtitle={`${stats.totalReports?.trend >= 0 ? "+" : ""}${stats.totalReports?.trend} New this month`}
+              isUp={stats.totalReports?.trend >= 0}
             />
             <StatsCard
-              title="Lake Request"
-              value={stats.lakeRequests?.value.toLocaleString()}
+              title="BassPorn Request"
+              value={stats.bassPornRequests?.value.toLocaleString()}
               icon={ImageIcon}
               iconBgColor="#CFFAFE"
               iconColor="#06B6D4"
-              subtitle={`+${stats.lakeRequests?.trend} Pending requests`}
-              isUp={true}
+              subtitle={`${stats.bassPornRequests?.trend >= 0 ? "+" : ""}${stats.bassPornRequests?.trend} Pending requests`}
+              isUp={stats.bassPornRequests?.trend >= 0}
             />
           </div>
         )}

@@ -59,6 +59,7 @@ export default function LakeFormModal({
     status: "pending" | "active" | "rejected" | "closed";
     featured: boolean;
     species: string[];
+    topTechniques: string[];
     bestSeason: string;
     nearestCity: string;
     recordBass: number;
@@ -74,6 +75,7 @@ export default function LakeFormModal({
     status: "pending",
     featured: false,
     species: [],
+    topTechniques: [],
     bestSeason: "",
     nearestCity: "",
     recordBass: 0,
@@ -82,6 +84,8 @@ export default function LakeFormModal({
 
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [speciesInput, setSpeciesInput] = useState("");
+  const [techniquesInput, setTechniquesInput] = useState("");
 
   useEffect(() => {
     if (isOpen) {
@@ -98,6 +102,7 @@ export default function LakeFormModal({
           status: lake.status || "active",
           featured: lake.featured || false,
           species: lake.species || [],
+          topTechniques: (lake as any).topTechniques || [],
           bestSeason: lake.bestSeason || "",
           nearestCity: lake.nearestCity || "",
           recordBass: lake.recordBass || 0,
@@ -116,6 +121,7 @@ export default function LakeFormModal({
           status: "active",
           featured: false,
           species: [],
+          topTechniques: [],
           bestSeason: "",
           nearestCity: "",
           recordBass: 0,
@@ -148,6 +154,38 @@ export default function LakeFormModal({
     }
   };
 
+  const addSpecies = () => {
+    const value = speciesInput.trim();
+    if (!value || formData.species.includes(value)) return;
+
+    setFormData((prev) => ({
+      ...prev,
+      species: [...prev.species, value],
+    }));
+    setSpeciesInput("");
+  };
+
+  const addTechnique = (techToAdd?: string) => {
+    const value = (
+      typeof techToAdd === "string" ? techToAdd : techniquesInput
+    ).trim();
+    if (
+      !value ||
+      formData.topTechniques.some(
+        (t) => t.toLowerCase() === value.toLowerCase(),
+      )
+    ) {
+      if (typeof techToAdd !== "string") setTechniquesInput("");
+      return;
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      topTechniques: [...prev.topTechniques, value],
+    }));
+    if (typeof techToAdd !== "string") setTechniquesInput("");
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -172,6 +210,7 @@ export default function LakeFormModal({
     data.append("catchRate", formData.catchRate.toString());
 
     formData.species.forEach((s) => data.append("species", s));
+    formData.topTechniques.forEach((t) => data.append("topTechniques", t));
 
     if (imageFile) {
       data.append("image", imageFile);
@@ -199,7 +238,7 @@ export default function LakeFormModal({
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
-      <div className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-4 duration-500 max-h-[90vh] flex flex-col">
+      <div className="bg-white rounded-2xl w-full max-w-4xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-4 duration-500 max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="px-5 py-3 border-b border-gray-100 flex items-center justify-between bg-white sticky top-0 z-10">
           <div>
@@ -282,7 +321,7 @@ export default function LakeFormModal({
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="space-y-2">
                 <label className="text-sm font-bold text-secondary ml-1">
                   Lake Name <span className="text-red-500">*</span>
@@ -320,6 +359,20 @@ export default function LakeFormModal({
                   </datalist>
                 </div>
               </div>
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-secondary ml-1">
+                  Nearest City
+                </label>
+                <input
+                  name="nearestCity"
+                  aria-label="Nearest city"
+                  title="Nearest city"
+                  value={formData.nearestCity}
+                  onChange={handleChange}
+                  placeholder="e.g. Guntersville, AL"
+                  className="w-full px-5 py-3 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+                />
+              </div>
             </div>
           </div>
 
@@ -332,7 +385,7 @@ export default function LakeFormModal({
               name="description"
               value={formData.description}
               onChange={handleChange}
-              rows={2}
+              rows={3}
               placeholder="Briefly describe the lake's history, fishing features, and access..."
               className="w-full px-5 py-4 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-primary/20 transition-all font-medium resize-none"
             />
@@ -355,19 +408,14 @@ export default function LakeFormModal({
                 <div className="flex gap-2">
                   <input
                     id="new-species"
+                    value={speciesInput}
+                    onChange={(e) => setSpeciesInput(e.target.value)}
                     placeholder="Add species..."
                     className="flex-1 px-4 py-2 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-primary/20 font-medium"
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
                         e.preventDefault();
-                        const val = (e.target as HTMLInputElement).value.trim();
-                        if (val && !formData.species.includes(val)) {
-                          setFormData((p) => ({
-                            ...p,
-                            species: [...p.species, val],
-                          }));
-                          (e.target as HTMLInputElement).value = "";
-                        }
+                        addSpecies();
                       }
                     }}
                   />
@@ -375,19 +423,7 @@ export default function LakeFormModal({
                     type="button"
                     variant="outline"
                     className="rounded-xl h-[42px]"
-                    onClick={() => {
-                      const input = document.getElementById(
-                        "new-species",
-                      ) as HTMLInputElement;
-                      const val = input.value.trim();
-                      if (val && !formData.species.includes(val)) {
-                        setFormData((p) => ({
-                          ...p,
-                          species: [...p.species, val],
-                        }));
-                        input.value = "";
-                      }
-                    }}
+                    onClick={addSpecies}
                   >
                     <Plus className="w-4 h-4" />
                   </Button>
@@ -401,6 +437,8 @@ export default function LakeFormModal({
                       {s}
                       <button
                         type="button"
+                        aria-label={`Remove ${s}`}
+                        title={`Remove ${s}`}
                         onClick={() =>
                           setFormData((p) => ({
                             ...p,
@@ -421,17 +459,98 @@ export default function LakeFormModal({
                 </div>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <label className="text-sm font-bold text-secondary ml-1">
+                    Best Fishing Season(s)
+                  </label>
+                  <input
+                    name="bestSeason"
+                    value={formData.bestSeason}
+                    onChange={handleChange}
+                    placeholder="e.g. Spring, Fall"
+                    className="w-full px-5 py-3 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+                  />
+                </div>
+              </div>
+              <div className="space-y-3 col-span-2">
                 <label className="text-sm font-bold text-secondary ml-1">
-                  Best Fishing Season(s)
+                  Top Techniques
                 </label>
-                <input
-                  name="bestSeason"
-                  value={formData.bestSeason}
-                  onChange={handleChange}
-                  placeholder="e.g. Spring, Fall"
-                  className="w-full px-5 py-3 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
-                />
+                <div className="flex flex-wrap gap-2 mb-1">
+                  {[
+                    "Flipping",
+                    "Swim Jigs",
+                    "Topwater",
+                    "Crankbaits",
+                    "Spinnerbaits",
+                    "Texas Rig",
+                    "Drop Shot",
+                  ].map((tech) => (
+                    <button
+                      key={tech}
+                      type="button"
+                      onClick={() => addTechnique(tech)}
+                      className="px-3 py-1.5 bg-gray-100 hover:bg-primary hover:text-white text-xs font-bold rounded-xl text-secondary transition-colors cursor-pointer"
+                    >
+                      + {tech}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex gap-2 w-full">
+                  <input
+                    id="new-technique"
+                    value={techniquesInput}
+                    onChange={(e) => setTechniquesInput(e.target.value)}
+                    placeholder="Type and press Enter or Comma..."
+                    className="flex-1 w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-primary/20 font-medium"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === ",") {
+                        e.preventDefault();
+                        addTechnique();
+                      }
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="rounded-xl h-[48px] px-6 bg-gray-50 border-none hover:bg-primary hover:text-white transition-colors"
+                    onClick={() => addTechnique()}
+                  >
+                    <Plus className="w-5 h-5" />
+                  </Button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {formData.topTechniques.map((t) => (
+                    <span
+                      key={t}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary/10 text-primary text-xs font-bold"
+                    >
+                      {t}
+                      <button
+                        type="button"
+                        aria-label={`Remove ${t}`}
+                        title={`Remove ${t}`}
+                        onClick={() =>
+                          setFormData((p) => ({
+                            ...p,
+                            topTechniques: p.topTechniques.filter(
+                              (tech) => tech !== t,
+                            ),
+                          }))
+                        }
+                        className="hover:text-red-500 transition-colors cursor-pointer"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </span>
+                  ))}
+                  {formData.topTechniques.length === 0 && (
+                    <p className="text-xs text-secondary italic">
+                      No techniques added yet.
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -445,7 +564,7 @@ export default function LakeFormModal({
               </h3>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               <div className="space-y-2">
                 <label className="text-xs font-bold text-secondary uppercase tracking-wider ml-1">
                   Size (Acres)
@@ -532,50 +651,6 @@ export default function LakeFormModal({
                   className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-primary/20 font-bold"
                 />
               </div>
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-secondary uppercase tracking-wider ml-1">
-                  Avg Depth (ft)
-                </label>
-                <input
-                  type="number"
-                  name="avgDepth"
-                  aria-label="Average depth in feet"
-                  title="Average depth in feet"
-                  value={formData.avgDepth}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-primary/20 font-bold"
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-secondary uppercase tracking-wider ml-1">
-                  Record Bass (lbs)
-                </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  name="recordBass"
-                  aria-label="Record bass weight"
-                  title="Record bass weight"
-                  value={formData.recordBass}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-primary/20 font-bold"
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-secondary uppercase tracking-wider ml-1">
-                  Catch Rate (fph)
-                </label>
-                <input
-                  type="number"
-                  step="0.1"
-                  name="catchRate"
-                  aria-label="Catch rate fish per hour"
-                  title="Catch rate fish per hour"
-                  value={formData.catchRate}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-primary/20 font-bold"
-                />
-              </div>
             </div>
           </div>
 
@@ -586,7 +661,7 @@ export default function LakeFormModal({
                 Visibility Status
               </label>
               <div className="flex gap-2">
-                {["pending", "active", "rejected", "closed"].map((s) => (
+                {["pending", "active", "closed"].map((s) => (
                   <button
                     key={s}
                     type="button"
@@ -648,9 +723,9 @@ export default function LakeFormModal({
                 Processing...
               </div>
             ) : lake ? (
-              "Update Location Data"
+              "Update Lake Data"
             ) : (
-              "Initialize Lake Location"
+              "Create Lake"
             )}
           </Button>
         </div>

@@ -9,6 +9,8 @@ import {
   StarIcon,
   Idea01Icon,
   Edit01Icon,
+  Location01Icon,
+  RulerIcon,
 } from "@hugeicons/core-free-icons";
 import { useGetMyProfileQuery, User } from "@/redux/services/userApi";
 import NextImage from "next/image";
@@ -20,45 +22,57 @@ import ProfileUpdateModal from "./ProfileUpdateModal";
 import UploadCatchModal from "../Catches/UploadCatchModal";
 import Link from "next/link";
 import { toast } from "sonner";
+import { resolveMediaUrl } from "@/lib/utils";
+import { Fish } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { TablePagination } from "@/components/Shared/TablePagination";
 
 export default function ProfileClient() {
-  const { data: profileResponse, isLoading } = useGetMyProfileQuery();
+  const { data: profileResponse, isLoading, refetch } = useGetMyProfileQuery();
   const { isLoading: isUserLoading } = useUser();
+
   const currentUser = useAppSelector(selectCurrentUser);
   const userData = profileResponse?.data || currentUser;
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUploadCatchModalOpen, setIsUploadCatchModalOpen] = useState(false);
+  const [favouritePage, setFavouritePage] = useState(1);
+  const [catchesPage, setCatchesPage] = useState(1);
+  const itemsPerPage = 8;
 
   // Use a fallback for createdAt since it might not be in authSlice user
   const userCreatedAt = (userData as { createdAt?: string })?.createdAt;
+
+  const favouriteLakes = profileResponse?.data?.favouriteLakes || [];
+  const myCatches = profileResponse?.data?.myCatches || [];
+  const profileStats = profileResponse?.data?.stats;
 
   const stats = [
     {
       id: "catches",
       label: "Catches",
-      value: "0",
+      value: String(profileStats?.catches || 0),
       icon: Camera01Icon,
       color: "text-orange-500",
     },
     {
       id: "biggest",
       label: "Biggest (lbs)",
-      value: "0.0",
+      value: Number(profileStats?.biggestCatch || 0).toFixed(1),
       icon: Idea01Icon,
       color: "text-yellow-500",
     },
     {
       id: "weight",
       label: "Total Weight",
-      value: "0.0",
+      value: Number(profileStats?.totalWeight || 0).toFixed(1),
       icon: StarIcon,
       color: "text-green-500",
     },
     {
       id: "favorites",
       label: "Favorite Lakes",
-      value: "0",
+      value: String(profileStats?.favorites || 0),
       icon: FavouriteIcon,
       color: "text-red-500",
     },
@@ -81,7 +95,7 @@ export default function ProfileClient() {
               <div className="relative flex h-24 w-24 items-center justify-center rounded-full bg-orange-500 text-4xl font-bold text-white shadow-xl border-4 border-white/20 overflow-hidden">
                 {userData?.avatar ? (
                   <NextImage
-                    src={userData.avatar}
+                    src={resolveMediaUrl(userData.avatar) || "/images/avatar.png"}
                     alt={userData.name || "User"}
                     fill
                     className="object-cover"
@@ -147,24 +161,90 @@ export default function ProfileClient() {
             className="h-6 w-6 text-primary"
           />
           <h2 className="text-2xl font-bold text-foreground">
-            About This Lake
+           My Favourite Lakes
           </h2>
         </div>
 
-        <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-gray-200 bg-gray-50/50 p-20 text-center">
-          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-white text-gray-400 shadow-sm">
-            <HugeiconsIcon icon={FavouriteIcon} className="h-8 w-8" />
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[...Array(3)].map((_, idx) => (
+              <div key={idx} className="h-52 rounded-2xl bg-gray-100 animate-pulse" />
+            ))}
           </div>
-          <p className="text-gray-500 font-medium">
-            No Favorite lakes yet. Explore lakes and save your favorites!
-          </p>
-          <Link
-            href="/lakes"
-            className="mt-4 text-primary font-bold hover:underline"
-          >
-            Browse Lakes
-          </Link>
-        </div>
+        ) : favouriteLakes.length === 0 ? (
+          <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-gray-200 bg-gray-50/50 p-20 text-center">
+            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-white text-gray-400 shadow-sm">
+              <HugeiconsIcon icon={FavouriteIcon} className="h-8 w-8" />
+            </div>
+            <p className="text-gray-500 font-medium">
+              No favorite lakes yet. Explore lakes and save your favorites!
+            </p>
+            <Link
+              href="/lakes"
+              className="mt-4 text-primary font-bold hover:underline"
+            >
+              Browse Lakes
+            </Link>
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {favouriteLakes
+                .slice(
+                  (favouritePage - 1) * itemsPerPage,
+                  favouritePage * itemsPerPage,
+                )
+                .map((lake) => (
+                  <Link
+                    key={lake._id}
+                    href={`/lakes/${lake.slug || lake._id}`}
+                    className="group overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all hover:shadow-md"
+                  >
+                    <div className="relative h-36">
+                      <NextImage
+                        src={resolveMediaUrl(lake.image) || "/images/lake-placeholder.png"}
+                        alt={lake.name}
+                        fill
+                        className="object-cover"
+                        unoptimized
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                      <div className="absolute left-3 bottom-3 text-white">
+                        <p className="text-sm font-bold">{lake.name}</p>
+                        <div className="flex items-center gap-1 text-xs text-white/85">
+                          <HugeiconsIcon
+                            icon={Location01Icon}
+                            className="h-3 w-3"
+                          />
+                          <span>{lake.state}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="p-3">
+                      <p className="line-clamp-2 text-sm text-gray-500 font-medium">
+                        {lake.description || "No description available."}
+                      </p>
+                      <div className="mt-2 flex items-center justify-between text-xs font-semibold text-gray-500">
+                        <span>Rating: {lake.rating || 0}</span>
+                        <span>{lake.reviewCount || 0} reviews</span>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+            </div>
+            {favouriteLakes.length > itemsPerPage && (
+              <div className="mt-8 rounded-2xl bg-white border border-gray-100 overflow-hidden">
+                <TablePagination
+                  currentPage={favouritePage}
+                  totalPages={Math.ceil(favouriteLakes.length / itemsPerPage)}
+                  totalItems={favouriteLakes.length}
+                  itemsPerPage={itemsPerPage}
+                  onPageChange={setFavouritePage}
+                />
+              </div>
+            )}
+          </>
+        )}
       </section>
 
       {/* My Catches Section */}
@@ -177,20 +257,109 @@ export default function ProfileClient() {
           <h2 className="text-2xl font-bold text-foreground">My Catches</h2>
         </div>
 
-        <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-gray-200 bg-gray-50/50 p-20 text-center">
-          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-white text-gray-400 shadow-sm">
-            <HugeiconsIcon icon={FavouriteIcon} className="h-8 w-8" />
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[...Array(3)].map((_, idx) => (
+              <div key={idx} className="h-52 rounded-2xl bg-gray-100 animate-pulse" />
+            ))}
           </div>
-          <p className="text-gray-500 font-medium">
-            No catches uploaded yet. Share your first trophy!
-          </p>
-          <button
-            onClick={() => setIsUploadCatchModalOpen(true)}
-            className="mt-4 text-primary font-bold hover:underline cursor-pointer bg-transparent border-none"
-          >
-            Upload a Catch
-          </button>
-        </div>
+        ) : myCatches.length === 0 ? (
+          <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-gray-200 bg-gray-50/50 p-20 text-center">
+            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-white text-gray-400 shadow-sm">
+              <HugeiconsIcon icon={FavouriteIcon} className="h-8 w-8" />
+            </div>
+            <p className="text-gray-500 font-medium">
+              No catches uploaded yet. Share your first trophy!
+            </p>
+            <button
+              onClick={() => setIsUploadCatchModalOpen(true)}
+              className="mt-4 text-primary font-bold hover:underline cursor-pointer bg-transparent border-none"
+            >
+              Upload a Catch
+            </button>
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {myCatches
+                .slice(
+                  (catchesPage - 1) * itemsPerPage,
+                  catchesPage * itemsPerPage,
+                )
+                .map((item) => (
+                  <div
+                    key={item._id}
+                    className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm"
+                  >
+                    <div className="relative h-40">
+                      <NextImage
+                        src={resolveMediaUrl(item.image) || "/images/catch-placeholder.png"}
+                        alt={item.species}
+                        fill
+                        className="object-cover"
+                        unoptimized
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                      <div className="absolute right-3 top-3">
+                        <Badge
+                          variant={
+                            item.status === "active"
+                              ? "success"
+                              : item.status === "pending"
+                                ? "warning"
+                                : item.status === "rejected"
+                                  ? "destructive"
+                                  : "secondary"
+                          }
+                          className="capitalize text-[10px] font-semibold"
+                        >
+                          {item.status === "active" ? "Approved" : item.status}
+                        </Badge>
+                      </div>
+                    </div>
+                    <div className="p-3">
+                      <div className="flex items-center justify-between gap-2">
+                        <h3 className="text-sm font-bold text-foreground truncate">
+                          {item.species}
+                        </h3>
+                        <span className="text-xs font-semibold text-primary">
+                          {item.weight} {item.weightUnit}
+                        </span>
+                      </div>
+                      <div className="mt-2 flex items-center gap-3 text-xs text-gray-500 font-semibold">
+                        {item.length ? (
+                          <span className="inline-flex items-center gap-1">
+                            <HugeiconsIcon
+                              icon={RulerIcon}
+                              className="h-3.5 w-3.5"
+                            />
+                            {item.length}&quot;
+                          </span>
+                        ) : null}
+                        {item.technique ? (
+                          <span className="inline-flex items-center gap-1 truncate">
+                            <Fish className="h-3.5 w-3.5 shrink-0" />
+                            <span className="truncate">{item.technique}</span>
+                          </span>
+                        ) : null}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+            </div>
+            {myCatches.length > itemsPerPage && (
+              <div className="mt-8 rounded-2xl bg-white border border-gray-100 overflow-hidden">
+                <TablePagination
+                  currentPage={catchesPage}
+                  totalPages={Math.ceil(myCatches.length / itemsPerPage)}
+                  totalItems={myCatches.length}
+                  itemsPerPage={itemsPerPage}
+                  onPageChange={setCatchesPage}
+                />
+              </div>
+            )}
+          </>
+        )}
       </section>
 
       <ProfileUpdateModal
@@ -201,9 +370,9 @@ export default function ProfileClient() {
       <UploadCatchModal
         isOpen={isUploadCatchModalOpen}
         onClose={() => setIsUploadCatchModalOpen(false)}
-        onSubmit={(newCatch) => {
-          console.log("New catch submitted:", newCatch);
-          toast.success("Catch uploaded successfully!");
+        onSubmit={() => {
+          void refetch();
+          toast.success("Submitted for review. You can track it in My Catches.");
         }}
       />
     </div>
