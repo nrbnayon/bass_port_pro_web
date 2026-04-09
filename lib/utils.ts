@@ -17,10 +17,20 @@ export function truncateText(text: string, maxLength: number = 100): string {
 
 export const resolveMediaUrl = (url?: string) => {
   if (!url) return "";
-  if (url.startsWith("data:") || url.startsWith("http://") || url.startsWith("https://")) {
+  
+  const mediaBase = process.env.NEXT_PUBLIC_MEDIA_URL || "http://localhost:5000";
+  
+  // If the url is already absolute but points to localhost:5000, replace it with NEXT_PUBLIC_MEDIA_URL
+  if (url.includes("localhost:5000")) {
+    return url.replace(/^https?:\/\/localhost:5000/, mediaBase);
+  }
+
+  // If it's already an external absolute URL or data URI, return as is
+  if (url.startsWith("http") || url.startsWith("data:")) {
     return url;
   }
-  const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
-  const origin = apiBase.replace(/\/api\/?$/, "");
-  return `${origin}${url.startsWith("/") ? "" : "/"}${url}`;
+
+  // For relative paths, prepend the media base URL
+  const separator = url.startsWith("/") ? "" : "/";
+  return `${mediaBase}${separator}${url}`;
 };
