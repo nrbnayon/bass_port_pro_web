@@ -7,11 +7,13 @@ import { logout, updateTokens } from "../features/authSlice";
 const clearAuthCookies = () => {
   if (typeof document === "undefined") return;
   const cookiesToClear = [
+    "accessToken",
     "refreshToken",
     "authSession",
     "userRole",
     "userEmail",
     "userName",
+    "userAvatar",
     "userPermissions",
     "reset_verified",
   ];

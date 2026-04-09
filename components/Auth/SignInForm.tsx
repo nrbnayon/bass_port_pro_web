@@ -77,9 +77,6 @@ export const SignInForm = () => {
 
       const maxAgeSeconds = cleanData.rememberMe ? 7 * 24 * 60 * 60 : undefined;
       setClientCookie("accessToken", response.accessToken, maxAgeSeconds);
-      if (response.refreshToken) {
-        setClientCookie("refreshToken", response.refreshToken, maxAgeSeconds);
-      }
       setClientCookie("userRole", response.role, maxAgeSeconds);
       setClientCookie("userEmail", response.email, maxAgeSeconds);
       setClientCookie("userName", response.name || "User", maxAgeSeconds);

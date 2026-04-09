@@ -4,7 +4,7 @@ import { TableColumn } from "@/types/table.types";
 import Image from "next/image";
 import { RecentActivity, DashboardResponse } from "@/redux/services/dashboardApi";
 import DashboardHeader from "@/components/Shared/DashboardHeader";
-import { Users, MapPin, FileText, Image as ImageIcon } from "lucide-react";
+import { Users, MapPin, FileText, Image as ImageIcon, AlertCircle } from "lucide-react";
 import {
   AreaChart,
   Area,
@@ -24,15 +24,34 @@ import { ChartSkeleton } from "@/components/Skeleton/ChartSkeleton";
 import { useGetDashboardQuery } from "@/redux/services/dashboardApi";
 
 const DashboardOverview = () => {
-  const { data: dashboardData, isLoading, isError } = useGetDashboardQuery();
+  const { data: dashboardData, isLoading, isError, refetch } = useGetDashboardQuery();
+  const Icon = AlertCircle;
 
   if (isError) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#FDFDFF]">
-        <div className="text-center space-y-4">
-          <p className="text-red-500 font-medium">
-            Failed to load dashboard data
-          </p>
+      <div className="min-h-screen flex flex-col pt-32 items-center bg-[#FDFDFF] px-4">
+        <div className="w-full max-w-md bg-white p-10 rounded-[2.5rem] border border-red-50/50 shadow-2xl shadow-red-500/5 text-center space-y-6 animate-in fade-in zoom-in duration-500">
+          <div className="relative mx-auto w-24 h-24 bg-red-50 rounded-full flex items-center justify-center">
+            <div className="absolute inset-0 bg-red-100 rounded-full animate-ping opacity-20" />
+            <Icon className="w-10 h-10 text-red-500 relative z-10" />
+          </div>
+          
+          <div className="space-y-2">
+            <h2 className="text-2xl font-bold text-foreground tracking-tight">
+              Oops! Connection Lost
+            </h2>
+            <p className="text-secondary font-medium leading-relaxed">
+              We couldn&apos;t fetch your dashboard statistics at this moment. 
+              Please check your network or try again.
+            </p>
+          </div>
+
+          <button
+            onClick={() => refetch()}
+            className="w-full py-4 bg-primary hover:bg-primary/90 text-white font-bold rounded-2xl shadow-xl shadow-primary/20 transition-all active:scale-[0.98] cursor-pointer"
+          >
+            Retry Connection
+          </button>
         </div>
       </div>
     );
