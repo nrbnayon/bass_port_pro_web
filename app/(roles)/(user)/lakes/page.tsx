@@ -9,12 +9,19 @@ export const metadata: Metadata = {
 };
 
 import { Suspense } from "react";
+import { LakeGridSkeleton } from "@/components/Skeleton/LakeGridSkeleton";
 
 export default function AllLakesPage() {
   return (
     <>
       <div className="pt-20">
-        <Suspense fallback={<div className="h-40 w-full" />}>
+        <Suspense
+          fallback={
+            <div className="container-1620 py-20">
+              <LakeGridSkeleton count={8} />
+            </div>
+          }
+        >
           <LakesSection />
         </Suspense>
         <CTASection />

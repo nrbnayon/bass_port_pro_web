@@ -9,13 +9,22 @@ export const metadata: Metadata = {
 };
 
 import { Suspense } from "react";
+import { CatchGridSkeleton } from "@/components/Skeleton/CatchGridSkeleton";
 
 export default function CatchesPage() {
   return (
     <main>
-      <Suspense fallback={<div>Loading catches...</div>}>
-        <CatchesFishClient />
-      </Suspense>
+      <div className="pt-24 pb-12">
+        <Suspense
+          fallback={
+            <div className="container-1620">
+              <CatchGridSkeleton count={8} />
+            </div>
+          }
+        >
+          <CatchesFishClient />
+        </Suspense>
+      </div>
       <CTASection />
     </main>
   );

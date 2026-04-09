@@ -9,13 +9,22 @@ export const metadata: Metadata = {
 };
 
 import { Suspense } from "react";
+import { ReportListSkeleton } from "@/components/Skeleton/ReportListSkeleton";
 
 export default function ReportsPage() {
   return (
     <main>
-      <Suspense fallback={<div>Loading reports...</div>}>
-        <ReportsContentClient />
-      </Suspense>
+      <div className="pt-24 pb-12">
+        <Suspense
+          fallback={
+            <div className="container-1620">
+              <ReportListSkeleton count={6} />
+            </div>
+          }
+        >
+          <ReportsContentClient />
+        </Suspense>
+      </div>
       <CTASection />
     </main>
   );

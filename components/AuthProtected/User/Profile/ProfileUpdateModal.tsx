@@ -16,6 +16,7 @@ import { useUpdateMyProfileMutation, User } from "@/redux/services/userApi";
 import { updateProfile as updateProfileAction } from "@/redux/features/authSlice";
 import { useAppDispatch } from "@/redux/hooks";
 import Image from "next/image";
+import { resolveMediaUrl } from "@/lib/utils";
 
 interface ProfileUpdateModalProps {
   isOpen: boolean;
@@ -141,7 +142,7 @@ export default function ProfileUpdateModal({
                   <div className="relative h-24 w-24 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden border-4 border-white shadow-lg">
                     {avatarPreview ? (
                       <Image
-                        src={avatarPreview}
+                        src={resolveMediaUrl(avatarPreview)}
                         alt="Profile Preview"
                         fill
                         className="object-cover"

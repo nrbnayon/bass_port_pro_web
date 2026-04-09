@@ -209,9 +209,18 @@ export default function LakesSection() {
         </motion.div>
 
         {isLakesError && (
-          <p className="mt-4 text-center text-xs font-semibold text-amber-600">
-            API unavailable. Showing fallback lake data.
-          </p>
+          <motion.div 
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-8 mx-auto max-w-lg flex items-center justify-center gap-3 rounded-2xl bg-amber-50/50 px-6 py-3.5 border border-amber-100 backdrop-blur-sm"
+          >
+            <div className="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-amber-100">
+              <HugeiconsIcon icon={Location01Icon} className="h-4 w-4 text-amber-600" />
+            </div>
+            <p className="text-sm font-semibold text-amber-800">
+              Live sync unvailable. Showing offline lake intelligence.
+            </p>
+          </motion.div>
         )}
 
         <motion.div

@@ -18,6 +18,7 @@ import { useRouter } from "next/navigation";
 import { useToggleFavouriteLakeMutation } from "@/redux/services/lakesApi";
 import { LakeViewModel } from "@/lib/lakeMappers";
 import { toast } from "sonner";
+import { resolveMediaUrl } from "@/lib/utils";
 
 interface LakeCardProps {
   lake: LakeViewModel;
@@ -99,7 +100,7 @@ export default function LakeCard({ lake }: LakeCardProps) {
       >
         <div className="relative aspect-[4/3] overflow-hidden rounded-t-2xl">
           <Image
-            src={lake.image}
+            src={resolveMediaUrl(lake.image)}
             alt={lake.name}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
