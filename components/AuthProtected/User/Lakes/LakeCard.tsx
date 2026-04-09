@@ -35,7 +35,10 @@ export default function LakeCard({ lake }: LakeCardProps) {
     setIsFavourite(Boolean(lake.isFavourite));
   }, [lake.isFavourite]);
 
-  const [authModal, setAuthModal] = useState<{ isOpen: boolean; view: AuthView }>({
+  const [authModal, setAuthModal] = useState<{
+    isOpen: boolean;
+    view: AuthView;
+  }>({
     isOpen: false,
     view: "login",
   });
@@ -183,7 +186,7 @@ export default function LakeCard({ lake }: LakeCardProps) {
           </div>
 
           <div className="mt-3 flex flex-wrap gap-1.5">
-            {lake.species.slice(0, 2).map((s) => (
+            {lake.species.slice(0, 3).map((s) => (
               <span
                 key={s}
                 className="rounded-full bg-[#3060D91A] px-2.5 py-1 text-xs font-semibold text-blue"
@@ -191,9 +194,9 @@ export default function LakeCard({ lake }: LakeCardProps) {
                 {s}
               </span>
             ))}
-            {lake.species.length > 2 && (
+            {lake.species.length > 3 && (
               <span className="rounded-full bg-[#1111111A] px-2.5 py-1 text-xs font-semibold text-foreground">
-                +{lake.species.length - 2}
+                +{lake.species.length - 3}
               </span>
             )}
           </div>

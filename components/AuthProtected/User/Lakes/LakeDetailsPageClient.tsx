@@ -9,6 +9,7 @@ import { getFallbackLakeByIdOrSlug, mapApiLakeToView } from "@/lib/lakeMappers";
 import Link from "next/link";
 import { useUser } from "@/hooks/useUser";
 import { LakeViewModel } from "@/lib/lakeMappers";
+import { resolveMediaUrl } from "@/lib/utils";
 
 interface LakeDetailsPageClientProps {
   id: string;
@@ -21,7 +22,12 @@ export default function LakeDetailsPageClient({
   const { data, isLoading, isError, refetch } = useGetLakeByIdQuery({ id });
 
   const apiLake = useMemo(() => {
-    return data?.lake ? mapApiLakeToView(data.lake) : null;
+    if (!data?.lake) return null;
+    const mapped = mapApiLakeToView(data.lake);
+    return {
+      ...mapped,
+      image: resolveMediaUrl(mapped.image),
+    };
   }, [data]);
   const fallbackLake = useMemo(() => getFallbackLakeByIdOrSlug(id), [id]);
   const [lakeState, setLakeState] = useState<LakeViewModel | null>(apiLake || fallbackLake);

@@ -99,6 +99,8 @@ export default function CatchesFishClient() {
     isFetching: isFetchingMine,
   } = useGetMyCatchesQuery({ page: 1, limit: 6 }, { skip: !isAuthenticated });
 
+  console.log("myCatchesData ::", myCatchesData);
+
   const [toggleFavourite] = useToggleFavouriteCatchMutation();
 
   const isLoading = showFavouriteOnly
