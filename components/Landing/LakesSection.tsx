@@ -62,9 +62,9 @@ export default function LakesSection() {
     isOpen: false,
     view: "login",
   });
-  const [sortBy, setSortBy] = useState<"rating" | "name" | "size" | "catchRate">(
-    "rating",
-  );
+  const [sortBy, setSortBy] = useState<
+    "rating" | "name" | "size" | "catchRate"
+  >("rating");
   const [showFilters, setShowFilters] = useState(false);
 
   // Pagination states
@@ -108,36 +108,58 @@ export default function LakesSection() {
 
       return result;
     }
-    
+
     // Fallback data logic
     if (isLakesError || (!isLakesLoading && !apiLakesData?.lakes?.length)) {
-       // Only filter fallback data if we are actually at the beginning or explicitly in error
-       const fallback = getFallbackLakes().filter(lake => {
-          const matchesSearch = !search || lake.name.toLowerCase().includes(search.toLowerCase()) || 
-                                lake.state.toLowerCase().includes(search.toLowerCase());
-          const matchesState = selectedState === "All" || lake.state === selectedState;
-          const matchesCondition = selectedCondition === "All" || lake.condition === selectedCondition;
-          const matchesRegion = selectedRegion === "All" || (regionMap[selectedRegion]?.includes(lake.state));
-          
-          return matchesSearch && matchesState && matchesCondition && matchesRegion;
-       });
+      // Only filter fallback data if we are actually at the beginning or explicitly in error
+      const fallback = getFallbackLakes().filter((lake) => {
+        const matchesSearch =
+          !search ||
+          lake.name.toLowerCase().includes(search.toLowerCase()) ||
+          lake.state.toLowerCase().includes(search.toLowerCase());
+        const matchesState =
+          selectedState === "All" || lake.state === selectedState;
+        const matchesCondition =
+          selectedCondition === "All" || lake.condition === selectedCondition;
+        const matchesRegion =
+          selectedRegion === "All" ||
+          regionMap[selectedRegion]?.includes(lake.state);
 
-       fallback.sort((a, b) => {
-         if (sortBy === "rating") return b.rating - a.rating;
-         if (sortBy === "name") return a.name.localeCompare(b.name);
-         if (sortBy === "size") return b.size - a.size;
-         if (sortBy === "catchRate") return b.catchRate - a.catchRate;
-         return 0;
-       });
+        return (
+          matchesSearch && matchesState && matchesCondition && matchesRegion
+        );
+      });
 
-       return fallback.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+      fallback.sort((a, b) => {
+        if (sortBy === "rating") return b.rating - a.rating;
+        if (sortBy === "name") return a.name.localeCompare(b.name);
+        if (sortBy === "size") return b.size - a.size;
+        if (sortBy === "catchRate") return b.catchRate - a.catchRate;
+        return 0;
+      });
+
+      return fallback.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage,
+      );
     }
 
     return [];
-  }, [apiLakesData, isLakesError, isLakesLoading, search, selectedState, selectedRegion, selectedCondition, sortBy, currentPage]);
+  }, [
+    apiLakesData,
+    isLakesError,
+    isLakesLoading,
+    search,
+    selectedState,
+    selectedRegion,
+    selectedCondition,
+    sortBy,
+    currentPage,
+  ]);
 
   const totalItems = apiLakesData?.pagination?.total || 48; // Default fallback total
-  const totalPages = apiLakesData?.pagination?.pages || Math.ceil(48 / itemsPerPage);
+  const totalPages =
+    apiLakesData?.pagination?.pages || Math.ceil(48 / itemsPerPage);
 
   const handleSearchChange = (value: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -272,6 +294,7 @@ export default function LakesSection() {
                         setSelectedRegion(e.target.value);
                         setCurrentPage(1);
                       }}
+                      aria-label="Region"
                       className="w-full appearance-none rounded-xl border-none bg-[#F8FAFC] py-3.5 px-5 text-sm font-medium text-foreground outline-none cursor-pointer focus:ring-2 focus:ring-primary"
                     >
                       {["All", "South", "West", "Midwest", "Northeast"].map(
@@ -348,7 +371,10 @@ export default function LakesSection() {
         <div className="mt-4 flex items-center justify-between">
           <p className="text-sm font-medium text-foreground">
             Showing{" "}
-            <span className="font-semibold">{apiLakesData?.pagination?.total || lakes.length}</span> lakes
+            <span className="font-semibold">
+              {apiLakesData?.pagination?.total || lakes.length}
+            </span>{" "}
+            lakes
           </p>
         </div>
 
