@@ -12,6 +12,7 @@ import AuthModal, { AuthView } from "@/components/Auth/AuthModal";
 import { ConfirmationModal } from "@/components/Shared/ConfirmationModal";
 import { useUser } from "@/hooks/useUser";
 import { LogOut } from "lucide-react";
+import { resolveMediaUrl } from "@/lib/utils";
 
 type NavLink = {
   label: string;
@@ -214,7 +215,7 @@ export default function Navbar() {
                   <Link href={role === "admin" ? "/admin/profile" : "/profile"} className="flex flex-row items-center gap-2 bg-[#D1D5DB]/20 pl-1.5 pr-4 py-1.5 rounded-full border border-white/10 hover:bg-white/20 transition-colors">
                     <div className="relative w-7 h-7">
                       {avatar ? (
-                        <Image src={avatar} alt="Avatar" fill className="rounded-full object-cover" unoptimized />
+                        <Image src={resolveMediaUrl(avatar)} alt="Avatar" fill className="rounded-full object-cover" unoptimized />
                       ) : (
                         <div className="flex w-full h-full items-center justify-center rounded-full bg-[#FF7043] text-white font-bold text-xs">
                           {name ? name.charAt(0).toUpperCase() : "U"}
@@ -320,7 +321,7 @@ export default function Navbar() {
                     >
                       <div className="relative w-8 h-8">
                         {avatar ? (
-                          <Image src={avatar} alt="Avatar" fill className="rounded-full object-cover" unoptimized />
+                          <Image src={resolveMediaUrl(avatar)} alt="Avatar" fill className="rounded-full object-cover" unoptimized />
                         ) : (
                           <div className="flex w-full h-full items-center justify-center rounded-full bg-[#FF7043] text-white font-bold text-sm">
                             {name ? name.charAt(0).toUpperCase() : "U"}

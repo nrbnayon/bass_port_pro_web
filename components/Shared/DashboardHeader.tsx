@@ -3,6 +3,7 @@
 import { useUser } from "@/hooks/useUser";
 import Image from "next/image";
 import Link from "next/link";
+import { resolveMediaUrl } from "@/lib/utils";
 // import { Bell } from "lucide-react";
 
 export default function DashboardHeader({
@@ -45,7 +46,7 @@ export default function DashboardHeader({
         >
           <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden shrink-0 border border-border">
             <Image
-              src={avatar || "/images/avatar.png"}
+              src={resolveMediaUrl(avatar) || "/images/avatar.png"}
               alt={name || "User"}
               width={40}
               height={40}

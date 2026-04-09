@@ -27,6 +27,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
+import { resolveMediaUrl } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -260,7 +261,7 @@ export default function SettingsPage() {
                 <div className="w-32 h-32 rounded-full overflow-hidden ring-4 ring-primary/40 transition-all duration-300 shadow-2xl">
                   {avatarPreview ? (
                     <Image
-                      src={avatarPreview || "/images/avatar.png"}
+                      src={resolveMediaUrl(avatarPreview!) || "/images/avatar.png"}
                       alt="Avatar"
                       width={128}
                       height={128}

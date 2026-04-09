@@ -4,7 +4,7 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { Sidebar, SidebarBody } from "@/components/ui/sidebar";
 import { motion } from "motion/react";
-import { cn } from "@/lib/utils";
+import { cn, resolveMediaUrl } from "@/lib/utils";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
@@ -479,7 +479,7 @@ export default function DashboardWrapper({ children }: DashboardWrapperProps) {
                     <div className="relative w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center shrink-0 overflow-hidden">
                       {avatar ? (
                         <Image
-                          src={avatar || "/images/avatar.png"}
+                            src={resolveMediaUrl(avatar) || "/images/avatar.png"}
                           alt={name || "User"}
                           fill
                           className="object-cover"
