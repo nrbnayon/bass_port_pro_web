@@ -14,17 +14,15 @@ import { ReportListSkeleton } from "@/components/Skeleton/ReportListSkeleton";
 export default function ReportsPage() {
   return (
     <main>
-      <div className="pt-24 pb-12">
-        <Suspense
-          fallback={
-            <div className="container-1620">
-              <ReportListSkeleton count={6} />
-            </div>
-          }
-        >
-          <ReportsContentClient />
-        </Suspense>
-      </div>
+      <Suspense
+        fallback={
+          <div className="container-1620">
+            <ReportListSkeleton count={6} />
+          </div>
+        }
+      >
+        <ReportsContentClient />
+      </Suspense>
       <CTASection />
     </main>
   );

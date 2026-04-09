@@ -13,11 +13,10 @@ import { LakeGridSkeleton } from "@/components/Skeleton/LakeGridSkeleton";
 
 export default function AllLakesPage() {
   return (
-    <>
-      <div className="pt-20">
+      <main className="pt-20">
         <Suspense
           fallback={
-            <div className="container-1620 py-20">
+            <div className="max-w-[1320px] mx-auto py-20">
               <LakeGridSkeleton count={8} />
             </div>
           }
@@ -25,7 +24,6 @@ export default function AllLakesPage() {
           <LakesSection />
         </Suspense>
         <CTASection />
-      </div>
-    </>
+      </main>
   );
 }

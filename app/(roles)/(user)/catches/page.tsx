@@ -14,17 +14,15 @@ import { CatchGridSkeleton } from "@/components/Skeleton/CatchGridSkeleton";
 export default function CatchesPage() {
   return (
     <main>
-      <div className="pt-24 pb-12">
-        <Suspense
+      <Suspense
           fallback={
-            <div className="container-1620">
+            <div className="max-w-[1320px] mx-auto">
               <CatchGridSkeleton count={8} />
             </div>
           }
         >
           <CatchesFishClient />
         </Suspense>
-      </div>
       <CTASection />
     </main>
   );

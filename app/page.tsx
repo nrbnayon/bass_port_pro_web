@@ -39,10 +39,11 @@ export const metadata: Metadata = {
 };
 
 import { Suspense } from "react";
+import { LandingSkeleton } from "@/components/Skeleton/LandingSkeleton";
 
 export default async function Page() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<LandingSkeleton />}>
       <LandingView />
     </Suspense>
   );
