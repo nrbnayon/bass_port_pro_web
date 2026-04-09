@@ -260,7 +260,7 @@ export default function SettingsPage() {
                 <div className="w-32 h-32 rounded-full overflow-hidden ring-4 ring-primary/40 transition-all duration-300 shadow-2xl">
                   {avatarPreview ? (
                     <Image
-                      src={avatarPreview}
+                      src={avatarPreview || "/images/avatar.png"}
                       alt="Avatar"
                       width={128}
                       height={128}
