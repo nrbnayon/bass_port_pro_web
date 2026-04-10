@@ -457,7 +457,7 @@ export default function ReportModal({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="flex flex-col gap-2">
                   <label className="text-sm font-semibold text-gray-500 ml-1">
-                    Total Catches
+                    Total Catches <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="number"
@@ -480,7 +480,7 @@ export default function ReportModal({
                 </div>
                 <div className="flex flex-col gap-2">
                   <label className="text-sm font-semibold text-gray-500 ml-1">
-                    Biggest (lbs)
+                    Biggest (lbs) <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="number"

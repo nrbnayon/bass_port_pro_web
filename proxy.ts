@@ -147,6 +147,7 @@ const PUBLIC_ONLY_ROUTES: string[] = ["/success", "/jobs", "/lakes", "/catches",
  * Always accessible — completely bypasses auth logic.
  */
 const INFO_ROUTES: string[] = [
+  "/privacy",
   "/privacy-policy",
   "/terms",
   "/about-us",

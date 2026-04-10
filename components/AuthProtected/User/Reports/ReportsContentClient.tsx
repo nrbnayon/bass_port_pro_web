@@ -10,7 +10,12 @@ import {
 import { Fish } from "lucide-react";
 import { reports as fallbackReports } from "@/data/landingData";
 import { ReportCard as ReportCardType } from "@/types/landingData.types";
-import { useGetReportsQuery, useGetReportLakeNamesQuery } from "@/redux/services/fishingReportApi";
+import {
+  useGetReportsQuery,
+  useGetReportLakeNamesQuery,
+  useSubmitReportMutation,
+  useUploadReportImageMutation,
+} from "@/redux/services/fishingReportApi";
 
 
 import { toast } from "sonner";
@@ -25,9 +30,18 @@ import { usePathname } from "next/navigation";
 
 import { resolveMediaUrl } from "@/lib/utils";
 
+const parseNumberFromString = (value?: string) => {
+  const parsed = Number((value || "").replace(/[^0-9.]/g, ""));
+  return Number.isFinite(parsed) ? parsed : 0;
+};
+
+const sanitizeConditionValue = (value: string | undefined, allowed: string[]) =>
+  value && allowed.includes(value) ? value : "";
+
 export default function ReportsContentClient() {
   const [selectedLake, setSelectedLake] = useState("All Lakes");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [pendingReports, setPendingReports] = useState<ReportCardType[]>([]);
   const { isAuthenticated } = useUser();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -49,10 +63,92 @@ export default function ReportsContentClient() {
   });
 
   const { data: lakesData } = useGetReportLakeNamesQuery();
+  const [submitReport] = useSubmitReportMutation();
+  const [uploadReportImage] = useUploadReportImageMutation();
 
-  const handleAddReport = () => {
-    toast.success("Fishing report shared successfully!");
-    refetch();
+  const handleAddReport = async (newReport: ReportCardType) => {
+    if (!isAuthenticated) {
+      setAuthModal({ isOpen: true, view: "login" });
+      return;
+    }
+
+    try {
+      let submittedImageUrl = newReport.image || "";
+      if (newReport.imageFile) {
+        const formData = new FormData();
+        formData.append("image", newReport.imageFile);
+        const uploadResponse = await uploadReportImage(formData).unwrap();
+        submittedImageUrl = uploadResponse.url || "";
+      }
+
+      const submitted = await submitReport({
+        lakeName: newReport.lake,
+        title: `${newReport.lake} trip report`,
+        text: newReport.text || "",
+        species: newReport.species || "",
+        image: submittedImageUrl,
+        tags: newReport.tags || [],
+        conditions: {
+          temp: newReport.temp,
+          weather: sanitizeConditionValue(newReport.weather, [
+            "Sunny",
+            "Clear",
+            "Partly Cloudy",
+            "Overcast",
+            "Rainy",
+            "Windy",
+            "Stormy",
+          ]),
+          clarity: sanitizeConditionValue(newReport.clarity, ["Clear", "Stained", "Muddy"]),
+          waterLevel: sanitizeConditionValue(newReport.waterLevel, [
+            "Normal",
+            "High",
+            "Low",
+            "Rising",
+            "Falling",
+          ]),
+          pressure: sanitizeConditionValue(newReport.pressure, ["Stable", "Rising", "Falling"]),
+        },
+        catchCount: parseNumberFromString(newReport.catches),
+        biggestCatch: parseNumberFromString(newReport.biggestCatch),
+        fishedAt: newReport.date,
+      }).unwrap();
+
+      const submittedReport = submitted?.report;
+      const pendingPreview: ReportCardType = {
+        id: submittedReport?._id || `pending-${Date.now()}`,
+        angler: submittedReport?.user?.name || newReport.angler || "You",
+        avatarImage: resolveMediaUrl(submittedReport?.user?.avatar) || newReport.avatarImage || "",
+        lake: submittedReport?.lake?.name || submittedReport?.lakeName || newReport.lake,
+        date: submittedReport?.fishedAt
+          ? new Date(submittedReport.fishedAt).toISOString().split("T")[0]
+          : newReport.date,
+        temp: submittedReport?.conditions?.temp || newReport.temp || "N/A",
+        weather: submittedReport?.conditions?.weather || newReport.weather || "N/A",
+        waterLevel: submittedReport?.conditions?.waterLevel || newReport.waterLevel || "Normal",
+        clarity: submittedReport?.conditions?.clarity || newReport.clarity || "Clear",
+        pressure: submittedReport?.conditions?.pressure || newReport.pressure || "Stable",
+        catches: `${submittedReport?.catchCount ?? parseNumberFromString(newReport.catches)} catches`,
+        biggestCatch: `${submittedReport?.biggestCatch ?? parseNumberFromString(newReport.biggestCatch)} lbs`,
+        text: submittedReport?.text || newReport.text,
+        tags: submittedReport?.tags || newReport.tags || [],
+        score: `${submittedReport?.score ?? parseNumberFromString(newReport.score)}%`,
+        status: submittedReport?.status || "pending",
+        species: submittedReport?.species || newReport.species,
+        image: submittedReport?.image || newReport.image,
+      };
+
+      setPendingReports((prev) => [
+        pendingPreview,
+        ...prev,
+      ]);
+
+      toast.success("Fishing report submitted successfully! and it currently under review.");
+      setCurrentPage(1);
+      refetch();
+    } catch {
+      toast.error("Failed to submit report. Please try again.");
+    }
   };
 
   const apiReports: ReportCardType[] = (data?.reports || []).map((r) => ({
@@ -74,12 +170,15 @@ export default function ReportsContentClient() {
     status: r.status || "active",
   }));
 
-  const displayReports = isError || (!isLoading && apiReports.length === 0) 
-    ? fallbackReports.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage) 
-    : apiReports;
+  const fallbackSlice = fallbackReports.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const mergedApiReports = currentPage === 1 ? [...pendingReports, ...apiReports] : apiReports;
 
-  const totalItems = isError ? fallbackReports.length : data?.pagination?.total || 0;
-  const totalPages = isError ? Math.ceil(fallbackReports.length / itemsPerPage) : data?.pagination?.pages || 1;
+  const displayReports = isError || (!isLoading && mergedApiReports.length === 0)
+    ? (currentPage === 1 ? [...pendingReports, ...fallbackSlice] : fallbackSlice)
+    : mergedApiReports;
+
+  const totalItems = (isError ? fallbackReports.length : data?.pagination?.total || 0) + pendingReports.length;
+  const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));
 
   // Reset to first page when filtering or searching changes
   useEffect(() => {
