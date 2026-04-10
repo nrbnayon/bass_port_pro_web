@@ -42,7 +42,7 @@ export default function ReportsContentClient() {
   const [selectedLake, setSelectedLake] = useState("All Lakes");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [pendingReports, setPendingReports] = useState<ReportCardType[]>([]);
-  const { isAuthenticated } = useUser();
+  const { isAuthenticated, isLoading: isUserLoading } = useUser();
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const searchQuery = searchParams.get("search")?.toLowerCase() || "";
@@ -59,7 +59,8 @@ export default function ReportsContentClient() {
     search: searchQuery,
     lake: selectedLake === "All Lakes" ? "" : selectedLake,
     page: currentPage,
-    limit: itemsPerPage
+    limit: itemsPerPage,
+    _auth: isAuthenticated ? "1" : "0",
   });
 
   const { data: lakesData } = useGetReportLakeNamesQuery();
@@ -185,6 +186,13 @@ export default function ReportsContentClient() {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setCurrentPage(1);
   }, [selectedLake, searchQuery]);
+
+  // After hydration, refetch once with authenticated context so user's own pending reports are included.
+  useEffect(() => {
+    if (!isUserLoading) {
+      refetch();
+    }
+  }, [isUserLoading, isAuthenticated, refetch]);
 
   // Get unique lakes for filter
   const uniqueLakes = [
