@@ -121,7 +121,7 @@ export default function TermsOfServicePage() {
             className="lg:col-span-3"
           >
             <div className="bg-white border border-gray-100 p-8 md:p-16 rounded-[2.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.02)] space-y-16">
-              {terms.map((section: any, idx: number) => {
+              {terms.map((section: any) => {
                 const Icon = iconMap[section.id] || FileText;
                 return (
                   <section

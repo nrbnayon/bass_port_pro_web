@@ -4,9 +4,19 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { 
-  ArrowLeft, Shield, Fingerprint, Activity, Share2, 
-  Lock, ExternalLink, Mail, FileText, LucideIcon, Home, User
+import {
+  ArrowLeft,
+  Shield,
+  Fingerprint,
+  Activity,
+  Share2,
+  Lock,
+  ExternalLink,
+  Mail,
+  FileText,
+  LucideIcon,
+  Home,
+  User,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { privacyPolicy as defaultPrivacy } from "@/data/legalData";
@@ -49,16 +59,16 @@ export default function PrivacyPolicyPage() {
     <div className="min-h-screen bg-[#FDFDFD] py-12 px-6 sm:px-8 lg:px-12 relative">
       {/* Top Navigation */}
       <div className="max-w-7xl mx-auto flex justify-between items-center mb-12">
-        <Link 
-          href="/" 
+        <Link
+          href="/"
           className="flex items-center gap-2 text-sm font-medium text-secondary hover:text-primary transition-colors bg-white px-4 py-2 rounded-full border shadow-sm"
         >
           <Home className="h-4 w-4" />
           <span>Home</span>
         </Link>
-        
-        <Link 
-          href="/signin" 
+
+        <Link
+          href="/signin"
           className="flex items-center gap-2 text-sm font-medium text-secondary hover:text-primary transition-colors bg-white px-4 py-2 rounded-full border shadow-sm"
         >
           <User className="h-4 w-4" />
@@ -86,7 +96,12 @@ export default function PrivacyPolicyPage() {
           </h1>
           <div className="flex items-center justify-center gap-2 text-secondary/60 text-sm">
             <Activity className="h-4 w-4" />
-            <span>Updated: {data?.data?.updatedAt ? new Date(data.data.updatedAt).toLocaleDateString() : new Date().toLocaleDateString()}</span>
+            <span>
+              Updated:{" "}
+              {data?.data?.updatedAt
+                ? new Date(data.data.updatedAt).toLocaleDateString()
+                : new Date().toLocaleDateString()}
+            </span>
           </div>
         </div>
 
@@ -103,7 +118,7 @@ export default function PrivacyPolicyPage() {
                 href={`#${section.id}`}
                 className="block px-3 py-2 text-xs font-semibold text-secondary/70 hover:text-primary hover:bg-primary/5 rounded-xl transition-all"
               >
-                {String(idx + 1).padStart(2, '0')}. {section.title}
+                {String(idx + 1).padStart(2, "0")}. {section.title}
               </a>
             ))}
           </aside>
@@ -115,7 +130,7 @@ export default function PrivacyPolicyPage() {
             className="lg:col-span-3"
           >
             <div className="bg-white border border-gray-100 p-8 md:p-16 rounded-[2.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.02)] space-y-16">
-              {policy.map((section: LegalSection, idx: number) => {
+              {policy.map((section: LegalSection) => {
                 const Icon = iconMap[section.id] || FileText;
                 return (
                   <section
