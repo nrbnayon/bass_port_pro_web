@@ -51,7 +51,10 @@ const NavIcon = ({
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
-  const [authModal, setAuthModal] = useState<{ isOpen: boolean; view: AuthView }>({ isOpen: false, view: "login" });
+  const [authModal, setAuthModal] = useState<{
+    isOpen: boolean;
+    view: AuthView;
+  }>({ isOpen: false, view: "login" });
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
@@ -210,22 +213,33 @@ export default function Navbar() {
                     Dashboard
                   </Link>
                 )}
-                
+
                 <div className="group relative flex items-center gap-2">
-                  <Link href={role === "admin" ? "/admin/profile" : "/profile"} className="flex flex-row items-center gap-2 bg-[#D1D5DB]/20 pl-1.5 pr-4 py-1.5 rounded-full border border-white/10 hover:bg-white/20 transition-colors">
+                  <Link
+                    href={role === "admin" ? "/admin/settings" : "/profile"}
+                    className="flex flex-row items-center gap-2 bg-[#D1D5DB]/20 pl-1.5 pr-4 py-1.5 rounded-full border border-white/10 hover:bg-white/20 transition-colors"
+                  >
                     <div className="relative w-7 h-7">
                       {avatar ? (
-                        <Image src={resolveMediaUrl(avatar)} alt="Avatar" fill className="rounded-full object-cover" unoptimized />
+                        <Image
+                          src={resolveMediaUrl(avatar)}
+                          alt="Avatar"
+                          fill
+                          className="rounded-full object-cover"
+                          unoptimized
+                        />
                       ) : (
                         <div className="flex w-full h-full items-center justify-center rounded-full bg-[#FF7043] text-white font-bold text-xs">
                           {name ? name.charAt(0).toUpperCase() : "U"}
                         </div>
                       )}
                     </div>
-                    <span className="text-xs font-semibold text-white truncate max-w-[100px]">{name || "User"}</span>
+                    <span className="text-xs font-semibold text-white truncate max-w-[100px]">
+                      {name || "User"}
+                    </span>
                   </Link>
-                  <button 
-                    onClick={() => setIsLogoutModalOpen(true)} 
+                  <button
+                    onClick={() => setIsLogoutModalOpen(true)}
                     className="text-white/80 hover:text-white transition-colors cursor-pointer p-1"
                     title="Logout"
                   >
@@ -318,23 +332,34 @@ export default function Navbar() {
                       </Link>
                     )}
                     <Link
-                      href={role === "admin" ? "/admin/profile" : "/profile"} 
+                      href={role === "admin" ? "/admin/settings" : "/profile"}
                       onClick={() => setOpen(false)}
                       className="flex items-center gap-3 bg-[#D1D5DB]/20 pl-2 pr-4 py-2 rounded-full border border-white/10 hover:bg-white/20 transition-colors w-fit"
                     >
                       <div className="relative w-8 h-8">
                         {avatar ? (
-                          <Image src={resolveMediaUrl(avatar)} alt="Avatar" fill className="rounded-full object-cover" unoptimized />
+                          <Image
+                            src={resolveMediaUrl(avatar)}
+                            alt="Avatar"
+                            fill
+                            className="rounded-full object-cover"
+                            unoptimized
+                          />
                         ) : (
                           <div className="flex w-full h-full items-center justify-center rounded-full bg-[#FF7043] text-white font-bold text-sm">
                             {name ? name.charAt(0).toUpperCase() : "U"}
                           </div>
                         )}
                       </div>
-                      <span className="text-sm font-semibold text-white">{name || "User"}</span>
+                      <span className="text-sm font-semibold text-white">
+                        {name || "User"}
+                      </span>
                     </Link>
-                    <button 
-                      onClick={() => { setIsLogoutModalOpen(true); setOpen(false); }} 
+                    <button
+                      onClick={() => {
+                        setIsLogoutModalOpen(true);
+                        setOpen(false);
+                      }}
                       className="flex items-center gap-2 text-white/80 hover:text-white transition-colors cursor-pointer p-2 w-fit"
                     >
                       <LogOut className="w-5 h-5" />
