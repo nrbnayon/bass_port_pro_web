@@ -56,26 +56,30 @@ export const metadata: Metadata = {
     process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
   ),
   title: {
-    default: "BASSPORT Pro | Bass Fishing Intelligence Hub",
+    default: "BASSPORT Pro | #1 Bass Fishing Intelligence & Lake Reports",
     template: "%s | BASSPORT Pro",
   },
   description:
-    "Discover top bass fishing lakes, real-time fishing reports, seasonal patterns, and community catches with BASSPORT Pro.",
+    "Join the ultimate bass fishing community. Access real-time lake intelligence, expert fishing reports, seasonal patterns, and share your trophy catches on BASSPORT Pro.",
   keywords: [
     "bass fishing",
-    "fishing lakes",
-    "lake intelligence",
-    "fishing reports",
+    "bass fishing reports",
+    "best bass lakes",
+    "fishing intelligence",
+    "trophy bass catches",
+    "bass fishing community",
+    "lake conditions",
+    "fishing techniques",
     "BASSPORT Pro",
-    "angler community",
+    "angler reports",
   ],
   icons: {
     icon: "/icons/logo.png",
     apple: "/icons/logo.png",
   },
-  authors: [{ name: "Nayon" }],
-  creator: "Nayon",
-  publisher: "Nayon",
+  authors: [{ name: "BASSPORT Pro Team" }],
+  creator: "BASSPORT Pro",
+  publisher: "BASSPORT Pro",
   formatDetection: {
     email: false,
     address: false,
@@ -96,31 +100,31 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "/",
-    siteName: process.env.NEXT_PUBLIC_APP_NAME || "BASSPORT Pro",
-    title: "BASSPORT Pro | Bass Fishing Intelligence Hub",
+    siteName: "BASSPORT Pro",
+    title: "BASSPORT Pro | #1 Bass Fishing Intelligence & Lake Reports",
     description:
-      "Explore premium bass fishing lakes, catch intelligence, and expert reports to plan your next trophy day.",
+      "Master bass fishing with premium lake intelligence, catch reports, and angler insights. Your destination for trophy bass fishing.",
     images: [
       {
-        url: `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/icons/logo.png`,
+        url: "/icons/logo.png",
         width: 1200,
         height: 630,
-        alt: "BASSPORT Pro",
+        alt: "BASSPORT Pro - Bass Fishing Intelligence Hub",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "BASSPORT Pro | Bass Fishing Intelligence Hub",
+    title: "BASSPORT Pro | Bass Fishing Intelligence & Lake Reports",
     description:
-      "Lake intelligence, fishing reports, and trophy catches in one platform.",
-    images: [`${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/icons/logo.png`],
+      "The most comprehensive bass fishing platform for intelligence, reports, and trophy catches.",
+    images: ["/icons/logo.png"],
   },
   alternates: {
     canonical: "/",
   },
-  category: "Software",
-  classification: "Fishing Platform",
+  category: "Fishing & Outdoors",
+  classification: "Sports Intelligence Platform",
 };
 
 export const viewport: Viewport = {

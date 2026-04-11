@@ -68,28 +68,30 @@ export default function HeroSection() {
             />
           </motion.div>
 
-          <motion.h1
-            variants={itemVariants}
-            className="max-w-5xl text-5xl font-semibold leading-[1.1] tracking-tight text-balance text-3xl md:text-6xl lg:text-7xl"
-          >
-            Your Bass Fishing <br />
-            <motion.span
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.8, duration: 0.8 }}
-              className="text-primary inline-block"
+          <h1 className="max-w-5xl text-center text-3xl font-semibold leading-[1.1] tracking-tight text-balance md:text-6xl lg:text-7xl">
+            <motion.span 
+              variants={itemVariants}
+              className="block"
             >
-              Intelligence Hub
+              BASSPORT Pro: Your Bass Fishing <br />
+              <motion.span
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.8, duration: 0.8 }}
+                className="text-primary inline-block"
+              >
+                Intelligence Hub
+              </motion.span>
             </motion.span>
-          </motion.h1>
+          </h1>
 
           <motion.p
             variants={itemVariants}
-            className="mx-auto mt-5 max-w-3xl px-4 text-base text-white/90 sm:text-lg"
+            className="mx-auto mt-5 max-w-3xl px-4 text-center text-base text-white/90 sm:text-lg"
           >
-            Discover the best bass fishing lakes across America. Get real-time
-            conditions, expert reports, and share your trophy catches with the
-            community.
+            Master bass fishing with premium lake intelligence, real-time
+            conditions, and expert fishing reports. Join the most advanced
+            angler community today.
           </motion.p>
 
           <motion.div
@@ -97,16 +99,16 @@ export default function HeroSection() {
             className="mt-10 flex flex-wrap items-center justify-center gap-4 px-4"
           >
             <Link
-              href="#lakes"
+              href="/lakes"
               className="flex items-center gap-2 rounded-lg bg-primary px-8 py-4 text-sm font-bold text-white transition hover:bg-primary/90 shadow-xl shadow-primary/30 hover:scale-105 active:scale-95"
             >
-              <HugeiconsIcon icon={Location08Icon} /> Explore Lakes
+              <HugeiconsIcon icon={Location08Icon} /> Explore Lake Reports
             </Link>
             <Link
-              href="#catches"
+              href="/catches"
               className="flex items-center gap-2 rounded-lg border border-white/10 bg-[#FFFFFF0A] px-8 py-4 text-sm font-bold text-white backdrop-blur-md transition hover:bg-foreground/60 hover:scale-105 active:scale-95"
             >
-              <HugeiconsIcon icon={Camera01Icon} /> BassPorn Gallery
+              <HugeiconsIcon icon={Camera01Icon} /> View Trophy Catches
             </Link>
           </motion.div>
         </motion.div>

@@ -140,7 +140,13 @@ const AUTH_ROUTES: string[] = [
  * PUBLIC-ONLY ROUTES
  * Accessible to everyone; authenticated users are NOT bounced away.
  */
-const PUBLIC_ONLY_ROUTES: string[] = ["/success", "/jobs", "/lakes", "/catches", "/reports"];
+const PUBLIC_ONLY_ROUTES: string[] = [
+  "/success",
+  "/jobs",
+  "/lakes",
+  "/catches",
+  "/reports",
+];
 
 /**
  * INFO / LEGAL ROUTES
@@ -158,9 +164,7 @@ const INFO_ROUTES: string[] = [
  * UNIVERSAL PROTECTED ROUTES  →  app/(protected)/(shared)/*
  * Accessible to ANY authenticated role.
  */
-const UNIVERSAL_PROTECTED_ROUTES: string[] = [
-  "/profile",
-];
+const UNIVERSAL_PROTECTED_ROUTES: string[] = ["/profile"];
 
 /**
  * ROLE-SPECIFIC ROUTES
@@ -380,6 +384,15 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
   const { pathname, search } = request.nextUrl;
   const method = request.method.toUpperCase();
 
+  const url = request.nextUrl.clone();
+  const hostname = url.hostname;
+
+  // SEO: redirect www → non-www canonical
+  if (hostname.startsWith("www.")) {
+    url.hostname = hostname.replace("www.", "");
+    return NextResponse.redirect(url, 301);
+  }
+
   // ─────────────────────────────────────────────────────────────────────────
   //  STEP 0 — Hard bypass
   //  Next.js internals, API routes, static files, PWA assets.
@@ -399,6 +412,12 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
     return NextResponse.next();
   }
 
+  const userAgent = request.headers.get("user-agent") || "";
+  const isBot = /googlebot|bingbot|slurp|duckduckbot/i.test(userAgent);
+
+  if (isBot && pathname === "/") {
+    return NextResponse.next();
+  }
   // ─────────────────────────────────────────────────────────────────────────
   //  STEP 1 — Development auth bypass
   //  Set DEV_AUTH_BYPASS=true  DEV_BYPASS_ROLE=admin|user  in .env.local

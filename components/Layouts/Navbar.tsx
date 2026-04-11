@@ -166,13 +166,13 @@ export default function Navbar() {
                   (pathname === "/" && item.id === activeSection);
 
                 return (
-                  <button
+                  <Link
                     key={item.label}
+                    href={item.href}
                     onClick={() => {
                       if (item.href.startsWith("#")) {
                         setActiveSection(item.href.replace("#", ""));
                       }
-                      router.push(item.href);
                     }}
                     className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-300 cursor-pointer ${
                       isActive
@@ -182,7 +182,7 @@ export default function Navbar() {
                   >
                     <NavIcon icon={item.icon} className="h-4 w-4" />
                     {item.label}
-                  </button>
+                  </Link>
                 );
               })}
             </nav>
@@ -274,11 +274,14 @@ export default function Navbar() {
                   (pathname === "/" && item.id === activeSection);
 
                 return (
-                  <button
+                  <Link
                     key={item.label}
+                    href={item.href}
                     onClick={() => {
                       setOpen(false);
-                      router.push(item.href);
+                      if (item.href.startsWith("#")) {
+                        setActiveSection(item.href.replace("#", ""));
+                      }
                     }}
                     className={`flex items-center gap-3 rounded-md px-3 py-3 text-sm font-medium transition text-left cursor-pointer ${
                       isActive
@@ -288,7 +291,7 @@ export default function Navbar() {
                   >
                     <NavIcon icon={item.icon} className="h-4 w-4" />
                     {item.label}
-                  </button>
+                  </Link>
                 );
               })}
 
