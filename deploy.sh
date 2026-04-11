@@ -1,28 +1,26 @@
 #!/bin/bash
 
-echo "Starting deployment..."
-cd /var/www/BassInsight-Frontend || exit
+echo "🚀 Starting deployment..."
 
-echo "Pulling latest code..."
+cd /var/www/bass_port_pro_web || exit 1
+
+echo "📥 Pulling latest code..."
 git pull origin main
 
-echo "Installing dependencies..."
+echo "📦 Installing dependencies..."
 npm install
 
-echo "Building Next.js..."
+echo "🏗️ Building Next.js..."
 npm run build
 
-echo "Reloading PM2..."
-pm2 reload ecosystem.config.js --update-env
+echo "🔁 Restarting PM2 frontend..."
+pm2 delete frontend
+pm2 start ecosystem.config.js
 
-echo "Testing Nginx configuration..."
-if nginx -t; then
-  systemctl reload nginx
-else
-  echo "Nginx config invalid. Skipping reload."
-fi
-
-echo "Saving PM2 process..."
+echo "💾 Saving PM2 state..."
 pm2 save
 
-echo "Deployment finished successfully."
+echo "🌐 Reloading Nginx..."
+nginx -t && systemctl reload nginx
+
+echo "✅ Deployment completed successfully!"
