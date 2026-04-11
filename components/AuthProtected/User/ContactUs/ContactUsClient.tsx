@@ -97,7 +97,7 @@ export default function ContactUsClient() {
                       Email
                     </h3>
                     <p className="text-primary font-bold text-base">
-                      william@bassportpro.com
+                      william@bassport.com
                     </p>
                   </div>
                 </div>

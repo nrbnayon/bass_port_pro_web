@@ -32,7 +32,7 @@ export default function Footer() {
                 icon={Mail02Icon}
                 className="h-4 w-4 text-primary"
               />{" "}
-              william@bassportpro.com
+              william@bassport.com
             </p>
           </div>
 
