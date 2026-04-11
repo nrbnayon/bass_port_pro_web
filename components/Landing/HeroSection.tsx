@@ -68,12 +68,9 @@ export default function HeroSection() {
             />
           </motion.div>
 
-          <h1 className="max-w-5xl text-center text-3xl font-semibold leading-[1.1] tracking-tight text-balance md:text-6xl lg:text-7xl">
-            <motion.span 
-              variants={itemVariants}
-              className="block"
-            >
-              BASSPORT Pro: Your Bass Fishing <br />
+          <h1 className="max-w-5xl text-center text-3xl font-semibold leading-[1.1] tracking-tight text-balance md:text-6xl">
+            <motion.span variants={itemVariants} className="block">
+              Your Bass Fishing <br />
               <motion.span
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
