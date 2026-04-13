@@ -54,14 +54,14 @@ export const SignUpForm = () => {
 
   const onSubmit = async (data: FormValues) => {
     try {
-      await signup({
+      const result = await signup({
         name: data.full_name,
         email: data.email,
         password: data.password,
       }).unwrap();
 
       toast.success(
-        "Registration successful! Please verify your email with the OTP sent.",
+        result?.message || "Registration successful! Please verify your email with the OTP sent.",
       );
       router.push(
         `/verify-otp?email=${encodeURIComponent(data.email)}&flow=signup`,

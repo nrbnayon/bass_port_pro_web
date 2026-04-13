@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useEffect } from "react";
@@ -69,13 +70,13 @@ const ResetPasswordContent = () => {
 
   const onSubmit = async (data: FormValues) => {
     try {
-      await resetPassword({
+      const result = await resetPassword({
         email,
         otp,
         newPassword: data.newPassword
       }).unwrap();
       
-      toast.success("Password reset successfully! Please signin.");
+      toast.success(result?.message || "Password reset successfully! Please signin.");
       router.push("/signin"); 
     } catch (error: any) {
       console.error("Reset failed:", error);

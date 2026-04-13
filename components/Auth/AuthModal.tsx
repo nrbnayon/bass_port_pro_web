@@ -22,7 +22,7 @@ import {
   emailValidationSchema,
   resetPasswordValidationSchema,
 } from "@/lib/formDataValidation";
-import { 
+import {
   useSigninMutation,
   useSignupMutation,
   useVerifyOtpMutation,
@@ -69,7 +69,11 @@ export default function AuthModal({
   }, [isOpen, initialView]); // Sync when modal opens or initialView changes
 
   // Persist form data across unexpected closes
-  const [loginData, setLoginData] = useState({ email: "", password: "", rememberMe: false });
+  const [loginData, setLoginData] = useState({
+    email: "",
+    password: "",
+    rememberMe: false,
+  });
   const [signupData, setSignupData] = useState({
     full_name: "",
     email: "",
@@ -78,8 +82,6 @@ export default function AuthModal({
     agreeToTerms: true,
   });
   const [forgotData, setForgotData] = useState({ email: "" });
-
-
 
   // Full reset only on intentional X-button close
   const handleClose = () => {
@@ -129,10 +131,21 @@ export default function AuthModal({
         );
       case "otp":
         return (
-          <OTPView setView={setView} email={emailForOTP} purpose={otpPurpose} setVerifiedOtp={setVerifiedOtp} />
+          <OTPView
+            setView={setView}
+            email={emailForOTP}
+            purpose={otpPurpose}
+            setVerifiedOtp={setVerifiedOtp}
+          />
         );
       case "reset-password":
-        return <ResetPasswordView setView={setView} email={emailForOTP} otp={verifiedOtp} />;
+        return (
+          <ResetPasswordView
+            setView={setView}
+            email={emailForOTP}
+            otp={verifiedOtp}
+          />
+        );
       case "success":
         return (
           <SuccessView
@@ -226,7 +239,9 @@ function LoginView({
   setView: (v: AuthView) => void;
   onClose: () => void;
   data: z.infer<typeof signinValidationSchema>;
-  setData: React.Dispatch<React.SetStateAction<z.infer<typeof signinValidationSchema>>>;
+  setData: React.Dispatch<
+    React.SetStateAction<z.infer<typeof signinValidationSchema>>
+  >;
   redirectTo?: string;
 }) {
   const [showPassword, setShowPassword] = useState(false);
@@ -245,7 +260,10 @@ function LoginView({
   // Keep parent state in sync
   useEffect(() => {
     if (values) {
-      setData((prev: z.infer<typeof signinValidationSchema>) => ({ ...prev, ...values }));
+      setData((prev: z.infer<typeof signinValidationSchema>) => ({
+        ...prev,
+        ...values,
+      }));
     }
   }, [values, setData]);
 
@@ -256,7 +274,7 @@ function LoginView({
   const onSubmit = async (formData: z.infer<typeof signinValidationSchema>) => {
     try {
       const result = await signin(formData).unwrap();
-      
+
       dispatch(
         setCredentials({
           user: {
@@ -267,7 +285,7 @@ function LoginView({
             permissions: result.permissions,
           },
           accessToken: result.accessToken,
-        })
+        }),
       );
 
       // We explicitly set cookies for SSR/middleware if the backend doesn't set HTTP-only.
@@ -412,7 +430,9 @@ function SignupView({
   setEmail: (e: string) => void;
   setPurpose: (p: "signup") => void;
   data: z.infer<typeof signupValidationSchema>;
-  setData: React.Dispatch<React.SetStateAction<z.infer<typeof signupValidationSchema>>>;
+  setData: React.Dispatch<
+    React.SetStateAction<z.infer<typeof signupValidationSchema>>
+  >;
 }) {
   const [showPassword, setShowPassword] = useState(false);
   const {
@@ -430,7 +450,10 @@ function SignupView({
   // Keep parent state in sync
   useEffect(() => {
     if (values) {
-      setData((prev: z.infer<typeof signupValidationSchema>) => ({ ...prev, ...values }));
+      setData((prev: z.infer<typeof signupValidationSchema>) => ({
+        ...prev,
+        ...values,
+      }));
     }
   }, [values, setData]);
 
@@ -438,16 +461,19 @@ function SignupView({
 
   const onSubmit = async (formData: z.infer<typeof signupValidationSchema>) => {
     try {
-      await signup({
+      const result = await signup({
         name: formData.full_name,
         email: formData.email,
-        password: formData.password
+        password: formData.password,
       }).unwrap();
       setEmail(formData.email);
       setPurpose("signup");
       setView("otp");
-      toast.success("Verification code sent to your email");
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      toast.success(
+        result?.message ||
+          "Verification code sent to your email, please check your email inbox or spam folder.",
+      );
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       toast.error(error?.data?.message || "Sign up failed. Please try again.");
     }
@@ -604,7 +630,9 @@ function ForgotPasswordView({
   setEmail: (e: string) => void;
   setPurpose: (p: "forgot-password") => void;
   data: z.infer<typeof emailValidationSchema>;
-  setData: React.Dispatch<React.SetStateAction<z.infer<typeof emailValidationSchema>>>;
+  setData: React.Dispatch<
+    React.SetStateAction<z.infer<typeof emailValidationSchema>>
+  >;
 }) {
   const {
     register,
@@ -621,7 +649,10 @@ function ForgotPasswordView({
   // Keep parent state in sync
   useEffect(() => {
     if (values) {
-      setData((prev: z.infer<typeof emailValidationSchema>) => ({ ...prev, ...values }));
+      setData((prev: z.infer<typeof emailValidationSchema>) => ({
+        ...prev,
+        ...values,
+      }));
     }
   }, [values, setData]);
 
@@ -629,12 +660,12 @@ function ForgotPasswordView({
 
   const onSubmit = async (formData: z.infer<typeof emailValidationSchema>) => {
     try {
-      await forgotPasswordUrl(formData).unwrap();
+      const result = await forgotPasswordUrl(formData).unwrap();
       setEmail(formData.email);
       setPurpose("forgot-password");
       setView("otp");
-      toast.success("Verification code sent to your email");
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      toast.success(result?.message || "Verification code sent to your email");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       toast.error(error?.data?.message || "Failed to process request");
     }
@@ -706,8 +737,10 @@ function OTPView({
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [countdown, setCountdown] = useState(180);
 
-  const [verifyOtpMutation, { isLoading: isVerifying }] = useVerifyOtpMutation();
-  const [forgotPasswordUrl, { isLoading: isResending }] = useForgotPasswordMutation();
+  const [verifyOtpMutation, { isLoading: isVerifying }] =
+    useVerifyOtpMutation();
+  const [forgotPasswordUrl, { isLoading: isResending }] =
+    useForgotPasswordMutation();
 
   useEffect(() => {
     if (countdown > 0) {
@@ -747,17 +780,20 @@ function OTPView({
       return;
     }
     const joinedOtp = otp.join("");
-    
+
     try {
-      await verifyOtpMutation({ email, otp: joinedOtp }).unwrap();
-      toast.success("OTP verified successfully!");
+      const result = await verifyOtpMutation({
+        email,
+        otp: joinedOtp,
+      }).unwrap();
+      toast.success(result?.message || "OTP verified successfully!");
       if (purpose === "signup") {
         setView("success");
       } else {
         setVerifiedOtp(joinedOtp);
         setView("reset-password");
       }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       toast.error(error?.data?.message || "Invalid OTP. Please try again.");
     }
@@ -766,11 +802,11 @@ function OTPView({
   const handleResend = async () => {
     if (countdown > 0) return;
     try {
-      await forgotPasswordUrl({ email }).unwrap();
-      toast.success("New code sent to your email!");
+      const result = await forgotPasswordUrl({ email }).unwrap();
+      toast.success(result?.message || "New code sent to your email!");
       setCountdown(180);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch(err: any) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
       toast.error(err?.data?.message || "Failed to resend OTP");
     }
   };
@@ -818,7 +854,11 @@ function OTPView({
             : "bg-gray-50 text-gray-500 hover:bg-gray-100 cursor-pointer"
         }`}
       >
-        {countdown > 0 ? `Resend code in ${Math.floor(countdown / 60)}:${(countdown % 60).toString().padStart(2, "0")}` : (isResending ? "Sending..." : "Resend")}
+        {countdown > 0
+          ? `Resend code in ${Math.floor(countdown / 60)}:${(countdown % 60).toString().padStart(2, "0")}`
+          : isResending
+            ? "Sending..."
+            : "Resend"}
       </button>
     </div>
   );
@@ -850,14 +890,14 @@ function ResetPasswordView({
     data: z.infer<typeof resetPasswordValidationSchema>,
   ) => {
     try {
-      await resetPasswordUrl({
+      const result = await resetPasswordUrl({
         email,
         otp,
-        newPassword: data.newPassword
+        newPassword: data.newPassword,
       }).unwrap();
-      toast.success("Password updated successfully!");
+      toast.success(result?.message || "Password updated successfully!");
       setView("success");
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       toast.error(error?.data?.message || "Failed to reset password");
     }

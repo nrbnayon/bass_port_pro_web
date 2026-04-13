@@ -62,15 +62,16 @@ const VerifyOtpContent = () => {
     }
 
     try {
+      let result;
       if (flow === "reset") {
-        await forgotPassword({ email }).unwrap();
+        result = await forgotPassword({ email }).unwrap();
       } else {
         // We need a resend verification endpoint. For now we use register but typically it's a separate one.
         // Assuming your backend might have or needs a resend-verification-otp endpoint
         // Let's call forgotPassword for now if it handles both, but better to be explicit.
-        await forgotPassword({ email }).unwrap(); 
+        result = await forgotPassword({ email }).unwrap(); 
       }
-      toast.success(`A new code has been sent to ${email}`);
+      toast.success(result?.message || `A new code has been sent to ${email}`);
       setCountdown(60); 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
@@ -81,8 +82,8 @@ const VerifyOtpContent = () => {
 
   const onSubmit = async (data: FormValues) => {
     try {
-      await verifyOtp({ email, otp: data.otp }).unwrap();
-      toast.success("Verification successful!");
+      const result = await verifyOtp({ email, otp: data.otp }).unwrap();
+      toast.success(result?.message || "Verification successful!");
       
       if (flow === "reset") {
         // We can pass verified status through a temporary state or params

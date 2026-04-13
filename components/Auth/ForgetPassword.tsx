@@ -50,8 +50,8 @@ const ForgetPassword = () => {
 
   const onSubmit = async (data: FormValues) => {
     try {
-      await forgotPassword({ email: data.email }).unwrap();
-      toast.success("OTP sent to your email.");
+      const result = await forgotPassword({ email: data.email }).unwrap();
+      toast.success(result?.message || "OTP sent to your email.");
       router.push(`/verify-otp?flow=reset&email=${encodeURIComponent(data.email)}`); 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
@@ -64,8 +64,8 @@ const ForgetPassword = () => {
     const email = getValues("email"); 
     if (!email) return;
     try {
-      await forgotPassword({ email }).unwrap();
-      toast.success("OTP resent to your email.");
+      const result = await forgotPassword({ email }).unwrap();
+      toast.success(result?.message || "OTP resent to your email.");
       setCountdown(60);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
