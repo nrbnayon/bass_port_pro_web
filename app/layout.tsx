@@ -74,8 +74,8 @@ export const metadata: Metadata = {
     "angler reports",
   ],
   icons: {
-    icon: "/icons/logo.png",
-    apple: "/icons/logo.png",
+    icon: `${process.env.NEXT_PUBLIC_APP_URL}/icons/logo.png`,
+    apple: `${process.env.NEXT_PUBLIC_APP_URL}/icons/logo.png`,
   },
   authors: [{ name: "BASSPORT Pro Team" }],
   creator: "BASSPORT Pro",
@@ -106,7 +106,7 @@ export const metadata: Metadata = {
       "Master bass fishing with premium lake intelligence, catch reports, and angler insights. Your destination for trophy bass fishing.",
     images: [
       {
-        url: "/icons/logo.png",
+        url: `${process.env.NEXT_PUBLIC_APP_URL}/icons/logo.png`,
         width: 1200,
         height: 630,
         alt: "BASSPORT Pro - Bass Fishing Intelligence Hub",
@@ -118,7 +118,7 @@ export const metadata: Metadata = {
     title: "BASSPORT Pro | Bass Fishing Intelligence & Lake Reports",
     description:
       "The most comprehensive bass fishing platform for intelligence, reports, and trophy catches.",
-    images: ["/icons/logo.png"],
+    images: [`${process.env.NEXT_PUBLIC_APP_URL}/icons/logo.png`],
   },
   alternates: {
     canonical: "/",
