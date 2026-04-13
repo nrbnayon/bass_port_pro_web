@@ -266,7 +266,6 @@ export default function SettingsPage() {
                       width={128}
                       height={128}
                       className="object-cover w-full h-full scale-100 group-hover:scale-105 transition-transform duration-500"
-                      unoptimized
                     />
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-primary to-orange-700 flex items-center justify-center text-3xl font-bold text-foreground">

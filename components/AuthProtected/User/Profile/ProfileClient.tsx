@@ -99,7 +99,6 @@ export default function ProfileClient() {
                     alt={userData.name || "User"}
                     fill
                     className="object-cover"
-                    unoptimized
                     priority
                   />
                 ) : (
@@ -206,7 +205,6 @@ export default function ProfileClient() {
                         alt={lake.name}
                         fill
                         className="object-cover"
-                        unoptimized
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                       <div className="absolute left-3 bottom-3 text-white">
@@ -297,7 +295,6 @@ export default function ProfileClient() {
                         alt={item.species}
                         fill
                         className="object-cover"
-                        unoptimized
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                       <div className="absolute right-3 top-3">

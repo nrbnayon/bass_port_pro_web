@@ -225,8 +225,10 @@ export default function Navbar() {
                           src={resolveMediaUrl(avatar)}
                           alt="Avatar"
                           fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          priority
+                          quality={100}
                           className="rounded-full object-cover"
-                          unoptimized
                         />
                       ) : (
                         <div className="flex w-full h-full items-center justify-center rounded-full bg-[#FF7043] text-white font-bold text-xs">
@@ -343,7 +345,6 @@ export default function Navbar() {
                             alt="Avatar"
                             fill
                             className="rounded-full object-cover"
-                            unoptimized
                           />
                         ) : (
                           <div className="flex w-full h-full items-center justify-center rounded-full bg-[#FF7043] text-white font-bold text-sm">

@@ -483,7 +483,6 @@ export default function DashboardWrapper({ children }: DashboardWrapperProps) {
                           alt={name || "User"}
                           fill
                           className="object-cover"
-                          unoptimized
                         />
                       ) : (
                         <div className="flex w-full h-full items-center justify-center rounded-full bg-[#FF7043] text-white font-bold text-sm">

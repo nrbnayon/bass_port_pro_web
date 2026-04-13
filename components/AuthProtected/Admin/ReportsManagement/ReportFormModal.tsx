@@ -241,7 +241,6 @@ export default function ReportFormModal({
                       alt={report.title || "Submitted report image"}
                       fill
                       className="object-cover"
-                      unoptimized
                     />
                   </div>
                 </div>
